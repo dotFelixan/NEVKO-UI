@@ -101,6 +101,23 @@ html:has([class*="NarrowRightPanel"]) [class*="_9sPoVBFyE_vE87mnZJ5aB"] {
     scrollbar-width: none;
 }
 
+/*Lower Collection Tags*/
+._2b6WkTnmJxMuX1biL7aS3C {
+    position: fixed !important;
+    top: 6px;
+    right: 16px;
+    max-height: 16px;
+    align-content: center;
+    justify-content: center;
+} 
+
+._2b6WkTnmJxMuX1biL7aS3C ._1HS4twEHtDJ_8MWgJT4VBd {
+    font-size: 8px;
+    background: color-mix(in srgb, var(--secondary-background) 65%, transparent) !important;
+	border-radius: 4px;
+	box-shadow: 0 0 12px #0000005c;
+}
+
 /*Fancy Gamepage Basic*/
 ._2OOzYVWIHaKXm6_7sscT9i>div {
     transition: 1s all ease;
@@ -163,7 +180,7 @@ div.NarrowRightPanel ._3-V8vjmrwuJM6Ws3tsjFJj ._7k4qmaN8SUMvv6u-L81uk {
 .HNbe3eZf6H7dtJ042x1vM {
     width: calc(95% + 128px);
     height: 130%;
-    max-width: 1660px;
+    max-width: 100%;
     -webkit-mask-image: unset;
     mask-image: unset;
 }
@@ -269,9 +286,8 @@ div.NarrowRightPanel ._34lrt5-Fc3usZU6trA1P0- {
 }
 ._1YbtIWcfkQJOysLXQbwzRf {
     position: fixed !important;
-    top: 8px;
+    top: 24px;
     right: 16px;
-	
 	background: color-mix(in srgb, var(--secondary-background) 65%, transparent) !important;
 	border-radius: 8px;
 	box-shadow: 0 0 12px #0000005c;
@@ -393,25 +409,27 @@ div.NarrowRightPanel ._1kiZKVbDe-9Ikootk57kpA ._3bkqc-SsCg0b3FTEuewlK8 {
 
 /*Buttons (Fav, Settings, Info)*/
 .lO1IF132jJ1gc9yz2HYvV {
-    flex-flow: row-reverse;
+    flex-flow: column-reverse;
     position: absolute;
     margin-top: 14px;
-    right: 20px;
+    right: 6px;
     margin-left: 0;
+    margin-right: 0;
 }
+
 ._3qDWQGB0rtwM3qpXTb11Q- {
-	background-color: color-mix(in srgb, var(--secondary-background) 75%, transparent) !important;
+	background: color-mix(in srgb, var(--secondary-background) 75%, transparent) !important;
     width: 26px;
     height: 26px;
+    bottom: 16px;
     padding: 5px;
+    margin-top: 5px;
 }
+
 ._3qDWQGB0rtwM3qpXTb11Q- .zvLq1GUCH3yLuqv_TXBJ1 .SVGIcon_Information {
     width: 18px;
     height: 18px;
 	margin-left: unset;
-}
-.lO1IF132jJ1gc9yz2HYvV>:last-child {
-    margin-right: 10px;
 }
 ._1EAxK56o5a9Nieu5HYkJ4k {
     margin-top: 37px;
