@@ -13,6 +13,10 @@
 
 (Still Heavy WIP, Things may change.)
 
+[Telegram](https://t.me/dotSProjects) | [Discord](https://dsc.gg/dotProjects)
+
+[Use this if Discord link don't work](https://discord.com/invite/mWtYwjcFZq)
+
  | Current Screenshot of Theme |
 | ------------------- | 
 | ![Refresh Design](https://github.com/dotFelixan/NEVKO-UI/blob/main/github/screenshots/rewritescreenshot.png?raw=true) |
