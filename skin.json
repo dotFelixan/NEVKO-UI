@@ -79,7 +79,7 @@
         },
         "Refresh Menu [WIP]": {
             "description": "PlaceHolder",
-            "default": "Disabled",
+            "default": "Enabled",
             "tab": "Refresh Design",
             "values": {
                 "Disabled": {},
