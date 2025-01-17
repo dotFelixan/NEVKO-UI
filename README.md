@@ -40,6 +40,10 @@
 * Hider: [Account Menu] - Blur Account Name
 * Hider: [Account Button] - Hide Balance
  
+## KNOW ISSUES:
+
+* "Low Perfomance Mode" Visual Bugs | Just disable this setting  
+ 
 ## TODO LIST:
 ### Low Priority -
 
