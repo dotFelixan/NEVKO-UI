@@ -6,3 +6,17 @@
 ._3BFcmjAaMyP6GTPwc0VyWi {
     flex-direction: row-reverse;
 }
+
+._9sPoVBFyE_vE87mnZJ5aB:has(._3x1HklzyDs4TEjACrRO2tB) {
+    padding: 8px;
+	padding-left: 8px !important;
+    padding-right: 0 !important;
+}
+._1J21tLst5SEhBPkVRT53UV div {
+    right: unset !important;
+	left: 48px !important;
+}
+._1J21tLst5SEhBPkVRT53UV:after {
+	right: unset !important;
+    left: 64.6px !important;
+}

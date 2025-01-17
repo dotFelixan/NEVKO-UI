@@ -1,0 +1,42 @@
+		/* Main Code */
+html._14wqdluDeDnnEcg3OSLEmd ._2EstNjFIIZm_WUSKm5Wt7n {
+	border: 1px solid color-mix(in srgb, var(--secondary-background) 80%, black);
+    padding: 4px !important;
+	border-radius: 8px;
+}
+html._14wqdluDeDnnEcg3OSLEmd .PP7LM0Ow1K5qkR8WElLpt {
+    border-radius: 8px;
+}
+._2jXHP0742MyApMUVUM8IFn._2uiDecKkKjAq7nimy3uLhG:hover {
+    border-radius: 4px;
+}
+
+html._14wqdluDeDnnEcg3OSLEmd body {
+    background: unset !important;
+}
+.DesktopUI .PP7LM0Ow1K5qkR8WElLpt, ._3qIuY9S_vXm3IQS-uE9SRS .PP7LM0Ow1K5qkR8WElLpt {
+    background: unset;
+}
+.GreenEnvelopeMenu, .PP7LM0Ow1K5qkR8WElLpt {
+    background: unset;
+}
+
+._3pofGqV0buiKAfMPEs3_82 {
+    background: color-mix(in srgb, var(--secondary-background) 95%, white);
+}
+
+.DesktopUI ._1n7Wloe5jZ6fSuvV18NNWI:hover, 
+.DesktopUI ._1n7Wloe5jZ6fSuvV18NNWI._18z-3vkWndCBO5WJgFldRK,
+._3qIuY9S_vXm3IQS-uE9SRS ._1n7Wloe5jZ6fSuvV18NNWI:hover, 
+._3qIuY9S_vXm3IQS-uE9SRS ._1n7Wloe5jZ6fSuvV18NNWI._18z-3vkWndCBO5WJgFldRK {
+    transition: .2s linear;
+	background: unset;
+	color: #dcdedf;
+    background-color: color-mix(in srgb, var(--secondary-background) 90%, white) !important;
+}
+._2jXHP0742MyApMUVUM8IFn._21GPYlKBCLsHQpTsHw_RL_ {
+    width: 95%;
+    margin-right: auto;
+    margin-left: auto;
+    border-bottom: 1px solid color-mix(in srgb, var(--secondary-background) 80%, black) !important;
+}

@@ -10,6 +10,9 @@
     background: rgba(103, 112, 123, .2);
 	border-radius: 4px;
 }
+._1bGewp3tfzqAF6fVTFFUOz .UkR3sY319PuaUNuUWks2K svg {
+    margin-top: 1px;
+}
 ._1bGewp3tfzqAF6fVTFFUOz .UkR3sY319PuaUNuUWks2K ._3KaB94Jl4r0hFkthDPJy09:hover {
     background: #6363632e;
 	border-radius: 4px;
@@ -27,7 +30,27 @@
 	border-radius: 4px !important;
     background: #6363632e;
 }
-/*Fix One Thing*/
-._1bGewp3tfzqAF6fVTFFUOz .UkR3sY319PuaUNuUWks2K {
+/*Position Page Arrows*/
+._25lBLzuVeYAUG279up4xP8:first-child {
+    position: fixed;
+    right: 40px;
+	padding: 6px 8px 6px 8px !important;
+	transform: scale(-0.80, 0.80) !important;
+}
+._25lBLzuVeYAUG279up4xP8 {
+    position: fixed;
+	top: 59.5px;
+    right: 8px;
     z-index: 1;
+	transform: scale(0.80, 0.80) !important;
+	padding: 6px 8px 6px 8px !important;
+    background: rgba(103, 112, 123, .2);
+    border-radius: 4px;
+}
+/*Stupid Fix for Arrows | I hope it's not broke anything*/
+.RGNMWtyj73_-WdhflrmuY {
+    z-index: 2;
+}
+._1bGewp3tfzqAF6fVTFFUOz .UkR3sY319PuaUNuUWks2K {
+    z-index: 0;
 }

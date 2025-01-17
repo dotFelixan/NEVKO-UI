@@ -6,22 +6,6 @@
 	
     "Conditions": {			
 	
-        "Badges for Contributes": {
-            "description": "Custom Badges for Users Who Donated/Help With Code! [WIP]",
-            "default": "yes",
-            "tab": "General",
-            "values": {
-                "no": {},
-                "yes": {
-                    "TargetCss": {
-                        "affects": [".*"], "src": "RefreshUI/WEB/Badges for Contributes/Main Script.css"
-                    },
-                    "TargetJs": {
-                        "affects": [".*"], "src": "RefreshUI/WEB/Badges for Contributes/Main Script.js"
-                    }
-                }
-            }
-        },
         "Rounding Avatars": {
             "description": "Three Convenient Presets for Avatars!",
             "default": "Rounded Square",
@@ -99,7 +83,11 @@
             "tab": "Refresh Design",
             "values": {
                 "Disabled": {},
-				"Enabled": {}
+				"Enabled": {
+                    "TargetCss": {
+                        "affects": ["Supernav$", "Menu$"], "src": "RefreshUI/Menu UI/Refresh Menu/Menu Code.css"
+                    }
+                }
             }
         },
         "Refresh Settings [PLACEHOLDER]": {
@@ -354,6 +342,6 @@
 	"header_image": "https://i.imgur.com/Qo6O7iv.png",
     "splash_image": "https://i.imgur.com/dqCDCH2.png",
     "name": "NEVKO-UI",
-    "version": "0.9.22",
+    "version": "0.9.25",
     "tags": [ "Refresh", "Redesign", "Customizable", "Features", "Accents", "AMOLED", "Material You", "WIP" ]
 }

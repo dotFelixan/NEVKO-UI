@@ -19,7 +19,7 @@
 
  | Current Screenshot of Theme |
 | ------------------- | 
-| ![Refresh Design](https://github.com/dotFelixan/NEVKO-UI/blob/main/github/screenshots/rewritescreenshot.png?raw=true) |
+| ![Refresh Design](https://github.com/dotFelixan/NEVKO-UI/blob/main/github/screenshots/newscreenshotlibrary.png?raw=true) |
 
 </div>
 

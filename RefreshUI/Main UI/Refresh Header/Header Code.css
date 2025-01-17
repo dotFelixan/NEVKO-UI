@@ -50,11 +50,7 @@
 ._2UyOBeiSdBayaFdRa39N2O:nth-of-type(4),
 ._2UyOBeiSdBayaFdRa39N2O:nth-of-type(5)  {
     display: none !important;
-}	
-/*Remove Page Arrows [TEMP]*/
-._25lBLzuVeYAUG279up4xP8 {
-    display: none !important;
-}	
+}
 
 	/* Store, Library, etc. Buttons */
 /*Change Style Buttons*/
@@ -210,6 +206,10 @@
 ._3yD46y5pd3zOGR7CzKs0mC {
     padding-left: 8px;
 }
+.DesktopUI .title-area-icon:hover, 
+.friendsui-container .title-area-icon:hover {
+    background: #6363632e;
+}
 /*Buttons Location*/
 ._3cykd-VfN_xBxf3Qxriccm {
     margin-right: 17px !important;
@@ -272,6 +272,25 @@
 ._3yD46y5pd3zOGR7CzKs0mC.ingame.awayOrSnooze:hover {
     background-color: color-mix(in srgb, var(--ingameidle-status) 20%, transparent) !important;
 }
+/* Fix Color Icon & Text */
+._2foCkpRXhqq0UGVE50BWqj ._1KrJ3sFAqPBN9mfpaNTU5F, 
+._1TdaAqMFadi0UTqilrkelR ._1KrJ3sFAqPBN9mfpaNTU5F,
+.ip-YZhijAMZcuRoXBGiye ._1KrJ3sFAqPBN9mfpaNTU5F {
+    color: #8B929A;
+}
+.ip-YZhijAMZcuRoXBGiye ._3wJnTtcTLEp0R7eQj_mK8Y {
+    color: #81878F;
+}
+
+.title-area-icon .SVGIcon_Minimize polyline, 
+.title-area-icon .SVGIcon_Restore polyline, 
+.title-area-icon.minimizeButton svg line,
+.title-area-icon .SVGIcon_Maximize rect, 
+.title-area-icon .SVGIcon_Maximize line, 
+.title-area-icon .SVGIcon_Restore rect, 
+.title-area-icon .SVGIcon_X_Line line {
+    stroke: #8B929A;
+}
 
 /* Account Color Text*/
 ._3yD46y5pd3zOGR7CzKs0mC /*offline*/ {
@@ -310,4 +329,18 @@
 /* Add Roundnes for Game Icon */
 ._3d_bT685lnWotXxgzKW6am.yDr03475kalWBTwAE-Rnw {
     border-radius: 3px;
+}
+
+/* Fix Notification */
+.RtSv39ZoBOySnb8XQ5hJf._3L1c8C0o_xXzPy26aoLBFd {
+    background-color: var(--green-color);
+}
+.RtSv39ZoBOySnb8XQ5hJf._3L1c8C0o_xXzPy26aoLBFd:not(._1QQWjaXmb1eTHZpeIhQA_5):hover {
+    transition: background-color .15s ease-out !important;
+    background-color: color-mix(in srgb, var(--green-color) 90%, white) !important;
+}
+.RtSv39ZoBOySnb8XQ5hJf._9YK5IY219Pm_F53DAxyYp:not(._1QQWjaXmb1eTHZpeIhQA_5):hover ._34bQcTHo5QKzuujoEyU1tm, 
+.RtSv39ZoBOySnb8XQ5hJf._3qhGkQ5qLVNQQ-J2-uPoHt:not(._1QQWjaXmb1eTHZpeIhQA_5):hover ._34bQcTHo5QKzuujoEyU1tm {
+    color: #fff;
+    transition: color .15s ease-out;
 }
