@@ -8,19 +8,14 @@ html._14wqdluDeDnnEcg3OSLEmd .PP7LM0Ow1K5qkR8WElLpt {
     border-radius: 8px;
 }
 ._2jXHP0742MyApMUVUM8IFn._2uiDecKkKjAq7nimy3uLhG:hover {
-    border-radius: 4px;
+    border-radius: 6px;
 }
 
 html._14wqdluDeDnnEcg3OSLEmd body {
     background: unset !important;
 }
-.DesktopUI .PP7LM0Ow1K5qkR8WElLpt, ._3qIuY9S_vXm3IQS-uE9SRS .PP7LM0Ow1K5qkR8WElLpt {
-    background: unset;
-}
-.GreenEnvelopeMenu, .PP7LM0Ow1K5qkR8WElLpt {
-    background: unset;
-}
-
+.DesktopUI .PP7LM0Ow1K5qkR8WElLpt, ._3qIuY9S_vXm3IQS-uE9SRS .PP7LM0Ow1K5qkR8WElLpt,
+.GreenEnvelopeMenu, .PP7LM0Ow1K5qkR8WElLpt,
 ._3pofGqV0buiKAfMPEs3_82 {
     background: color-mix(in srgb, var(--secondary-background) 95%, white);
 }

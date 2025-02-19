@@ -248,6 +248,72 @@
                 "no": {}
             }
         },
+        "[Library] - Hiding Library Items": {
+            "description": "Placeholder",
+            "default": "None",
+            "tab": "Hider",
+            "values": {
+                "None": {},
+                "[What's New] Only": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "Hider/Library Items/News.css"
+                    }
+                },
+				"[Add Shelf] Only": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "Hider/Library Items/Shelf.css"
+                    }
+                },
+				"Both": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "Hider/Library Items/Both.css"
+                    }
+                }
+			}
+        },
+        "[Header] - Remove Window Buttons": {
+            "description": "Placeholder",
+            "default": "None",
+            "tab": "Hider",
+            "values": {
+                "None": {},
+                "[Collapse] Only": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "Hider/Main Window Buttons/collapse-o.css"
+                    }
+                },
+                "[Expand] Only": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "Hider/Main Window Buttons/expand-o.css"
+                    }
+                },
+                "[Close] Only": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "Hider/Main Window Buttons/close-o.css"
+                    }
+                },
+                "[Collapse + Expand]": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "Hider/Main Window Buttons/collapse-expand.css"
+                    }
+                },
+                "[Collapse + Close]": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "Hider/Main Window Buttons/collapse-close.css"
+                    }
+                },
+                "[Expand + Close]": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "Hider/Main Window Buttons/expand-close.css"
+                    }
+                },
+				"All": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "Hider/Main Window Buttons/hide all.css"
+                    }
+                }
+			}
+        },
 		
         "Extra Popup Menu [PLACEHOLDER]": {
             "description": "PlaceHolder",
@@ -259,6 +325,7 @@
             }
         }	
 	},
+	
 	
 		"Patches": [	
     {
@@ -342,6 +409,6 @@
 	"header_image": "https://i.imgur.com/Qo6O7iv.png",
     "splash_image": "https://i.imgur.com/dqCDCH2.png",
     "name": "NEVKO-UI",
-    "version": "0.9.26",
+    "version": "0.9.30",
     "tags": [ "Refresh", "Redesign", "Customizable", "Features", "Accents", "AMOLED", "Material You", "WIP" ]
 }

@@ -39,6 +39,8 @@
 
 * Hider: [Account Menu] - Blur Account Name
 * Hider: [Account Button] - Hide Balance
+* Hider: [Library] - Hiding Library Items
+* Hider: [Library] - Remove Window Buttons
  
 ## KNOW ISSUES:
 
