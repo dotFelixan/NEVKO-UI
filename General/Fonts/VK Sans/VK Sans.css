@@ -1,0 +1,52 @@
+@font-face
+{
+	font-family: "VK Sans Regular";
+	font-style: normal;
+	font-weight: 100 900;
+	src: url("Display/vk_sans_display_medium.ttf") format("truetype");
+	font-display: swap;
+}
+
+@font-face
+{
+	font-family: "VK Sans Regular";
+	font-style: normal;
+	font-weight: 700;
+	src: url("Display/vk_sans_display_bold.ttf") format("truetype");
+	font-display: swap;
+}
+
+@font-face
+{
+	font-family: "VK Sans Mono";
+	font-style: normal;
+	font-weight: 400;
+	src: url("Text/vk_sans_text_regular.ttf") format("truetype");
+	font-display: swap;
+}
+
+@font-face
+{
+	font-family: "VK Sans Mono";
+	font-style: normal;
+	font-weight: 700;
+	src: url("Text/vk_sans_text_demibold.ttf") format("truetype");
+	font-display: swap;
+}
+
+:root
+{
+	--nku-text-font-primary: "VK Sans Regular" !important;
+	--nku-text-font-monospace-primary: "VK Sans Mono" !important;
+}
+
+
+
+body.DesktopUI div[class*="steamdesktop_TopBar_"] div[class*="supernav_MenuButton_"], 
+body.DesktopUI div._3Z7VQ1IMk4E3HsHvrkLNgo div._19axKcqYRuaJ8vdYKYmtTQ {
+    font-family: var(--nku-text-font-primary) !important;
+    font-size: 15px !important;
+}
+._7AlhCx3XGzBeIrQaCneUD ._19axKcqYRuaJ8vdYKYmtTQ {
+    margin-top: 7px !important;
+}

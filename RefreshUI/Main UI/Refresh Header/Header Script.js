@@ -22,3 +22,4 @@ const observer = new MutationObserver((mutations) => {
         }
     });
 });
+

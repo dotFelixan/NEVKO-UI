@@ -41,130 +41,56 @@
 				}
             }
 		},
-		
-        "Refresh Header": {
-            "description": "Fancy Lookin' Header!",
-            "default": "Top",
-            "tab": "Refresh Design",
+        "Fonts [WIP]": {
+            "description": "WIP Fonts, Nothing Else.",
+            "default": "Steam Default",
+            "tab": "General",
             "values": {
-                "Top": {},
-				"Bottom": {
+                "Inter": {
                     "TargetCss": {
-                        "affects": ["^Steam$"], "src": "RefreshUI/Main UI/Refresh Header/Top Bar Reverse.css"
+                        "affects": [".*"], "src": "General/Fonts/Inter/Inter.css"
                     }
-                }
-            }
-        },
-        "Refresh Library [WIP]": {
-            "description": "PlaceHolder",
-            "default": "Left Side",
-            "tab": "Refresh Design",
-            "values": {
-                "Left Side": {},
-				"Right Side": {
+                },
+                "VK Sans": {
                     "TargetCss": {
-                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Flip Library.css"
+                        "affects": [".*"], "src": "General/Fonts/VK Sans/VK Sans.css"
                     }
-                }
+                },
+                "Steam Default": {}
             }
-        },
-        "Refresh Friends [PLACEHOLDER]": {
-            "description": "PlaceHolder",
-            "default": "Disabled",
-            "tab": "Refresh Design",
-            "values": {
-                "Disabled": {},
-				"Enabled": {}
-            }
-        },
-        "Refresh Menu [WIP]": {
-            "description": "PlaceHolder",
-            "default": "Enabled",
-            "tab": "Refresh Design",
-            "values": {
-                "Disabled": {},
-				"Enabled": {
-                    "TargetCss": {
-                        "affects": ["Supernav$", "Menu$"], "src": "RefreshUI/Menu UI/Refresh Menu/Menu Code.css"
+		},
+
+                "DRIVER = 1": {
+                    "description": "",
+                    "default": "",
+                    "tab": "UI Personalization",
+                    "values": {
+                        "": {}
                     }
-                }
-            }
-        },
-        "Refresh Settings [PLACEHOLDER]": {
-            "description": "PlaceHolder",
-            "default": "Disabled",
-            "tab": "Refresh Design",
-            "values": {
-                "Disabled": {},
-				"Enabled": {}
-            }
-        },
-				
-        "Refresh Store [PLACEHOLDER]": {
-            "description": "PlaceHolder",
-            "default": "Disabled",
-            "tab": "Refresh Design [WEB]",
-            "values": {
-                "Disabled": {},
-				"Enabled": {}
-            }
-        },
-        "Refresh Profile [PLACEHOLDER]": {
-            "description": "PlaceHolder",
-            "default": "Disabled",
-            "tab": "Refresh Design [WEB]",
-            "values": {
-                "Disabled": {},
-				"Enabled": {}
-            }
-        },	
-        "Refresh Community [PLACEHOLDER]": {
-            "description": "PlaceHolder",
-            "default": "Disabled",
-            "tab": "Refresh Design [WEB]",
-            "values": {
-                "Disabled": {},
-				"Enabled": {}
-            }
-        },
-		
-        "[Library] - Resize Library List.": {
-            "description": "PlaceHolder",
-            "default": "Default",
-            "tab": "Refresh Design Config",
-            "values": {
-                "Default": {
-                    "TargetCss": {
-                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Library Sizes/Default.css"
-                    }
-				},
-                "Small": {
-                    "TargetCss": {
-                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Library Sizes/Small.css"
-                    }
-				},
-				"Medium": {
-                    "TargetCss": {
-                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Library Sizes/Medium.css"
-                    }
-				},
-				"Big": {
-                    "TargetCss": {
-                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Library Sizes/Big.css"
-                    }
-				}
-            }
-        },
-        "[Header] - Move Bottom Bar to Top Bar.": {
-            "description": "And Removes Bottom Bar. Credits: Shadow [CSS & JS]",
+                },
+        "Hide Balance": {
+            "description": "Just Hide Balance in Account Button. Nothing Else.",
             "default": "yes",
-            "tab": "Refresh Design Config",
+            "tab": "UI Personalization",
+            "values": {
+                "yes": {                
+                "TargetCss": {
+                        "affects": ["^Steam$"], "src": "Hider/Balance Acc/Balance.css"
+                    }
+                },
+                "no": {}
+            }
+        },
+        "Move Bottom Bar to Top Bar": {
+            "description": "And Removes Bottom Bar.",
+            "default": "yes",
+            "tab": "UI Personalization",
             "values": {
                 "yes": {
                     "TargetCss": {
                         "affects": ["^Steam$"], "src": "RefreshUI/Main UI/Refresh Header/Compact Buttons/Compact Buttons.css"
                     },
-					"TargetJs": {
+                    "TargetJs": {
                         "affects": ["^Steam$"], "src": "RefreshUI/Main UI/Refresh Header/Compact Buttons/Compact Buttons.js"
                     }
                 },
@@ -172,13 +98,13 @@
                     "TargetCss": {
                         "affects": ["^Steam$"], "src": "RefreshUI/Main UI/Refresh Header/Fancy Bottom.css"
                     }
-				}
+                }
             }
         },
-		"[Header] - Move URL Bar to Bottom.": {
-            "description": "Just Moves URL Bar to Bottom. Nothing Else.",
+        "Move URL Bar to Bottom": {
+            "description": "Just Moves URL Bar to Bottom.",
             "default": "yes",
-            "tab": "Refresh Design Config",
+            "tab": "UI Personalization",
             "values": {
                 "yes": {
                     "TargetCss": {
@@ -192,10 +118,10 @@
                 }
             }
         },
-        "[Header] - Reorder Main Buttons.": {
+        "Reorder Main Buttons": {
             "description": "Swap 'Library' and 'Store' Buttons.",
             "default": "no",
-            "tab": "Refresh Design Config",
+            "tab": "UI Personalization",
             "values": {
                 "yes": {
                     "TargetCss": {
@@ -205,76 +131,26 @@
                 "no": {}
             }
         },
-        "[Header] - Hide Profile Button.": {
+        "Hide Profile Button": {
             "description": "Remove Profile Button in Left Side. All Needful Buttons Ports into 'Account Menu'",
             "default": "yes",
-            "tab": "Refresh Design Config",
+            "tab": "UI Personalization",
             "values": {
                 "yes": {
                     "TargetCss": {
                         "affects": ["^Steam$", "Menu$", "SuperNav$"], "src": "RefreshUI/Main UI/Refresh Header/Account Style/Hide Profile Button.css"  
-					},
-					"TargetJs": {
-						"affects": ["Menu$", "SuperNav$"], "src": "RefreshUI/Main UI/Refresh Header/Account Style/Profile Buttons in Account Menu.js"
-					}
+                    },
+                    "TargetJs": {
+                        "affects": ["Menu$", "SuperNav$"], "src": "RefreshUI/Main UI/Refresh Header/Account Style/Profile Buttons in Account Menu.js"
+                    }
                 },
                 "no": {}
             }
-        },     				
-		
-		"[Account Menu] - Blur Account Name": {
-            "description": "Just Blur Account/Login Name in Account Menu. Nothing Else (for now).",
-            "default": "yes",
-            "tab": "Hider",
-            "values": {
-                "yes": {				
-				"TargetCss": {
-						"affects": ["Menu$", "SuperNav$"], "src": "Hider/Blur Account/Account.css"
-					}
-				},
-                "no": {}
-            }
-        },
-		"[Account Button] - Hide Balance": {
-            "description": "Just Hide Balance in Account Button. Nothing Else.",
-            "default": "yes",
-            "tab": "Hider",
-            "values": {
-                "yes": {				
-				"TargetCss": {
-						"affects": ["^Steam$"], "src": "Hider/Balance Acc/Balance.css"
-					}
-				},
-                "no": {}
-            }
-        },
-        "[Library] - Hiding Library Items": {
-            "description": "Placeholder",
+        },      
+        "Remove Window Buttons": {
+            "description": "",
             "default": "None",
-            "tab": "Hider",
-            "values": {
-                "None": {},
-                "[What's New] Only": {
-                    "TargetCss": {
-                        "affects": ["^Steam$"], "src": "Hider/Library Items/News.css"
-                    }
-                },
-				"[Add Shelf] Only": {
-                    "TargetCss": {
-                        "affects": ["^Steam$"], "src": "Hider/Library Items/Shelf.css"
-                    }
-                },
-				"Both": {
-                    "TargetCss": {
-                        "affects": ["^Steam$"], "src": "Hider/Library Items/Both.css"
-                    }
-                }
-			}
-        },
-        "[Header] - Remove Window Buttons": {
-            "description": "Placeholder",
-            "default": "None",
-            "tab": "Hider",
+            "tab": "UI Personalization",
             "values": {
                 "None": {},
                 "[Collapse] Only": {
@@ -307,30 +183,242 @@
                         "affects": ["^Steam$"], "src": "Hider/Main Window Buttons/expand-close.css"
                     }
                 },
-				"All": {
+                "All": {
                     "TargetCss": {
                         "affects": ["^Steam$"], "src": "Hider/Main Window Buttons/hide all.css"
                     }
                 }
-			}
+            }
+        },
+
+                "DRIVER = 2": {
+                    "description": "",
+                    "default": "",
+                    "tab": "UI Personalization",
+                    "values": {
+                        "": {}
+                    }
+                },
+        "Resize Library List": {
+            "description": "",
+            "default": "Default",
+            "tab": "UI Personalization",
+            "values": {
+                "Default": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Library Sizes/Default.css"
+                    }
+                },
+                "Small": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Library Sizes/Small.css"
+                    }
+                },
+                "Medium": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Library Sizes/Medium.css"
+                    }
+                },
+                "Big": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Library Sizes/Big.css"
+                    }
+                }
+            }
+        },
+        "Game Page Content Location": {
+            "description": "",
+            "default": "Center [All]",
+            "tab": "UI Personalization",
+            "values": {
+                "Center [All]": {},
+                "Left Side [All]": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Game Main Buttons Location/leftside-all.css"
+                    }
+                },
+                "Right Side [All]": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Game Main Buttons Location/rightside-all.css"
+                    }
+                },
+                "Compact Left Side": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Game Main Buttons Location/compact-left.css"
+                    }
+                },
+                "Compact Right Side": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Game Main Buttons Location/compact-right.css"
+                    }
+                },
+                "Right Side [Play Button] Only": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Game Main Buttons Location/rightside-play.css"
+                    }
+                },
+                "Right Side [Game Links] Only": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Game Main Buttons Location/rightside-links.css"
+                    }
+                },
+                "Left Side [Play Button] Only": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Game Main Buttons Location/leftside-play.css"
+                    }
+                },
+                "Left Side [Game Links] Only": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Game Main Buttons Location/leftside-links.css"
+                    }
+                }
+            }
+        },      
+        "Hiding Library Items": {
+            "description": "",
+            "default": "None",
+            "tab": "UI Personalization",
+            "values": {
+                "None": {},
+                "[What's New] Only": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "Hider/Library Items/News.css"
+                    }
+                },
+                "[Add Shelf] Only": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "Hider/Library Items/Shelf.css"
+                    }
+                },
+                "Both": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "Hider/Library Items/Both.css"
+                    }
+                }
+            }
+        },
+
+                "DRIVER = 3": {
+                    "description": "",
+                    "default": "",
+                    "tab": "UI Personalization",
+                    "values": {
+                        "": {}
+                    }
+                },
+        "Style Menu [WIP]": {
+            "description": "",
+            "default": "Default",
+            "tab": "UI Personalization",
+            "values": {
+                "Spacious": {
+                    "TargetCss": {
+                        "affects": ["Supernav$", "Menu$"], "src": "RefreshUI/Menu UI/Refresh Menu/Spacious.css"
+                    }
+                },
+                "Compact": {
+                    "TargetCss": {
+                        "affects": ["Supernav$", "Menu$"], "src": "RefreshUI/Menu UI/Refresh Menu/Compact.css"
+                    }
+                },
+                "Default": {}
+            }
         },
 		
-        "Extra Popup Menu [PLACEHOLDER]": {
-            "description": "PlaceHolder",
-            "default": "no",
-            "tab": "Experimental",
+        "Refresh Library": {
+            "description": "",
+            "default": "Left Side",
+            "tab": "Refresh Presets",
             "values": {
-                "yes": {},
+                "Left Side": {},
+				"Right Side": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"], "src": "RefreshUI/Library UI/Refresh Library/Flip Library.css"
+                    }
+                }
+            }
+        },
+        "Refresh Friends & Chat [PLACEHOLDER]": {
+            "description": "PlaceHolder",
+            "default": "Disabled",
+            "tab": "Refresh Presets",
+            "values": {
+                "Disabled": {},
+				"Enabled": {}
+            }
+        },
+        "Refresh Settings [PLACEHOLDER]": {
+            "description": "PlaceHolder",
+            "default": "Disabled",
+            "tab": "Refresh Presets",
+            "values": {
+                "Disabled": {},
+				"Enabled": {}
+            }
+        },
+				
+        "Refresh Store [PLACEHOLDER]": {
+            "description": "PlaceHolder",
+            "default": "Disabled",
+            "tab": "Refresh Presets",
+            "values": {
+                "Disabled": {},
+				"Enabled": {}
+            }
+        },
+        "Refresh Profile [PLACEHOLDER]": {
+            "description": "PlaceHolder",
+            "default": "Disabled",
+            "tab": "Refresh Presets",
+            "values": {
+                "Disabled": {},
+				"Enabled": {}
+            }
+        },	
+        "Refresh Community [PLACEHOLDER]": {
+            "description": "PlaceHolder",
+            "default": "Disabled",
+            "tab": "Refresh Presets",
+            "values": {
+                "Disabled": {},
+				"Enabled": {}
+            }
+        },
+
+		
+		"Blur Account Name": {
+            "description": "Just Blur Account/Login Name in Account Menu. Nothing Else (for now).",
+            "default": "yes",
+            "tab": "Privacy",
+            "values": {
+                "yes": {				
+				"TargetCss": {
+						"affects": ["Menu$", "SuperNav$"], "src": "Hider/Blur Account/Account.css"
+					}
+				},
                 "no": {}
             }
-        }	
+        }
 	},
 	
 	
+
+
+
+
 		"Patches": [	
     {
       "MatchRegexString": ".*",
       "TargetJs": "webkit.js"
+    },
+
+    {
+      "MatchRegexString": "^Steam$",
+      "TargetJs": "Fixes/Names in Settings Theme/TITLETheme.js"
+    },
+    {
+      "MatchRegexString": ".*",
+      "TargetJs": "Fixes/Names in Settings Theme/TITLETheme.js"
     },
 		
 	{
@@ -344,6 +432,16 @@
 	{
         "MatchRegexString": "^Steam$",
         "TargetCss": "RefreshUI/Library UI/Refresh Library/Library Code.css"
+	},
+	
+	{
+        "MatchRegexString": "^Steam$",
+        "TargetJs": "Fixes/Bring Back Top Buttons/Extra Buttons.js"
+	},
+	
+	{
+        "MatchRegexString": "^Steam$",
+        "TargetJs": "RefreshUI/Library UI/Refresh Library/Scaling Category.js"
 	},
 	
     {
@@ -392,6 +490,45 @@
 	{
         "MatchRegexString": "SuperNav$",
         "TargetCss": "Extra/CSS/accents-config.css"
+    },
+	
+	{
+		"MatchRegexString": "Menu$",
+        "TargetJs": "Fixes/Account Button Extras/Status Menu.js"
+    },
+	{
+        "MatchRegexString": "SuperNav$",
+        "TargetJs": "Fixes/Account Button Extras/Status Menu.js"
+    },
+	{
+        "MatchRegexString": ".ModalDialogPopup",
+        "TargetJs": "Fixes/Account Button Extras/Status Menu.js"
+    },
+	{
+        "MatchRegexString": "^Steam$",
+        "TargetJs": "Fixes/Account Button Extras/Status Menu.js"
+    },
+    {
+        "MatchRegexString": ".friendsui-container",
+        "TargetJs": "Fixes/Account Button Extras/Status Menu.js"
+    },
+	
+	{
+        "MatchRegexString": "^Steam$",
+        "TargetJs": "RefreshUI/Main UI/Refresh Header/Fix Family Tooltip.js"
+    },
+	
+	{
+        "MatchRegexString": "^Steam$",
+        "TargetJs": "Fixes/Fix Tooltips/Fix Tooltips.js"
+    },
+	{
+		"MatchRegexString": "Menu$",
+        "TargetJs": "Fixes/Fix Tooltips/Fix Tooltips.js"
+    },
+	{
+        "MatchRegexString": "SuperNav$",
+        "TargetJs": "Fixes/Fix Tooltips/Fix Tooltips.js"
     }
 ],
 	
@@ -409,6 +546,6 @@
 	"header_image": "https://i.imgur.com/Qo6O7iv.png",
     "splash_image": "https://i.imgur.com/dqCDCH2.png",
     "name": "NEVKO-UI",
-    "version": "0.9.30",
+    "version": "0.9.42",
     "tags": [ "Refresh", "Redesign", "Customizable", "Features", "Accents", "AMOLED", "Material You", "WIP" ]
 }

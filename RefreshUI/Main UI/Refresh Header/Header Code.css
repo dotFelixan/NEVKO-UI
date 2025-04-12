@@ -1,7 +1,37 @@
 			/* Top Bar */
 		/* Interface Elements */
+/* Loading Screen */
+._3sa1NXudhvcc1U7HrlLdNQ {
+    transition: all 1.2s ease;
+}
+._2YwTwqFtU04JgwfzXSAcSV {
+    transition: all 1.2s ease;
+}
+
+._2YwTwqFtU04JgwfzXSAcSV {
+    background: var(--main-background);	
+    transition: all 1.2s ease;
+}
+._3sa1NXudhvcc1U7HrlLdNQ img._39-WTtOSEPJqAEjOcNGE3j {
+    display: none;
+}
+
+._3CN5DkgNMvdtT9fJhNOj_v {
+    background-image: url(https://i.imgur.com/Wyc2tBO.png);
+    width: 200px;
+    height: 200px;
+    background-position: center;
+    background-size: 308px;
+}
 		
 	/* Remove Elements */	
+/*Context Profile Button*/
+._2UyOBeiSdBayaFdRa39N2O:nth-of-type(2),
+._2UyOBeiSdBayaFdRa39N2O:nth-of-type(3),
+._2UyOBeiSdBayaFdRa39N2O:nth-of-type(4),
+._2UyOBeiSdBayaFdRa39N2O:nth-of-type(5)  {
+    display: none !important;
+}
 /*Remove Useless Height*/
 .RGNMWtyj73_-WdhflrmuY ._2CmrnGY-Amtd83ScJkFvx2 {
 	min-height: unset !important;
@@ -42,15 +72,6 @@
 }
 		
 		/* Left Side Bar */
-	
-	/* Remove Elements */
-/*Context Profile Button*/
-._2UyOBeiSdBayaFdRa39N2O:nth-of-type(2),
-._2UyOBeiSdBayaFdRa39N2O:nth-of-type(3),
-._2UyOBeiSdBayaFdRa39N2O:nth-of-type(4),
-._2UyOBeiSdBayaFdRa39N2O:nth-of-type(5)  {
-    display: none !important;
-}
 
 	/* Store, Library, etc. Buttons */
 /*Change Style Buttons*/
@@ -76,7 +97,7 @@
 	transition: .2s linear;
 }
 ._7AlhCx3XGzBeIrQaCneUD ._19axKcqYRuaJ8vdYKYmtTQ {
-    margin-top: 6px !important;
+    margin-top: 6px;
 }
 /*Change Style Text Buttons */
 ._7AlhCx3XGzBeIrQaCneUD {
@@ -90,6 +111,9 @@
 ._7AlhCx3XGzBeIrQaCneUD._1gqEjB5QsKT_NftD1dEsdZ:not(._2cO0HdvLEGAdhosLekWsmo) ._19axKcqYRuaJ8vdYKYmtTQ {
 	text-transform: capitalize;
 	font-weight: bold;
+}
+._7AlhCx3XGzBeIrQaCneUD:nth-of-type(4)._1gqEjB5QsKT_NftD1dEsdZ:not(._2cO0HdvLEGAdhosLekWsmo) ._19axKcqYRuaJ8vdYKYmtTQ {
+    text-transform: math-auto !important;
 }
 ._2D64jIEK7wpUR_NlObDW76 {
     gap: 5px !important;
@@ -348,4 +372,9 @@
 /* Change Color Balance */
 ._3yD46y5pd3zOGR7CzKs0mC ._2jphjrSifC6orDT4g_7Wd {
     color: #81878F;
+}
+
+._1bGewp3tfzqAF6fVTFFUOz .UkR3sY319PuaUNuUWks2K.Maximized, 
+.Maximized ._1bGewp3tfzqAF6fVTFFUOz .UkR3sY319PuaUNuUWks2K {
+    box-shadow: unset;
 }
