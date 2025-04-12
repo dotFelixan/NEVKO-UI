@@ -42,27 +42,17 @@
 * Hider: [Library] - Hiding Library Items
 * Hider: [Library] - Remove Window Buttons
  
-## KNOW ISSUES:
-
-* "Low Perfomance Mode" Visual Bugs | Just disable this setting  
- 
 ## TODO LIST:
 ### Low Priority -
 
- 1. Public Figma
- 2. Popup Menu (Big Picture, VR Button) [JS] 
- 3. "Open SteamDB" Button in Steam Menu [JS]
- 4. Fixing Steam Color/Design [CSS]
+ 1. Popup Menu (Big Picture, VR Button) [JS] 
+ 2. "Open SteamDB" Button in Steam Menu [JS]
 
-### Medium Priority -
+ 3. Solar Icons
+ 4. WEB Alt Store [CSS & JS]
 
- 1. Solar Icons
- 2. WEB Alt Store [CSS & JS]
-
-### High Priority -
-
- 1. Refresh Library [CSS, Maybe JS]
- 2. WEB Alt Design (Profile, Community, etc.) [CSS]
+ 5. Refresh Library [CSS, Maybe JS]
+ 6. WEB Alt Design (Profile, Community, etc.) [CSS]
  
 ...And More [CSS & JS]
 
@@ -70,6 +60,10 @@
 ### Authors from Who I Borrowed the Code:
 
 * [ShadowMonster99](https://github.com/shdwmtr) - [JS & CSS] Code from CompactHeader
+
+* [tkashkin](https://github.com/tkashkin) - [CSS] Fonts Code from Adwaita
+
+* [SpaceTheme](https://github.com/SpaceTheme) - [CSS] Code for Right Side Library(Fix Posts Game) from SpaceTheme
 
 ### People Who Helped Me With the Code:
 
