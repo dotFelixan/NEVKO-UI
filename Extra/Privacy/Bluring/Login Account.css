@@ -1,0 +1,9 @@
+/* Stock Blur*/
+.HoGkIKTQnkTEFGjqO-GMl ._11phBiBefcVQdzrnrezkKa {
+	filter: blur(5px);
+}
+/* Hover Blur*/
+._1n7Wloe5jZ6fSuvV18NNWI:hover ._11phBiBefcVQdzrnrezkKa {
+	filter: unset !important;
+	transition: 0.15s linear;
+}

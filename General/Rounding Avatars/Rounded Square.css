@@ -1,0 +1,46 @@
+/* Round Avatars - MAIN */
+._1xTATKELHR-lRS_s3A4yzd ._36eQg-jp1ebbdaE6PBniHu,
+._3dncOt2dhpnFYQn-WYQ3Mb ._2JYwpg3-WbCSXH-w5h-zL_,
+.ChatRoomMultiFriendAvatar,
+._3h-QRJGxnVOIExtHD1R0f2 {
+	border-radius: 18% !important;
+}
+/* Code for Alt Online Icon */
+._3xUpb5DWXPFNcHHIcv-9pe.right,
+._3xUpb5DWXPFNcHHIcv-9pe.bottom {
+	border-radius: 28%;
+}
+
+/* Disable Round Avatars with Cosmetic Border */
+._3h-QRJGxnVOIExtHD1R0f2:has(+ ._2nPONxDUmK4rQXzK4Y3vG2) {
+	border-radius: 6% !important;
+	outline: unset !important;
+}
+
+
+/* Replace Online Icon */
+.nibodjvvrm86uCfnnAn4g ._3xUpb5DWXPFNcHHIcv-9pe.bottom,
+.nibodjvvrm86uCfnnAn4g ._3xUpb5DWXPFNcHHIcv-9pe.right,
+._3xUpb5DWXPFNcHHIcv-9pe {
+	visibility: hidden;
+}
+
+._3h-QRJGxnVOIExtHD1R0f2 {
+	outline: 1px solid;
+	transition: .35s linear;
+}
+/*offline*/ ._3h-QRJGxnVOIExtHD1R0f2 {
+	outline-color: var(--offline-status);
+}
+.online ._3h-QRJGxnVOIExtHD1R0f2 {
+	outline-color: var(--online-status);
+}
+.awayOrSnooze ._3h-QRJGxnVOIExtHD1R0f2 {
+	outline: 1px dashed var(--idle-status);
+}
+.ingame ._3h-QRJGxnVOIExtHD1R0f2 {
+	outline-color: var(--ingame-status);
+}
+.ingame.awayOrSnooze ._3h-QRJGxnVOIExtHD1R0f2 {
+	outline: 1px dashed var(--ingameidle-status);
+}

@@ -1,0 +1,21 @@
+/* Millennium Settings */
+/* Main Colors */
+
+/* Background */
+.CFTLX2wIKOK3hNV-fS7_V.DesktopUI, .DesktopUI .CFTLX2wIKOK3hNV-fS7_V {
+    background: var(--main-background) !important;
+}
+._2kwFFHckg8jvnwJfg9-la8 {
+    background: var(--secondary-background) !important;
+}
+
+/* Accents */
+._2bl0iQ9xigbq4Zd1NI6NZl::before {
+    background: var(--accent) !important;
+}
+.DialogDropDown_Arrow .SVGIcon_DownArrowContextMenu {
+    fill: var(--accent) !important;
+}
+._2rjVTGz8aLvqOdz5v2gq5C {
+    color: var(--accent) !important;
+}

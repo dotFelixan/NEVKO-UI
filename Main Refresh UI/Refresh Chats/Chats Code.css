@@ -1,0 +1,106 @@
+/* Remove Glowing */
+.statusHeaderGlow {
+    display: none;
+}
+.chatTitleBar .title-area-highlight {
+    -webkit-mask: unset;
+}
+.title-area-highlight {
+    background: unset;
+}
+.singleWindowFocusBar.chatSingleWindowFocusBar {
+    -webkit-mask: unset !important;
+}
+.singleWindowFocusBar {
+    background: unset !important;
+}
+._1osHa9KHOmdCDNrA232z4N {
+    background: unset !important;
+}
+/* Remove Stuff */
+.friendListFooter {
+    display: none !important;
+}
+
+/* Main Coloring */
+.friendListHeaderContainer {
+    background-color: var(--main-background) !important;
+    box-shadow: unset;
+}
+.activeTab {
+    background-color: color-mix(in srgb, var(--secondary-background) 90%, white) !important;
+    box-shadow: 0px 6px 6px 12px rgba(0, 0, 0, .05), 0px 8px 4px 2px rgba(0, 0, 0, .05);
+}
+.friendlistListContainer {
+    background: color-mix(in srgb, var(--secondary-background) 90%, gray)
+}
+.quickAccessFriends {
+    background: var(--secondary-background) !important
+}
+.FriendsListContent {
+    background: var(--main-background) !important;
+}
+
+.chatDialogs {
+    background: var(--main-background) !important;
+}
+.titleBarContainer.ChatTabs {
+    background-color: var(--main-background) !important;
+    border: unset !important;
+    box-shadow: unset !important;
+}
+
+/* Location and etc. */
+.currentUserContainer {
+    border-bottom: 4px solid rgb(255 255 255 / 0%);
+}
+
+.quickAccessFriends {
+    margin-left: 16px;
+    width: calc(100% - 40px) !important;
+}
+.AvatarAndUser {
+    padding-left: 12px;
+}
+
+.quickAccessFriends:not(.emptyQuickAccess) {
+    padding-left: 8px;
+    padding-bottom: 4px;
+    margin-bottom: 12px;
+
+    border-radius: 10px;
+}
+.quickAccessFriends.emptyQuickAccess {
+    padding-left: 8px;
+    padding-bottom: 4px;
+    margin-bottom: 12px;
+
+    border-radius: 10px;
+}
+.quickAccessFriendsMessage {
+    margin-left: 4px;
+    margin-right: 12px;
+    padding: 9px 0px 8px 0;
+}
+
+.socialListTab {
+    margin: 0 32px !important;
+    border-radius: 10px 10px 0 0;
+}
+.friendlistListContainer {
+    border-radius: 10px 10px 0 0;
+    margin: 0 5px 0 6px;
+}
+
+.SteamPlayerGroupFooter.lastInGroup {
+    margin-bottom: 6px;
+}
+.friendGroup .friend {
+    height: 42px;
+    margin: 2px 0px 2px 0px;
+    padding: 4px 0px 4px 16px;
+}
+.groupName .gameGroupContainer .groupIcon,
+.FriendInGameIcon img {
+    box-shadow: none !important;
+}

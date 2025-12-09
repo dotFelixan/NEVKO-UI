@@ -1,0 +1,88 @@
+/* Return Icon */
+.nibodjvvrm86uCfnnAn4g ._3xUpb5DWXPFNcHHIcv-9pe.bottom,
+.nibodjvvrm86uCfnnAn4g ._3xUpb5DWXPFNcHHIcv-9pe.right,
+._3xUpb5DWXPFNcHHIcv-9pe {
+	visibility: visible;
+}
+
+._3h-QRJGxnVOIExtHD1R0f2 {
+	outline: unset;
+}
+/*offline*/ ._3h-QRJGxnVOIExtHD1R0f2 {
+	outline-color: unset;
+}
+.online ._3h-QRJGxnVOIExtHD1R0f2 {
+	outline-color: unset;
+}
+.awayOrSnooze ._3h-QRJGxnVOIExtHD1R0f2 {
+	outline: unset;
+}
+.ingame ._3h-QRJGxnVOIExtHD1R0f2 {
+	outline-color: unset;
+}
+.ingame.awayOrSnooze ._3h-QRJGxnVOIExtHD1R0f2 {
+	outline: unset;
+}
+
+/* Remove SVG Icon */
+.awayOrSnooze ._3xUpb5DWXPFNcHHIcv-9pe {
+    -webkit-mask: unset;
+    -webkit-mask-size: unset;
+    mask: unset;
+    mask-size: unset;
+    opacity: 1;
+}
+.awayOrSnooze ._3xUpb5DWXPFNcHHIcv-9pe.bottom {
+    -webkit-mask: unset;
+    mask: unset;
+}
+
+/* Replace to Alt Online icon */
+._3xUpb5DWXPFNcHHIcv-9pe.right {
+    top: unset;
+	left: unset;
+    width: 20%;
+    height: 20%;
+	margin-bottom: 1px;
+	margin-right: 1px;
+	z-index: 2;
+
+    outline: solid 2px var(--main-background);
+}
+._3xUpb5DWXPFNcHHIcv-9pe.bottom {
+    top: unset;
+	left: unset;
+    width: 20%;
+    height: 20%;
+	margin-bottom: 1px;
+	margin-right: 1px;
+	z-index: 2;
+
+    outline: solid 2px var(--main-background);
+}
+._3yD46y5pd3zOGR7CzKs0mC .nibodjvvrm86uCfnnAn4g ._3xUpb5DWXPFNcHHIcv-9pe.right {
+    width: 28%;
+    height: 28%;
+}
+
+/* Color Online Icons */
+/*offline*/ ._3xUpb5DWXPFNcHHIcv-9pe.right,
+/*offline*/ ._3xUpb5DWXPFNcHHIcv-9pe.bottom {
+	background: var(--offline-status);
+}
+.online ._3xUpb5DWXPFNcHHIcv-9pe.right,
+.online ._3xUpb5DWXPFNcHHIcv-9pe.bottom {
+	background: var(--online-status);
+}
+.awayOrSnooze ._3xUpb5DWXPFNcHHIcv-9pe.right,
+.awayOrSnooze ._3xUpb5DWXPFNcHHIcv-9pe.bottom {
+	background: var(--idle-status);
+}
+.ingame ._3xUpb5DWXPFNcHHIcv-9pe.right,
+.ingame ._3xUpb5DWXPFNcHHIcv-9pe.bottom {
+	background: var(--ingame-status);
+}
+.ingame.awayOrSnooze ._3xUpb5DWXPFNcHHIcv-9pe.right,
+.ingame.awayOrSnooze ._3xUpb5DWXPFNcHHIcv-9pe.bottom {
+	background: var(--ingameidle-status);
+}

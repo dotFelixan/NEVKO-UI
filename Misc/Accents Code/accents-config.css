@@ -1,0 +1,15 @@
+:root, body {
+	/*main color*/
+	--accent: var(--custom-accent) !important;
+	/*main color transparent*/
+	--accent-transparent-alt2: color-mix(in srgb, var(--accent) 25%, transparent) !important;
+	--accent-transparent: color-mix(in srgb, var(--accent) 15%, transparent) !important;
+	--accent-transparent-alt: color-mix(in srgb, var(--accent) 10%, transparent) !important;
+	/*main lightly*/
+	--accent-light: color-mix(in srgb, var(--accent) 70%, white) !important;
+	/*main darky*/
+	--accent-dark: color-mix(in srgb, var(--accent) 85%, black) !important;
+
+	/*secondary background color*/
+	--secondary-background: color-mix(in srgb, var(--main-background) 95%, white);
+}

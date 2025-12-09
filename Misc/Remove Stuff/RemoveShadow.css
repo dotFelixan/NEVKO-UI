@@ -1,0 +1,56 @@
+/* Main Window */
+._1ENHEsrSLcTRtPQFl1F-wL {
+    border: unset;
+}
+._3Z7VQ1IMk4E3HsHvrkLNgo {
+    box-shadow: unset;
+}
+._3pXasCUulX4jjqO79s4q_F {
+    background-color: unset;
+}
+._1bGewp3tfzqAF6fVTFFUOz .UkR3sY319PuaUNuUWks2K {
+    box-shadow: unset;
+}
+._3pXasCUulX4jjqO79s4q_F._2MkHZqf7MrgW3f8qGHiI8Z {
+    background: unset;
+}
+._3Z7VQ1IMk4E3HsHvrkLNgo.Maximized, .Maximized ._3Z7VQ1IMk4E3HsHvrkLNgo {
+    box-shadow: unset;
+}
+
+._3vCzSrrXZzZjVJFZNg9SGu {
+    box-shadow: unset;
+}
+.Maximized ._3vCzSrrXZzZjVJFZNg9SGu,
+._3vCzSrrXZzZjVJFZNg9SGu.Maximized {
+    box-shadow: unset;
+}
+
+.RGNMWtyj73_-WdhflrmuY._3WJCt_OkjPA6npxOtguSt5 ._2CmrnGY-Amtd83ScJkFvx2 {
+    box-shadow: unset;
+}
+
+._1bGewp3tfzqAF6fVTFFUOz .UkR3sY319PuaUNuUWks2K.Maximized,
+.Maximized ._1bGewp3tfzqAF6fVTFFUOz .UkR3sY319PuaUNuUWks2K {
+  box-shadow: unset;
+}
+
+/* Remove Shadow Things in Download icon */
+._3vCzSrrXZzZjVJFZNg9SGu ._2iJsgdTIX9Tj23rWnB7Q-c,
+._3vCzSrrXZzZjVJFZNg9SGu ._2EQ7ghgqIdjKv9jsQC0Zq9 ._2VtAqT03BpBsVdmxwptn9D ._21vPQjHoo0uwud5lfCD_x-,
+._3vCzSrrXZzZjVJFZNg9SGu ._2EQ7ghgqIdjKv9jsQC0Zq9 ._2VtAqT03BpBsVdmxwptn9D .IconBevel {
+    display: none !important;
+}
+
+/* Remove Strange Scalling */
+.nibodjvvrm86uCfnnAn4g.X-Large {
+	display: unset !important;
+
+    height: 90px;
+    width: 90px;
+}
+
+/*Remove Shadow in Millennium*/
+.MillenniumSettings {
+    border-top: unset !important;
+}
