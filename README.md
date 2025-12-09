@@ -38,17 +38,17 @@
 * Custom Background Color
 
 * Main:
-    [Header] - Remove Window Buttons
-    [Library] - Hiding Library Items
-    [Library] - Library Side
-    [Library] - Gamepage Side
-    [Library] - Game Page Content Location
-    [Misc] - Style Menu
+    * [Header] - Remove Window Buttons
+    * [Library] - Hiding Library Items
+    * [Library] - Library Side
+    * [Library] - Gamepage Side
+    * [Library] - Game Page Content Location
+    * [Misc] - Style Menu
 
 * Privacy:
-    [Account Menu] - Blur Account Name
-    [Account Menu] - Blur Balance
-    [Account Button] - Hide Balance
+    * [Account Menu] - Blur Account Name
+    * [Account Menu] - Blur Balance
+    * [Account Button] - Hide Balance
 
  
 ## TODO LIST:
