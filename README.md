@@ -26,21 +26,30 @@
 ## Current Features:
 
 * Contributor Badges
-* Custom Rounding Avatars
+* "Custom" Rounding Avatars
+* Hide Avatar Decoration
 
 * Alternative Online Indicator
 
 * Refresh Header Design
 * Refresh Library [WIP] Design
-* Refresh Design Config
 
 * Custom Accents
 * Custom Background Color
 
-* Hider: [Account Menu] - Blur Account Name
-* Hider: [Account Button] - Hide Balance
-* Hider: [Library] - Hiding Library Items
-* Hider: [Library] - Remove Window Buttons
+* Main:
+    [Header] - Remove Window Buttons
+    [Library] - Hiding Library Items
+    [Library] - Library Side
+    [Library] - Gamepage Side
+    [Library] - Game Page Content Location
+    [Misc] - Style Menu
+
+* Privacy:
+    [Account Menu] - Blur Account Name
+    [Account Menu] - Blur Balance
+    [Account Button] - Hide Balance
+
  
 ## TODO LIST:
 ### Low Priority -
@@ -63,7 +72,9 @@
 
 * [tkashkin](https://github.com/tkashkin) - [CSS] Fonts Code from Adwaita
 
-* [SpaceTheme](https://github.com/SpaceTheme) - [CSS] Code for Right Side Library(Fix Posts Game) from SpaceTheme
+* [kuska1](https://github.com/kuska1) - [CSS] Some code from Material Design
+
+* [SpaceTheme](https://github.com/SpaceTheme) - [CSS] Code for Right Side GamePage from SpaceTheme
 
 ### People Who Helped Me With the Code:
 
