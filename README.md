@@ -54,16 +54,7 @@
 ## TODO LIST:
 ### Low Priority -
 
- 1. Popup Menu (Big Picture, VR Button) [JS] 
- 2. "Open SteamDB" Button in Steam Menu [JS]
-
- 3. Solar Icons
- 4. WEB Alt Store [CSS & JS]
-
- 5. Refresh Library [CSS, Maybe JS]
- 6. WEB Alt Design (Profile, Community, etc.) [CSS]
- 
-...And More [CSS & JS]
+Edit Later
 
 ## CREDITS:
 ### Authors from Who I Borrowed the Code:
