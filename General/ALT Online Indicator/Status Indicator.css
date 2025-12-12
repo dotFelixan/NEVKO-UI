@@ -2,26 +2,26 @@
 .nibodjvvrm86uCfnnAn4g ._3xUpb5DWXPFNcHHIcv-9pe.bottom,
 .nibodjvvrm86uCfnnAn4g ._3xUpb5DWXPFNcHHIcv-9pe.right,
 ._3xUpb5DWXPFNcHHIcv-9pe {
-	visibility: visible;
+	visibility: visible !important;
 }
 
 ._3h-QRJGxnVOIExtHD1R0f2 {
-	outline: unset;
+	outline: unset !important;
 }
 /*offline*/ ._3h-QRJGxnVOIExtHD1R0f2 {
-	outline-color: unset;
+	outline-color: unset !important;
 }
 .online ._3h-QRJGxnVOIExtHD1R0f2 {
-	outline-color: unset;
+	outline-color: unset !important;
 }
 .awayOrSnooze ._3h-QRJGxnVOIExtHD1R0f2 {
-	outline: unset;
+	outline: unset !important;
 }
 .ingame ._3h-QRJGxnVOIExtHD1R0f2 {
-	outline-color: unset;
+	outline-color: unset !important;
 }
 .ingame.awayOrSnooze ._3h-QRJGxnVOIExtHD1R0f2 {
-	outline: unset;
+	outline: unset !important; 
 }
 
 /* Remove SVG Icon */
