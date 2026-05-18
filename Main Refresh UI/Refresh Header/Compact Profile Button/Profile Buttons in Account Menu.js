@@ -419,7 +419,7 @@ class SteamProfileEnhancer {
     const buttons = document.querySelectorAll(CONFIG.selectors.buttonClass)
 
     if (!mainContainer || !buttons.length) return false
-
+    
     this.elements = {
       mainContainer,
       templateButton: buttons[0],
@@ -517,6 +517,7 @@ class SteamProfileEnhancer {
 
     const statusBtns = statuses.map(({ key, url }) => {
       const btn = this.elements.templateButton.cloneNode(true)
+      btn.style.display = "flex";
       btn.textContent = this.t(key)
       btn.classList.add("steam-status-option")
       btn.addEventListener("click", (e) => {
