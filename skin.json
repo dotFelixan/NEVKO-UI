@@ -506,6 +506,14 @@
       "MatchRegexString": "^Steam$",
       "TargetJs": "Misc/Category Settings Script/TitleCategory.js"
     },
+    {
+      "MatchRegexString": ".*",
+      "TargetJs": "Misc/Category Settings Script/Localizer.js"
+    },
+    {
+      "MatchRegexString": "^Steam$",
+      "TargetJs": "Misc/Category Settings Script/Localizer.js"
+    },
   
     {
       "MatchRegexString": ".*",
