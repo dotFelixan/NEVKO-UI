@@ -1,0 +1,10 @@
+:root, body {
+	/*main color transparent*/
+	--SystemAccentColor-Transparent: color-mix(in srgb, var(--SystemAccentColor) 15%, transparent) !important;
+	--SystemAccentColor-Transparent-Alt: color-mix(in srgb, var(--SystemAccentColor) 10%, transparent) !important;
+	--SystemAccentColor-Transparent-Alt2: color-mix(in srgb, var(--SystemAccentColor) 25%, transparent) !important;
+	/*main lightly*/
+	--SystemAccentColor-Light: color-mix(in srgb, var(--SystemAccentColor) 70%, white) !important;
+	/*main darky*/
+	--SystemAccentColor-Dark: color-mix(in srgb, var(--SystemAccentColor) 85%, black) !important;
+}

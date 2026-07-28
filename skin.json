@@ -4,6 +4,8 @@
   "description": "Another Design for Steam",
   "author": "dotFelixan",
 
+  "RootColors": "Patches/Colors/root.css",
+
   "github": {
     "owner": "dotFelixan",
     "repo_name": "NEVKO-UI"
@@ -18,13 +20,77 @@
 
   "Conditions": {
 
-    "DRIVER = 1": {
+			"DRIVER = 1": {
+			  "description": "",
+			  "default": "",
+			  "tab": "General",
+			  "values": { "": {} }
+			},
+	"Rounding Avatars": {
       "description": "",
       "default": "",
       "tab": "General",
       "values": { "": {} }
+    },
+    "Alternative Online Indicator": {
+      "description": "Replaces default indicator with a modern dot-style badge (like Discord)",
+      "default": "yes",
+      "tab": "General",
+      "values": {
+        "no": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Features/Status Indicator/Legacy Status Indicator.css"
+			}
+          },
+        "yes": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Features/Status Indicator/Modern Status Indicator.css"
+          }
+        }
+      }
     }
 
-
-  }
+  },
+  
+  "UseDefaultPatches": true,
+  "Patches": [
+    {
+      "MatchRegexString": "^Steam$",
+      "TargetCss": "Main Design/Header/Header Code.css"
+    },
+    {
+      "MatchRegexString": "^Steam$",
+      "TargetJs": "Main Design/Header/Header Scripts.js"
+    },
+	
+	{
+      "MatchRegexString": "^Steam$",
+      "TargetCss": "Patches/Colors/Accents/Accents Code.css"
+    },
+	
+	{
+      "MatchRegexString": "^Steam$",
+      "TargetCss": "Patches/Colors/Backgrounds/Backgrounds Code.css"
+    },
+	{
+      "MatchRegexString": "^Steam$",
+      "TargetCss": "Patches/Colors/Backgrounds/Backgrounds Elements.css"
+    },
+	
+    {
+      "MatchRegexString": "^Steam$",
+      "TargetJs": "Features/Custom Roundress Avatars/Custom R Avatars.js"
+    },
+	
+	{
+      "MatchRegexString": "^Steam$",
+      "TargetJs": "Patches/STEAM Button Patch/STEAM Button Patch.js"
+    },
+	{
+      "MatchRegexString": "^Steam$",
+      "TargetJs": "Patches/Driver Settings/Driver.js"
+    }
+  ]
 }
