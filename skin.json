@@ -27,7 +27,7 @@
 			  "values": { "": {} }
 			},
 	"Rounding Avatars": {
-      "description": "",
+      "description": "Change how round or sharp avatars look throughout Steam",
       "default": "",
       "tab": "General",
       "values": { "": {} }
@@ -50,6 +50,19 @@
           }
         }
       }
+    },
+	
+			"DRIVER = 89": {
+			  "description": "",
+			  "default": "",
+			  "tab": "UI Personalization",
+			  "values": { "": {} }
+			},
+	"Rounding Buttons": {
+      "description": "Change how round or sharp buttons look throughout Steam",
+      "default": "",
+      "tab": "UI Personalization",
+      "values": { "": {} }
     },
 	
 			"DRIVER = 2": {
@@ -89,6 +102,69 @@
           }
         }
       }
+    },
+    "Compact Manage Downloads Button": {
+      "description": "PlaceHolder",
+      "default": "no",
+      "tab": "UI Personalization",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Header/Compact Buttons/Compact Download Button.css"
+          }
+        }
+      }
+    },
+    "Hide Balance": {
+      "description": "Completely hide your wallet balance from the account button",
+      "default": "yes",
+      "tab": "UI Personalization",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Header/Hide Balance/Account Balance.css"
+          }
+        }
+      }
+    },
+	
+			"DRIVER = 88": {
+			  "description": "",
+			  "default": "",
+			  "tab": "Privacy",
+			  "values": { "": {} }
+			},
+	"Blur Account Name": {
+      "description": "Apply blur effect to your account/login name",
+      "default": "no",
+      "tab": "Privacy",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetCss": {
+            "affects": [".*"],
+            "src": "Features/Privacy/Login Account.css"
+          }
+        }
+      }
+    },
+    "Blur Balance": {
+      "description": "Apply blur effect to your wallet balance",
+      "default": "no",
+      "tab": "Privacy",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetCss": {
+            "affects": ["Menu$", "SuperNav$"],
+            "src": "Features/Privacy/Balance in Menu.css"
+          }
+        }
+      }
     }
 
   },
@@ -103,6 +179,38 @@
       "MatchRegexString": "^Steam$",
       "TargetJs": "Main Design/Header/Header Scripts.js"
     },
+    {
+      "MatchRegexString": "^Steam$",
+      "TargetCss": "Main Design/Settings/Millennium/Quick Settings.css"
+    },
+	
+    {
+      "MatchRegexString": "^Steam$",
+      "TargetJs": "Features/Custom Roundness Avatars/Custom Avatars.js"
+    },
+	
+    {
+      "MatchRegexString": "^Steam$",
+      "TargetCss": "Features/Custom Border Radius/Buttons.css"
+    },
+    {
+      "MatchRegexString": "^Steam$",
+      "TargetJs": "Features/Custom Border Radius/Buttons.js"
+    },
+	
+    {
+      "MatchRegexString": "^Steam$",
+      "TargetCss": "Main Design/Header/Compact Buttons/Compact Top Buttons.css"
+    },
+    {
+      "MatchRegexString": "^Steam$",
+      "TargetJs": "Main Design/Header/Compact Buttons/Fix Placement Buttons.js"
+    },
+	
+	{
+      "MatchRegexString": "^Steam$",
+      "TargetJs": "Patches/STEAM Button Patch/STEAM Button Patch.js"
+    },
 	
 	{
       "MatchRegexString": "^Steam$",
@@ -115,6 +223,11 @@
 	
 	{
       "MatchRegexString": "^Steam$",
+      "TargetCss": "Patches/Legacy Style Tooltips/Legacy Tooltip.css"
+    },
+	
+	{
+      "MatchRegexString": "^Steam$",
       "TargetCss": "Patches/Colors/Backgrounds/Backgrounds Code.css"
     },
 	{
@@ -122,14 +235,9 @@
       "TargetCss": "Patches/Colors/Backgrounds/Backgrounds Elements.css"
     },
 	
-    {
-      "MatchRegexString": "^Steam$",
-      "TargetJs": "Features/Custom Roundress Avatars/Custom R Avatars.js"
-    },
-	
 	{
       "MatchRegexString": "^Steam$",
-      "TargetJs": "Patches/STEAM Button Patch/STEAM Button Patch.js"
+      "TargetJs": "Patches/WIP Badges for Settings/WIP Badges.js"
     },
 	{
       "MatchRegexString": "^Steam$",

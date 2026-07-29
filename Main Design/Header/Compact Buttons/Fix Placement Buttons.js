@@ -2,7 +2,7 @@
 ;(() => {
   const TITLE_BAR_SELECTOR = "._3cykd-VfN_xBxf3Qxriccm"
   const BOTTOM_BAR_SELECTOR = "._1_yS5UP7el0aN4vntx3dx"
-  const OFFSET_BASE = 121
+  const OFFSET_BASE = 135
 
   let currentTitleBar = null
   let currentBottomBar = null

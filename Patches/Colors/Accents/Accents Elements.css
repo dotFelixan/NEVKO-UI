@@ -15,3 +15,9 @@
 	background: var(--SystemAccentColor-Transparent-Alt) !important;
 	transition: .2s linear;
 }
+._2bl0iQ9xigbq4Zd1NI6NZl::before {
+    background: var(--SystemAccentColor) !important;
+}
+.nk-fill {
+    background: var(--SystemAccentColor) !important;
+}

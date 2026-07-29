@@ -12,23 +12,23 @@
     default: 50,
   }
 
-  // ─── UTILS ─────────────────────────────────────────────────────────────────
-
+  // достаём сохранённое значение, если нет — берём дефолт
   const getSaved = () => {
     const s = localStorage.getItem(CONFIG.storageKey)
     return s !== null ? Number(s) : CONFIG.default
   }
 
+  // текст рядом со слайдером
   const formatLabel = val => {
     if (val === CONFIG.min) return "Sharp"
     if (val === CONFIG.max) return "Circle"
     return `${val}%`
   }
 
+  // значение → css border-radius
   const toRadius = val => val === CONFIG.max ? "50%" : `${val}%`
 
-  // ─── CSS ───────────────────────────────────────────────────────────────────
-
+  // вставляем стили один раз — они нужны чтобы аватарки реагировали на CSS-переменную
   function injectCSS() {
     if (document.getElementById("nevko-rounding-style")) return
     const style = document.createElement("style")
@@ -52,16 +52,16 @@
     ;(document.head || document.documentElement).appendChild(style)
   }
 
+  // применяем значение: обновляем CSS-переменные и сохраняем в localStorage
   function applyValue(val) {
-    const norm = val / CONFIG.max                  // 0..1
-    const statusRadius = Math.round(norm * 50)     // 0% (sharp) → 50% (круг)
+    const norm = val / CONFIG.max
+    const statusRadius = Math.round(norm * 50) // иконка статуса закругляется вместе с аватаркой
     document.documentElement.style.setProperty("--avatar-radius", toRadius(val))
     document.documentElement.style.setProperty("--status-radius", `${statusRadius}%`)
     localStorage.setItem(CONFIG.storageKey, val)
   }
 
-  // ─── SLIDER ────────────────────────────────────────────────────────────────
-
+  // стили слайдера — отдельно от основных, чтобы не пересобирать при каждом вызове
   function injectSliderCSS() {
     if (document.getElementById("nevko-slider-style")) return
     const s = document.createElement("style")
@@ -71,9 +71,11 @@
         display: flex;
         align-items: center;
         width: 100%;
-        gap: 8px;
         overflow: visible;
         margin-top: 4px;
+        gap: 6px;
+        max-width: 35%;
+        margin-right: 4px;
       }
       .nk-track-wrap {
         flex: 1;
@@ -83,8 +85,7 @@
         align-items: center;
         overflow: visible;
         cursor: pointer;
-        /* расширяем зону под кружок: половина кружка 18px = 9px с каждой стороны */
-        padding: 0 9px;
+        padding: 0px 12px 0px 8px;
         box-sizing: border-box;
       }
       .nk-track {
@@ -114,8 +115,7 @@
         pointer-events: none;
         overflow: visible;
         z-index: 2;
-        /* центрируем по кружку: кружок 18px, стрелка 12px */
-        /* центр кружка на 12 + 18/2 = 21px от верха */
+        /* сдвигаем вверх так чтобы центр кружка (12px стрелка + 9px половина кружка = 21px) совпал с центром трека */
         margin-top: -21px;
       }
       .nk-arrow {
@@ -145,12 +145,46 @@
       }
       .nk-label {
         font-size: 13px;
-        color: #c6d4df;
+        color: #dcdedf;
         font-weight: bold;
         white-space: nowrap;
         flex-shrink: 0;
         min-width: 38px;
-        text-align: right;
+        text-align: center;
+      }
+      .nk-reset {
+        position: relative;
+        flex-shrink: 0;
+        padding: 8px 14px;
+        font-size: 13px;
+        line-height: 18px;
+        color: #dfe3e6;
+        background-color: rgba(59, 63, 72, .5);
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+        border-radius: 2px;
+      }
+      .nk-reset::before {
+        pointer-events: none;
+        user-select: none;
+        content: " ";
+        position: absolute;
+        top: 0; right: 0; bottom: 0; left: 0;
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.3);
+        opacity: 0;
+      }
+      .nk-reset:hover {
+        background-color: #464d58;
+        color: #fff;
+      }
+      .nk-reset:hover::before {
+        opacity: 1;
+      }
+      /* при дефолтном значении кнопка визуально пропадает */
+      .nk-reset--default {
+        opacity: 0;
+        pointer-events: none;
       }
     `
     ;(document.head || document.documentElement).appendChild(s)
@@ -162,29 +196,23 @@
     const norm = (currentVal - CONFIG.min) / (CONFIG.max - CONFIG.min)
     const pct  = norm * 100
 
-    // Строка: [трек] [лейбл]
     const row = document.createElement("div")
     row.className = "nk-row"
 
-    // Обёртка трека
     const trackWrap = document.createElement("div")
     trackWrap.className = "nk-track-wrap"
 
-    // Трек
     const track = document.createElement("div")
     track.className = "nk-track"
 
-    // Заливка
     const fill = document.createElement("div")
     fill.className = "nk-fill"
     fill.style.width = `${pct}%`
 
-    // Ручка
     const handle = document.createElement("div")
     handle.className = "nk-handle"
     handle.style.left = `${pct}%`
 
-    // Стрелка (SVG)
     const arrowNS = "http://www.w3.org/2000/svg"
     const arrow = document.createElementNS(arrowNS, "svg")
     arrow.setAttribute("viewBox", "0 0 36 36")
@@ -195,11 +223,9 @@
     ap.setAttribute("fill", "currentColor")
     arrow.appendChild(ap)
 
-    // Кружок
     const dot = document.createElement("div")
     dot.className = "nk-dot"
 
-    // Input
     const input = document.createElement("input")
     input.type  = "range"
     input.min   = CONFIG.min
@@ -211,15 +237,37 @@
     track.append(fill, handle)
     trackWrap.append(track, input)
 
-    // Лейбл
     const label = document.createElement("span")
     label.className = "nk-label"
     label.textContent = formatLabel(currentVal)
 
-    row.append(trackWrap, label)
+    const reset = document.createElement("button")
+    reset.className = "nk-reset"
+    reset.textContent = "Reset"
 
-    // Обновление
+    // показываем кнопку только когда значение отличается от дефолта
+    const updateResetVisibility = val =>
+      reset.classList.toggle("nk-reset--default", val === CONFIG.default)
+
+    updateResetVisibility(currentVal)
+
+    row.append(reset, trackWrap, label)
+
+    // визуал обновляется мгновенно, applyValue с задержкой — не грузим DOM при спаме
     let debounceTimer = null
+
+    reset.addEventListener("click", () => {
+      const def = CONFIG.default
+      const n   = (def - CONFIG.min) / (CONFIG.max - CONFIG.min)
+      const p   = n * 100
+      input.value         = def
+      fill.style.width    = `${p}%`
+      handle.style.left   = `${p}%`
+      label.textContent   = formatLabel(def)
+      updateResetVisibility(def)
+      applyValue(def)
+    })
+
     input.addEventListener("input", () => {
       const val = Number(input.value)
       const n   = (val - CONFIG.min) / (CONFIG.max - CONFIG.min)
@@ -228,6 +276,7 @@
       fill.style.width    = `${p}%`
       handle.style.left   = `${p}%`
       label.textContent   = formatLabel(val)
+      updateResetVisibility(val)
 
       clearTimeout(debounceTimer)
       debounceTimer = setTimeout(() => applyValue(val), 300)
@@ -236,13 +285,12 @@
     return row
   }
 
-  // ─── PROCESS FIELD ─────────────────────────────────────────────────────────
-
   const seen = new WeakSet()
 
   function processField(field) {
     if (seen.has(field)) return
 
+    // ищем поле именно с текстом "Rounding Avatars" — не трогаем чужие элементы
     const hasLabel = [...field.querySelectorAll("*")].some(el =>
       [...el.childNodes].some(
         n => n.nodeType === Node.TEXT_NODE && n.textContent.trim() === CONFIG.targetLabel
@@ -252,6 +300,7 @@
 
     seen.add(field)
 
+    // скрываем оригинальный дропдаун Steam
     field.querySelector(CONFIG.hideSelector)
          ?.style.setProperty("display", "none", "important")
 
@@ -260,15 +309,13 @@
     applyValue(val)
   }
 
-  // ─── INIT ─────────────────────────────────────────────────────────────────
-
   function scan() {
     document.querySelectorAll(CONFIG.fieldSelector).forEach(processField)
   }
 
   function init() {
     injectCSS()
-    applyValue(getSaved())
+    applyValue(getSaved()) // применяем сразу — до рендера настроек
     scan()
     new MutationObserver(scan).observe(document.documentElement, { childList: true, subtree: true })
   }

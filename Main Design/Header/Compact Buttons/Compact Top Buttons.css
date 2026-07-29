@@ -6,7 +6,7 @@
 	background-color: rgba(103, 112, 123, .2);
 	justify-content: center !important;
 	align-items: center !important;
-	border-radius: 4px;
+	border-radius: var(--button-radius) !important;
 	max-height: 32px !important;
     padding: 0px 4px !important;
 	min-height: 32px !important;
@@ -26,10 +26,22 @@
 ._3vCzSrrXZzZjVJFZNg9SGu {
     width: fit-content !important;
     box-shadow: none !important;
-    background: none !important;
 	-webkit-app-region: no-drag;
-    gap: 5px !important;
+    gap: 8px !important;
     flex: 0 !important;
+	
+	border-radius: var(--button-radius) 0 0 var(--button-radius);
+	background: var(--main-background) !important;
+    padding-bottom: 0.5px !important;
+}
+/*Костыль*/
+.ip-YZhijAMZcuRoXBGiye ._1KrJ3sFAqPBN9mfpaNTU5F {
+    height: 15px !important;
+    width: 16px !important;
+    margin-top: -4px !important;
+}
+.ip-YZhijAMZcuRoXBGiye ._1KrJ3sFAqPBN9mfpaNTU5F {
+    margin-top: -2px;
 }
 ._1_yS5UP7el0aN4vntx3dx > div:first-of-type {
 	transform: translateX(-50%);
@@ -40,7 +52,7 @@
     padding: 0 !important;
     position: absolute !important;
     --steam-control-width: 242px !important;
-    top: 12px;
+    top: 8px;
 }
 
 /*Change Text Style in Downloads*/
@@ -69,7 +81,7 @@
 }
 /*Buttons Location*/
 ._3vCzSrrXZzZjVJFZNg9SGu {
-    padding: 0 0 0 5px !important;
+    padding: 0 0 0 8px !important;
 }
 /*Change Style Tooltips*/
 ._3vCzSrrXZzZjVJFZNg9SGu ._2foCkpRXhqq0UGVE50BWqj ._3OhUxFVlQYr9W5ThxstR8k, ._3vCzSrrXZzZjVJFZNg9SGu ._1TdaAqMFadi0UTqilrkelR ._3OhUxFVlQYr9W5ThxstR8k {

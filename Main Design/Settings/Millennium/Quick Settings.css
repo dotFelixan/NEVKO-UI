@@ -1,0 +1,12 @@
+.MillenniumDesktopSidebar {
+	top: 0px;
+	bottom: 0px;
+    right: 0px;
+    left: 0px;
+	margin: auto;
+	
+    --sidebar-bg: #171d25;
+	
+    --sidebar-width: 60% !important;
+    height: 90% !important;
+}
