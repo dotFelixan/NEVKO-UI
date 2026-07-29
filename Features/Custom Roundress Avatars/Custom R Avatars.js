@@ -62,91 +62,178 @@
 
   // ─── SLIDER ────────────────────────────────────────────────────────────────
 
+  function injectSliderCSS() {
+    if (document.getElementById("nevko-slider-style")) return
+    const s = document.createElement("style")
+    s.id = "nevko-slider-style"
+    s.textContent = `
+      .nk-row {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: 8px;
+        overflow: visible;
+        margin-top: 4px;
+      }
+      .nk-track-wrap {
+        flex: 1;
+        height: 32px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        overflow: visible;
+        cursor: pointer;
+        /* расширяем зону под кружок: половина кружка 18px = 9px с каждой стороны */
+        padding: 0 9px;
+        box-sizing: border-box;
+      }
+      .nk-track {
+        width: 100%;
+        height: 6px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 3px;
+        position: relative;
+        overflow: visible;
+        pointer-events: none;
+      }
+      .nk-fill {
+        position: absolute;
+        top: 0; left: 0; bottom: 0;
+        background: #1a9fff;
+        border-radius: 3px;
+        transition: none;
+        pointer-events: none;
+      }
+      .nk-handle {
+        position: absolute;
+        top: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        pointer-events: none;
+        overflow: visible;
+        z-index: 2;
+        /* центрируем по кружку: кружок 18px, стрелка 12px */
+        /* центр кружка на 12 + 18/2 = 21px от верха */
+        margin-top: -21px;
+      }
+      .nk-arrow {
+        color: #8b929a;
+        width: 12px;
+        height: 12px;
+        display: block;
+        flex-shrink: 0;
+      }
+      .nk-dot {
+        width: 18px;
+        height: 18px;
+        background: #fff;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .nk-input {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        margin: 0;
+        padding: 0;
+        z-index: 3;
+      }
+      .nk-label {
+        font-size: 13px;
+        color: #c6d4df;
+        font-weight: bold;
+        white-space: nowrap;
+        flex-shrink: 0;
+        min-width: 38px;
+        text-align: right;
+      }
+    `
+    ;(document.head || document.documentElement).appendChild(s)
+  }
+
   function buildSlider(currentVal) {
+    injectSliderCSS()
+
     const norm = (currentVal - CONFIG.min) / (CONFIG.max - CONFIG.min)
+    const pct  = norm * 100
+
+    // Строка: [трек] [лейбл]
+    const row = document.createElement("div")
+    row.className = "nk-row"
+
+    // Обёртка трека
+    const trackWrap = document.createElement("div")
+    trackWrap.className = "nk-track-wrap"
 
     // Трек
     const track = document.createElement("div")
-    track.className = "_2_vG6TwMW2XtyLlTEaODH9"
-    track.style.cssText = "overflow: visible;"
-    track.style.setProperty("--normalized-slider-value", norm)
-    track.style.setProperty("--normalized-slider-origin", 0)
-    track.style.setProperty("--slider-extra-notch-padding", "0px")
+    track.className = "nk-track"
 
-    // Обёртка ручки
-    const handleWrap = document.createElement("div")
-    handleWrap.className = "_2aCoHO7mXYYdPXMN0USBAW"
-    handleWrap.style.cssText = "overflow: visible; contain: none;"
-    handleWrap.style.setProperty("--inverse-normalized-default-value", 1 - norm)
+    // Заливка
+    const fill = document.createElement("div")
+    fill.className = "nk-fill"
+    fill.style.width = `${pct}%`
 
-    // Ручка: стрелка + кружок
+    // Ручка
     const handle = document.createElement("div")
-    handle.className = "_1NgUy7a2LKuF-moe-rzsiH"
-    handle.style.cssText = "overflow: visible; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; margin-top: -5px;"
+    handle.className = "nk-handle"
+    handle.style.left = `${pct}%`
 
-    const mkSvg = (viewBox) => {
-      const s = document.createElementNS("http://www.w3.org/2000/svg", "svg")
-      s.setAttribute("viewBox", viewBox)
-      s.setAttribute("fill", "none")
-      return s
-    }
-
-    // Стрелка
-    const arrow = mkSvg("0 0 36 36")
-    arrow.style.cssText = "color: #8b929a; width: 16px; height: 16px; display: block; position: relative; z-index: 11; transform: translateY(-50%);"
-    const arrowPath = document.createElementNS("http://www.w3.org/2000/svg", "path")
-    arrowPath.setAttribute("d", "M17.98 26.54L3.20996 11.77H32.75L17.98 26.54Z")
-    arrowPath.setAttribute("fill", "currentColor")
-    arrow.appendChild(arrowPath)
+    // Стрелка (SVG)
+    const arrowNS = "http://www.w3.org/2000/svg"
+    const arrow = document.createElementNS(arrowNS, "svg")
+    arrow.setAttribute("viewBox", "0 0 36 36")
+    arrow.setAttribute("fill", "none")
+    arrow.classList.add("nk-arrow")
+    const ap = document.createElementNS(arrowNS, "path")
+    ap.setAttribute("d", "M17.98 26.54L3.21 11.77H32.75L17.98 26.54Z")
+    ap.setAttribute("fill", "currentColor")
+    arrow.appendChild(ap)
 
     // Кружок
-    const dot = mkSvg("0 0 24 24")
-    dot.style.cssText = "width: 24px; height: 24px; display: block; position: relative; z-index: 10; flex-shrink: 0;"
-    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle")
-    circle.setAttribute("cx", "12")
-    circle.setAttribute("cy", "12")
-    circle.setAttribute("r", "10")
-    circle.setAttribute("fill", "#ffffff")
-    dot.appendChild(circle)
+    const dot = document.createElement("div")
+    dot.className = "nk-dot"
+
+    // Input
+    const input = document.createElement("input")
+    input.type  = "range"
+    input.min   = CONFIG.min
+    input.max   = CONFIG.max
+    input.value = currentVal
+    input.className = "nk-input"
 
     handle.append(arrow, dot)
-    handleWrap.appendChild(handle)
-    track.appendChild(handleWrap)
-
-    // Скрытый input поверх трека
-    const input = document.createElement("input")
-    input.type = "range"
-    input.min = CONFIG.min
-    input.max = CONFIG.max
-    input.value = currentVal
-    input.style.cssText = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; margin: 0; z-index: 20;"
-
-    // Обёртка трека + input
-    const wrap = document.createElement("div")
-    wrap.className = "_1udlGGE4F5pggcpxovorUd"
-    wrap.style.cssText = "flex: 1; cursor: pointer; position: relative; overflow: visible;"
-    wrap.style.setProperty("--slider-handle-width", "24px")
-    wrap.append(track, input)
+    track.append(fill, handle)
+    trackWrap.append(track, input)
 
     // Лейбл
     const label = document.createElement("span")
+    label.className = "nk-label"
     label.textContent = formatLabel(currentVal)
-    label.style.cssText = "min-width: 42px; text-align: right; font-size: 13px; color: #c6d4df; font-weight: bold; margin-left: 8px; flex-shrink: 0;"
 
+    row.append(trackWrap, label)
+
+    // Обновление
+    let debounceTimer = null
     input.addEventListener("input", () => {
       const val = Number(input.value)
       const n   = (val - CONFIG.min) / (CONFIG.max - CONFIG.min)
-      label.textContent = formatLabel(val)
-      track.style.setProperty("--normalized-slider-value", n)
-      handleWrap.style.setProperty("--inverse-normalized-default-value", 1 - n)
-      applyValue(val)
+      const p   = n * 100
+
+      fill.style.width    = `${p}%`
+      handle.style.left   = `${p}%`
+      label.textContent   = formatLabel(val)
+
+      clearTimeout(debounceTimer)
+      debounceTimer = setTimeout(() => applyValue(val), 300)
     })
 
-    const outer = document.createElement("div")
-    outer.style.cssText = "display: flex; align-items: center; flex: 1; overflow: visible;"
-    outer.append(wrap, label)
-
-    return outer
+    return row
   }
 
   // ─── PROCESS FIELD ─────────────────────────────────────────────────────────
@@ -173,7 +260,7 @@
     applyValue(val)
   }
 
-  // ─── INIT ──────────────────────────────────────────────────────────────────
+  // ─── INIT ────────��─────────────────────────────────────────────────────────
 
   function scan() {
     document.querySelectorAll(CONFIG.fieldSelector).forEach(processField)
