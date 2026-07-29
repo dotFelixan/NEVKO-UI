@@ -17,6 +17,10 @@
       label:   "Beta",
       tooltip: "This feature is not yet stable and is still in development.",
     },
+	"Rounding Avatars": {
+      label:   "Beta",
+      tooltip: "This feature is not yet stable and is still in development.",
+    },
   }
 
   // ── стили ──────────────────────────────────────────────────────────────────

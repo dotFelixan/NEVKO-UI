@@ -118,7 +118,7 @@
       }
     },
     "Account Button Style": {
-      "description": "Completely hide your wallet balance from the account button",
+      "description": "PlaceHolder",
       "default": "Hide Balance",
       "tab": "UI Personalization",
       "values": {
@@ -132,13 +132,13 @@
         "Hide Balance": {
           "TargetCss": {
             "affects": ["^Steam$"],
-            "src": "Main Design/Header/Account Button Style/Account Balance.css"
+            "src": "Main Design/Header/Account Button Style/Balance.css"
           }
 		},
         "Hide Nickname": {
           "TargetCss": {
             "affects": ["^Steam$"],
-            "src": "Main Design/Header/Account Button Style/Hide Profile Button.css"
+            "src": "Main Design/Header/Account Button Style/Nickname.css"
           }
 		},
         "Hide Both": {
