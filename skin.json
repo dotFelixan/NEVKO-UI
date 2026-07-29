@@ -50,6 +50,45 @@
           }
         }
       }
+    },
+	
+			"DRIVER = 2": {
+			  "description": "",
+			  "default": "",
+			  "tab": "UI Personalization",
+			  "values": { "": {} }
+			},
+	"Reorder Main Buttons": {
+      "description": "Swap the positions of 'Store' and 'Library' buttons in the header",
+      "default": "yes",
+      "tab": "UI Personalization",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Header/Reorder Buttons.css"
+          }
+        }
+      }
+    },
+    "Hide Profile Button": {
+      "description": "Remove the profile button from the left side | Useful buttons are moved to Account Menu",
+      "default": "yes",
+      "tab": "UI Personalization",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetCss": {
+            "affects": ["^Steam$", "Menu$", "SuperNav$"],
+            "src": "Main Design/Header/Compact Profile Button/Hide Profile Button.css"
+          },
+          "TargetJs": {
+            "affects": ["Menu$", "SuperNav$"],
+            "src": "Main Design/Header/Compact Profile Button/Profile Buttons in Account Menu.js"
+          }
+        }
+      }
     }
 
   },
@@ -68,6 +107,10 @@
 	{
       "MatchRegexString": "^Steam$",
       "TargetCss": "Patches/Colors/Accents/Accents Code.css"
+    },
+	{
+      "MatchRegexString": "^Steam$",
+      "TargetCss": "Patches/Colors/Accents/Accents Elements.css"
     },
 	
 	{

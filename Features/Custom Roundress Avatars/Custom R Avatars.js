@@ -260,7 +260,7 @@
     applyValue(val)
   }
 
-  // ─── INIT ────────��─────────────────────────────────────────────────────────
+  // ─── INIT ─────────────────────────────────────────────────────────────────
 
   function scan() {
     document.querySelectorAll(CONFIG.fieldSelector).forEach(processField)

@@ -6,11 +6,11 @@
 const CONFIG = {
   replacements: {
     "DRIVER = 1": "Users",
-    "DRIVER = 2": "Misc",
-    "DRIVER = 3": "Main",
-    "DRIVER = 4": "Library",
-    "DRIVER = 5": "Chats",
-    "DRIVER = 6": "Misc",
+    "DRIVER = 2": "Header",
+    "DRIVER = 3": "Library",
+    "DRIVER = 4": "Chats",
+	"DRIVER = 98": "Misc",
+    "DRIVER = 99": "Misc",
   },
 
   styles: {

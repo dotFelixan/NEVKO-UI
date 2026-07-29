@@ -1,0 +1,17 @@
+.bSKGlAJG2UVWTsntEJY2v:hover > svg > path,
+.bSKGlAJG2UVWTsntEJY2v:hover {
+	color: var(--SystemAccentColor) !important;
+	fill: var(--SystemAccentColor) !important;
+}
+._7AlhCx3XGzBeIrQaCneUD._1gqEjB5QsKT_NftD1dEsdZ:not(._2cO0HdvLEGAdhosLekWsmo) ._19axKcqYRuaJ8vdYKYmtTQ {
+    color: var(--SystemAccentColor);
+    text-shadow: 0px 0px 1px var(--SystemAccentColor);
+}
+._1gqEjB5QsKT_NftD1dEsdZ {
+	background: var(--SystemAccentColor-Transparent) !important;
+	transition: .2s linear;
+}
+._1gqEjB5QsKT_NftD1dEsdZ:hover {
+	background: var(--SystemAccentColor-Transparent-Alt) !important;
+	transition: .2s linear;
+}
