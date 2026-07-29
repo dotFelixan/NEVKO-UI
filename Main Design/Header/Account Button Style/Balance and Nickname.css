@@ -1,0 +1,13 @@
+/* Hide Balance */
+._3yD46y5pd3zOGR7CzKs0mC ._2jphjrSifC6orDT4g_7Wd {
+    display: none !important;
+}
+
+/* Hide Arrow */
+._3yD46y5pd3zOGR7CzKs0mC ._3x51wbt5DYyWC8JKwQ51ir {
+    display: none;
+}
+/* Hide Nickname */
+._3yD46y5pd3zOGR7CzKs0mC > div {
+    font-size: 0;
+}

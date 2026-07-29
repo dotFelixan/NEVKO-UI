@@ -209,20 +209,20 @@
 
 /*Hover Account Menu Color*/
 /*offline*/ ._3yD46y5pd3zOGR7CzKs0mC:hover {
-    background-color: color-mix(in srgb, var(--offline-status) 20%, transparent) !important;
+    background-color: color-mix(in srgb, var(--offline-status) 20%, transparent);
     transition: background-color .25s ease-out;
 }
 ._3yD46y5pd3zOGR7CzKs0mC.online:hover {
-    background-color: color-mix(in srgb, var(--online-status) 20%, transparent) !important;
+    background-color: color-mix(in srgb, var(--online-status) 20%, transparent);
 }
 ._3yD46y5pd3zOGR7CzKs0mC.awayOrSnooze:hover {
-    background-color: color-mix(in srgb, var(--idle-status) 20%, transparent) !important;
+    background-color: color-mix(in srgb, var(--idle-status) 20%, transparent);
 }
 ._3yD46y5pd3zOGR7CzKs0mC.ingame:hover {
-    background-color: color-mix(in srgb, var(--ingame-status) 20%, transparent) !important;
+    background-color: color-mix(in srgb, var(--ingame-status) 20%, transparent);
 }
 ._3yD46y5pd3zOGR7CzKs0mC.ingame.awayOrSnooze:hover {
-    background-color: color-mix(in srgb, var(--ingameidle-status) 20%, transparent) !important;
+    background-color: color-mix(in srgb, var(--ingameidle-status) 20%, transparent);
 }
 /* Fix Color Icon & Text */
 ._2foCkpRXhqq0UGVE50BWqj ._1KrJ3sFAqPBN9mfpaNTU5F,
@@ -274,8 +274,8 @@
 
 /*Style*/
 ._3yD46y5pd3zOGR7CzKs0mC {
-	padding-left: 12px;
-	padding-right: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
 	
 	font-weight: bold;
 	font-size: 13px;

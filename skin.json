@@ -117,16 +117,34 @@
         }
       }
     },
-    "Hide Balance": {
+    "Account Button Style": {
       "description": "Completely hide your wallet balance from the account button",
-      "default": "yes",
+      "default": "Hide Balance",
       "tab": "UI Personalization",
       "values": {
-        "no": {},
-        "yes": {
+        "Default": {},
+        "Minimal": {
           "TargetCss": {
             "affects": ["^Steam$"],
-            "src": "Main Design/Header/Hide Balance/Account Balance.css"
+            "src": "Main Design/Header/Account Button Style/Minimal.css"
+          }
+		},
+        "Hide Balance": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Header/Account Button Style/Account Balance.css"
+          }
+		},
+        "Hide Nickname": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Header/Account Button Style/Hide Profile Button.css"
+          }
+		},
+        "Hide Both": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Header/Account Button Style/Balance and Nickname.css"
           }
         }
       }
