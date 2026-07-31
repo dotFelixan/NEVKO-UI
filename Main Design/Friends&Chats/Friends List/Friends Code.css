@@ -1,0 +1,150 @@
+		/* Tob Bar*/
+	/*Profile & Window Buttons */
+/*Remove*/
+.statusHeaderGlow {
+    visibility: hidden;
+}
+.titleBarContainer .currentUserContainer ._2Ri005Wg_uXDTa71kdRbcN {
+    display: none;
+}
+.singleWindowFocusBar.chatSingleWindowFocusBar,
+.chatTitleBar .title-area-highlight {
+    -webkit-mask: unset !important;
+}
+.singleWindowFocusBar,
+.title-area-highlight {
+	background: unset !important;
+}
+.friendListHeaderContainer {
+    box-shadow: unset;
+}
+.focused:not(.singlewindow) .title-area-highlight {
+    opacity: 0 !important;
+}
+/* Style */
+/*Height & etc.*/
+.currentUserContainer {
+    height: 48px;
+	
+	padding-left: 6px;
+	
+	border-bottom: unset;
+}
+.AvatarAndUser {
+    height: 16px !important;
+    padding-top: 8px;
+	
+    margin-top: -1px;
+    margin-left: 9px;
+    transform: translateY(30%);
+	
+	
+	background-color: rgba(103, 112, 123, .2);
+	
+	width: fit-content;
+    max-width: 100%;
+}
+.AvatarAndUser .labelHolder .richPresenceContainer,
+.currentUserContainer ._3sxE7F1LV2IcSX68YsH9dI {
+    margin-top: unset; 
+	display: none;
+}
+.currentUserAvatar
+.currentUserContainer .labelHolder {
+    margin-top: -4px;
+}
+.currentUserContainer .ContextMenuButton .SVGIcon_DownArrowContextMenu {
+    width: 8px;
+    height: 14px;
+    margin-top: 5px;
+}
+.currentUserContainer .labelHolder {
+    margin-inline-start: 8px;
+    margin-inline-end: 8px;
+	
+	margin-top: -2px;
+}
+.friendsui-container .title-area .title-bar-actions, 
+.DesktopUI .title-area .title-bar-actions {
+    margin-top: 9px;
+    padding-right: unset;
+    margin-right: 15px;
+    gap: 8px;
+}
+.addFriendButton {
+    margin-top: unset !important;
+}
+.addFriendButton .SVGIcon_AddFriend {
+    margin-left: 4px;
+}
+/*Avatar*/
+.currentUserAvatar {
+    width: 24px !important;
+    height: 24px !important;
+	
+	margin-top: -4px;
+	padding-left: 6px;
+}
+.currentUserAvatar .avatarHolder.Medium {
+    width: 24px;
+    height: 24px;
+}
+/*Colors*/
+.currentUserContainer .nOdcT-MoOaXGePXLyPe0H {
+	color: var(--offline-status);
+}
+.currentUserContainer .online .nOdcT-MoOaXGePXLyPe0H {
+	color: var(--online-status);
+}
+.currentUserContainer .awayOrSnooze .nOdcT-MoOaXGePXLyPe0H {
+	color: var(--idle-status);
+}
+.currentUserContainer .ingame .nOdcT-MoOaXGePXLyPe0H {
+	color: var(--ingame-status);
+}
+.currentUserContainer .ingame.awayOrSnooze .nOdcT-MoOaXGePXLyPe0H {
+	color: var(--ingameidle-status);
+}
+
+:not(.friendInviteContainer) .ContextMenuButton .SVGIcon_DownArrowContextMenu {
+    fill: var(--offline-status);
+}
+:not(.friendInviteContainer) .online .ContextMenuButton .SVGIcon_DownArrowContextMenu {
+    fill: var(--online-status);
+}
+:not(.friendInviteContainer) .awayOrSnooze .ContextMenuButton .SVGIcon_DownArrowContextMenu {
+    fill: var(--idle-status);
+}
+:not(.friendInviteContainer) .ingame .ContextMenuButton .SVGIcon_DownArrowContextMenu {
+    fill: var(--ingame-status);
+}
+:not(.friendInviteContainer) .ingame.awayOrSnooze .ContextMenuButton .SVGIcon_DownArrowContextMenu {
+    fill: var(--ingameidle-status);
+}
+/*Hover Account Menu Color*/
+.AvatarAndUser {
+	transition: background-color .25s ease-out;
+}
+.AvatarAndUser:hover {
+	background-color: color-mix(in srgb, var(--offline-status) 20%, transparent);
+}
+.online .AvatarAndUser:hover {
+	background-color: color-mix(in srgb, var(--online-status) 20%, transparent);
+}
+.awayOrSnooze .AvatarAndUser:hover {
+	background-color: color-mix(in srgb, var(--idle-status) 20%, transparent);
+}
+.ingame .AvatarAndUser:hover {
+	background-color: color-mix(in srgb, var(--ingame-status) 20%, transparent);
+}
+.ingame.awayOrSnooze .AvatarAndUser:hover {
+	background-color: color-mix(in srgb, var(--ingameidle-status) 20%, transparent);
+}
+/*Font&Text*/
+.currentUserContainer .nOdcT-MoOaXGePXLyPe0H {
+    font-weight: bold;
+    font-size: 13px !important;
+	
+	max-width: 98px;
+}
+

@@ -22,11 +22,26 @@
     return `${val}px`
   }
 
+  // инжектируем сохранённое значение через <style> немедленно — до любого рендера
+  function injectSavedAsStyle() {
+    const id = "nevko-button-radius-preload"
+    if (document.getElementById(id)) return
+    const val = getSaved()
+    const s   = document.createElement("style")
+    s.id = id
+    s.textContent = `:root { --button-radius: ${val}px !important; }`
+    ;(document.head || document.documentElement).appendChild(s)
+  }
+
   // применяем значение: выставляем CSS-переменную и сохраняем
   function applyValue(val) {
     document.documentElement.style.setProperty("--button-radius", `${val}px`)
     localStorage.setItem(CONFIG.storageKey, val)
+    const pre = document.getElementById("nevko-button-radius-preload")
+    if (pre) pre.textContent = `:root { --button-radius: ${val}px !important; }`
   }
+
+  injectSavedAsStyle()
 
   function buildSlider(currentVal) {
     // стили слайдера уже инжектит RoundingAvatars — если запущен отдельно, добавляем сами

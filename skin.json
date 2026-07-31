@@ -16,7 +16,7 @@
 
   "header_image": "https://i.imgur.com/2aRCvrt.png",
   "splash_image": "https://i.imgur.com/dqCDCH2.png",
-  "tags": ["Customizable", "Features", "Accents"],
+  "tags": ["Customizable", "Features", "Compact", "Accents"],
 
   "Conditions": {
 
@@ -32,21 +32,53 @@
       "tab": "General",
       "values": { "": {} }
     },
-    "Alternative Online Indicator": {
-      "description": "Replaces default indicator with a modern dot-style badge (like Discord)",
-      "default": "yes",
+    "Online Indicator Style": {
+      "description": "Replaces default indicator with a modern dot-style badge",
+      "default": "Modern",
       "tab": "General",
       "values": {
-        "no": {
+        "Legacy": {
           "TargetCss": {
-            "affects": ["^Steam$"],
+            "affects": ["^.*$"],
             "src": "Features/Status Indicator/Legacy Status Indicator.css"
 			}
           },
+        "Modern": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Features/Status Indicator/Modern Status Indicator.css"
+          }
+        }
+      }
+    },
+    "Avatar Decoration": {
+      "description": "Hide avatar frames",
+      "default": "no",
+      "tab": "General",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetJs": {
+            "affects": ["^.*$"],
+            "src": "Features/Hide Decoration/HAD.js"
+          },
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Features/Hide Decoration/HAD.css"
+          }
+        }
+      }
+    },
+    "Hide Custom Username Icon": {
+      "description": "Toggle visibility of custom username icon",
+      "default": "no",
+      "tab": "General",
+      "values": {
+        "no": {},
         "yes": {
           "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Features/Status Indicator/Modern Status Indicator.css"
+            "affects": [".*"],
+            "src": "Features/Hide Custom Username Icon/HCUI.css"
           }
         }
       }
@@ -198,21 +230,28 @@
       "TargetJs": "Main Design/Header/Header Scripts.js"
     },
     {
+      "MatchRegexString": ".friendsui-container",
+      "TargetCss": "Main Design/Friends&Chats/Friends List/Friends Code.css"
+    },
+    {
+      "MatchRegexString": ".friendsui-container",
+      "TargetJs": "Main Design/Friends&Chats/Friends List/Friends Scripts.js"
+    },
+    {
       "MatchRegexString": "^Steam$",
       "TargetCss": "Main Design/Settings/Millennium/Quick Settings.css"
     },
 	
     {
-      "MatchRegexString": "^Steam$",
+      "MatchRegexString": "^.*$",
       "TargetJs": "Features/Custom Roundness Avatars/Custom Avatars.js"
     },
-	
     {
-      "MatchRegexString": "^Steam$",
+      "MatchRegexString": "^.*$",
       "TargetCss": "Features/Custom Border Radius/Buttons.css"
     },
     {
-      "MatchRegexString": "^Steam$",
+      "MatchRegexString": "^.*$",
       "TargetJs": "Features/Custom Border Radius/Buttons.js"
     },
 	
@@ -231,28 +270,31 @@
     },
 	
 	{
-      "MatchRegexString": "^Steam$",
+      "MatchRegexString": "^.*$",
       "TargetCss": "Patches/Colors/Accents/Accents Code.css"
     },
 	{
-      "MatchRegexString": "^Steam$",
+      "MatchRegexString": "^.*$",
       "TargetCss": "Patches/Colors/Accents/Accents Elements.css"
     },
 	
 	{
-      "MatchRegexString": "^Steam$",
-      "TargetCss": "Patches/Legacy Style Tooltips/Legacy Tooltip.css"
-    },
-	
-	{
-      "MatchRegexString": "^Steam$",
+      "MatchRegexString": "^.*$",
       "TargetCss": "Patches/Colors/Backgrounds/Backgrounds Code.css"
     },
 	{
-      "MatchRegexString": "^Steam$",
+      "MatchRegexString": "^.*$",
       "TargetCss": "Patches/Colors/Backgrounds/Backgrounds Elements.css"
     },
 	
+	{
+      "MatchRegexString": "^.*$",
+      "TargetCss": "Patches/Legacy Style Tooltips/Legacy Tooltip.css"
+    },
+	{
+      "MatchRegexString": ".friendsui-container",
+      "TargetJs": "Patches/Minimal Resize Window Friends/Window Script.js"
+    },
 	{
       "MatchRegexString": "^Steam$",
       "TargetJs": "Patches/WIP Badges for Settings/WIP Badges.js"

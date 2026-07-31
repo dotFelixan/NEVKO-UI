@@ -1,4 +1,10 @@
 /* Main Color */
+html.client_chat_frame body, 
+html.web_chat_frame body,
+
+.friendListHeaderContainer,
+
+._1ENHEsrSLcTRtPQFl1F-wL._1DvwQt0JN-Ogp_4tVZdkzX,
 ._39oUCO1OuizVPwcnnv88no ._1-9sir4j_KQiMqdkZjQN0u,
 ._3Z7VQ1IMk4E3HsHvrkLNgo {
     background: var(--main-background) !important;

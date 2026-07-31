@@ -21,6 +21,10 @@
       label:   "Beta",
       tooltip: "This feature is not yet stable and is still in development.",
     },
+	"Avatar Decoration": {
+      label:   "Beta",
+      tooltip: "This feature is not yet stable and is still in development.",
+    },
   }
 
   // ── стили ──────────────────────────────────────────────────────────────────

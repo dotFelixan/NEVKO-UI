@@ -52,14 +52,31 @@
     ;(document.head || document.documentElement).appendChild(style)
   }
 
+  // инжектируем сохранённое значение через <style> немедленно — до любого рендера
+  function injectSavedAsStyle() {
+    const id = "nevko-avatar-radius-preload"
+    if (document.getElementById(id)) return
+    const val          = getSaved()
+    const norm         = val / CONFIG.max
+    const statusRadius = Math.round(norm * 50)
+    const s   = document.createElement("style")
+    s.id = id
+    s.textContent = `:root { --avatar-radius: ${toRadius(val)} !important; --status-radius: ${statusRadius}% !important; }`
+    ;(document.head || document.documentElement).appendChild(s)
+  }
+
   // применяем значение: обновляем CSS-переменные и сохраняем в localStorage
   function applyValue(val) {
-    const norm = val / CONFIG.max
-    const statusRadius = Math.round(norm * 50) // иконка статуса закругляется вместе с аватаркой
+    const norm         = val / CONFIG.max
+    const statusRadius = Math.round(norm * 50)
     document.documentElement.style.setProperty("--avatar-radius", toRadius(val))
     document.documentElement.style.setProperty("--status-radius", `${statusRadius}%`)
     localStorage.setItem(CONFIG.storageKey, val)
+    const pre = document.getElementById("nevko-avatar-radius-preload")
+    if (pre) pre.textContent = `:root { --avatar-radius: ${toRadius(val)} !important; --status-radius: ${statusRadius}% !important; }`
   }
+
+  injectSavedAsStyle()
 
   // стили слайдера — отдельно от основных, чтобы не пересобирать при каждом вызове
   function injectSliderCSS() {
@@ -245,7 +262,7 @@
     reset.className = "nk-reset"
     reset.textContent = "Reset"
 
-    // показываем кнопку только когда значение отличается от дефолта
+    // показываем кнопку только когда значение отличается от дефолт��
     const updateResetVisibility = val =>
       reset.classList.toggle("nk-reset--default", val === CONFIG.default)
 
