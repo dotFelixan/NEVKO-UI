@@ -11,6 +11,8 @@ const CONFIG = {
     "DRIVER = 4": "Social",
     "DRIVER = 5": "Chats",
 	
+    "DRIVER = 60": "Contributors",
+	
     "DRIVER = 70": "Experimental",
 	
 	"DRIVER = 88": "Main",

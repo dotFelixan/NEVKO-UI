@@ -20,6 +20,27 @@
 
   "Conditions": {
 
+			"DRIVER = 60": {
+			  "description": "",
+			  "default": "",
+			  "tab": "General",
+			  "values": { "": {} }
+			},
+    "Badges for Contributors": {
+      "description": "Display special badges for theme contributors on their profiles",
+      "default": "yes",
+      "tab": "General",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetJs": {
+            "affects": ["^.*$", ".*"],
+            "src": "Credits/Badges for Contributors.js"
+          }
+        }
+      }
+    },
+
 			"DRIVER = 1": {
 			  "description": "",
 			  "default": "",
@@ -95,6 +116,57 @@
       "default": "",
       "tab": "UI Personalization",
       "values": { "": {} }
+    },
+	
+    "Remove Window Buttons": {
+      "description": "Hide specific window control buttons",
+      "default": "None",
+      "tab": "UI Personalization",
+      "values": {
+        "None": {},
+        "[Collapse] Only": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/collapse-o.css"
+          }
+        },
+        "[Expand] Only": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/expand-o.css"
+          }
+        },
+        "[Close] Only": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/close-o.css"
+          }
+        },
+        "[Collapse + Expand]": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/collapse-expand.css"
+          }
+        },
+        "[Collapse + Close]": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/collapse-close.css"
+          }
+        },
+        "[Expand + Close]": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/expand-close.css"
+          }
+        },
+        "All": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/hide all.css"
+          }
+        }
+      }
     },
 	
 			"DRIVER = 2": {
@@ -192,56 +264,6 @@
           "TargetCss": {
             "affects": ["^Steam$"],
             "src": "Main Design/Header/Account Button Style/Balance and Nickname.css"
-          }
-        }
-      }
-    },
-    "Remove Window Buttons": {
-      "description": "Hide specific window control buttons",
-      "default": "None",
-      "tab": "UI Personalization",
-      "values": {
-        "None": {},
-        "[Collapse] Only": {
-          "TargetCss": {
-            "affects": ["^.*$"],
-            "src": "Main Design/Header/Window Buttons/collapse-o.css"
-          }
-        },
-        "[Expand] Only": {
-          "TargetCss": {
-            "affects": ["^.*$"],
-            "src": "Main Design/Header/Window Buttons/expand-o.css"
-          }
-        },
-        "[Close] Only": {
-          "TargetCss": {
-            "affects": ["^.*$"],
-            "src": "Main Design/Header/Window Buttons/close-o.css"
-          }
-        },
-        "[Collapse + Expand]": {
-          "TargetCss": {
-            "affects": ["^.*$"],
-            "src": "Main Design/Header/Window Buttons/collapse-expand.css"
-          }
-        },
-        "[Collapse + Close]": {
-          "TargetCss": {
-            "affects": ["^.*$"],
-            "src": "Main Design/Header/Window Buttons/collapse-close.css"
-          }
-        },
-        "[Expand + Close]": {
-          "TargetCss": {
-            "affects": ["^.*$"],
-            "src": "Main Design/Header/Window Buttons/expand-close.css"
-          }
-        },
-        "All": {
-          "TargetCss": {
-            "affects": ["^.*$"],
-            "src": "Main Design/Header/Window Buttons/hide all.css"
           }
         }
       }

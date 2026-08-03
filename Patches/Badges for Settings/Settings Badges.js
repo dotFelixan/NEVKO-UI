@@ -30,6 +30,11 @@
       color: "#FFA500",
       tooltip: "This feature is not yet stable and is still in development.",
     },
+    "Badges for Contributors": {
+      label: "Alpha",
+      color: "#289CFF",
+      tooltip: "This feature is not yet stable and is still in development.",
+    },
     "Steam Modes Button": {
       label: "Beta",
       color: "#FFA500",
