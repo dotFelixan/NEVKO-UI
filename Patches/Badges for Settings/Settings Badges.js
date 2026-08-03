@@ -1,28 +1,38 @@
 // добавляет бейджик "Beta" (или любой другой) рядом с нужными надписями в настройках Steam
 
-;(() => {
+; (() => {
 
   // ── настройки ──────────────────────────────────────────────────────────────
   //
   // Ключ   — точный текст надписи в настройках (на любом языке)
-  // Значение — объект { label, tooltip }
+  // Значение — объект { label, tooltip, color }
   //   label   — текст бейджика
-  //   tooltip — текст тултипа при наведении (опционально, можно не указывать)
+  //   tooltip — текст тултипа при наведении (опционально)
+  //   color   — цвет фона бейджика (обязательно)
   //
   // Чтобы добавить новый бейджик — просто допиши строку:
-  //   "Название настройки": { label: "Beta", tooltip: "..." },
+  //   "Название настройки": { label: "Beta", color: "#FF0000", tooltip: "..." },
   //
   const BADGES = {
     "Rounding Buttons": {
-      label:   "Beta",
+      label: "Beta",
+      color: "#FFA500",
       tooltip: "This feature is not yet stable and is still in development.",
     },
-	"Rounding Avatars": {
-      label:   "Beta",
+    "Rounding Avatars": {
+      label: "Beta",
+      color: "#FFA500",
       tooltip: "This feature is not yet stable and is still in development.",
     },
-	"Avatar Decoration": {
-      label:   "Beta",
+
+    "Avatar Decoration": {
+      label: "Beta",
+      color: "#FFA500",
+      tooltip: "This feature is not yet stable and is still in development.",
+    },
+    "Steam Modes Button": {
+      label: "Beta",
+      color: "#FFA500",
       tooltip: "This feature is not yet stable and is still in development.",
     },
   }
@@ -42,8 +52,7 @@
         font-weight: bold;
         line-height: 16px;
         height: 18px;
-        color: #fff;
-        background-color: #FFA500;
+        color: #000;
         border-radius: 3px;
         margin-left: 12px;
         letter-spacing: 0.04em;
@@ -67,6 +76,7 @@
         overflow: visible !important;
         font-size: 13px !important;
         font-family: "Motiva Sans", Arial, Helvetica, sans-serif !important;
+
         background-color: #696773 !important;
         color: #E0E1E6 !important;
         z-index: 2147483647 !important;
@@ -75,7 +85,7 @@
         left: 0;
       }
     `
-    ;(document.head || document.documentElement).appendChild(s)
+      ; (document.head || document.documentElement).appendChild(s)
   }
 
   // ── логика ─────────────────────────────────────────────────────────────────
@@ -98,12 +108,13 @@
       if (!BADGES[directText]) continue
       processed.add(el)
 
-      const { label, tooltip } = BADGES[directText]
+      const { label, tooltip, color } = BADGES[directText]
 
       // добавляем бейджик в конец элемента — не трогаем существующие узлы
       const badge = document.createElement("span")
       badge.className = "nk-badge"
       badge.textContent = label
+      badge.style.backgroundColor = color
       el.appendChild(badge)
 
       if (!tooltip) continue
@@ -113,6 +124,7 @@
       const tip = document.createElement("span")
       tip.className = "nk-tooltip"
       tip.textContent = tooltip
+
       document.documentElement.appendChild(tip)
 
       // Steam может блокировать pointer-events — слушаем mousemove на document
@@ -121,12 +133,12 @@
       document.addEventListener("mousemove", (e) => {
         const r = badge.getBoundingClientRect()
         const inside = e.clientX >= r.left && e.clientX <= r.right
-                    && e.clientY >= r.top  && e.clientY <= r.bottom
+          && e.clientY >= r.top && e.clientY <= r.bottom
 
         if (inside && !visible) {
           visible = true
-          tip.style.left    = `${r.left - 40}px`
-          tip.style.top     = `${r.bottom + 6}px`
+          tip.style.left = `${r.left - 40}px`
+          tip.style.top = `${r.bottom + 6}px`
           tip.style.opacity = "1"
         } else if (!inside && visible) {
           visible = false

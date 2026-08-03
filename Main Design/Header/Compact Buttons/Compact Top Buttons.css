@@ -36,12 +36,11 @@
 }
 /*Костыль*/
 .ip-YZhijAMZcuRoXBGiye ._1KrJ3sFAqPBN9mfpaNTU5F {
-    height: 15px !important;
+    height: 16px !important;
     width: 16px !important;
-    margin-top: -4px !important;
-}
-.ip-YZhijAMZcuRoXBGiye ._1KrJ3sFAqPBN9mfpaNTU5F {
-    margin-top: -2px;
+    margin-top: -4px;
+	
+	box-shadow: unset;
 }
 ._1_yS5UP7el0aN4vntx3dx > div:first-of-type {
 	transform: translateX(-50%);
@@ -53,6 +52,9 @@
     position: absolute !important;
     --steam-control-width: 242px !important;
     top: 8px;
+}
+.ip-YZhijAMZcuRoXBGiye ._1KrJ3sFAqPBN9mfpaNTU5F.Icon svg {
+    margin-top: 2px;
 }
 
 /*Change Text Style in Downloads*/

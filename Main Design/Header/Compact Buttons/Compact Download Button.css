@@ -9,9 +9,7 @@
     display: block !important;
 }
 ._2VtAqT03BpBsVdmxwptn9D ._1KrJ3sFAqPBN9mfpaNTU5F {
-    width: 16px;
-    height: 16px;
-    margin-top: 8px;
+    margin-top: -2px !important;
     margin-left: 0px;
 	
     cursor: pointer;
@@ -21,7 +19,7 @@
 	margin-top: 8px;
 }
 ._2_FomluqqgQ2Hx8ON3AVep .wi0pDywRgOCxhG7OqQNaA {
-    border-radius: 0 0 4px 4px !important;
+    border-radius: 0 0 var(--button-radius) var(--button-radius) !important;
 	
     margin-top: 16px;
 	width: 32px;

@@ -90,21 +90,16 @@
         .nk-handle {
           position: absolute;
           top: 50%;
-          transform: translateX(-50%);
+          transform: translateX(-50%) translateY(-50%);
           display: flex;
           flex-direction: column;
           align-items: center;
           pointer-events: none;
           overflow: visible;
           z-index: 2;
-          margin-top: -21px;
         }
         .nk-arrow {
-          color: #8b929a;
-          width: 12px;
-          height: 12px;
-          display: block;
-          flex-shrink: 0;
+          display: none;
         }
         .nk-dot {
           width: 18px;
@@ -166,6 +161,24 @@
           opacity: 0;
           pointer-events: none;
         }
+        .nk-default-marker {
+          position: absolute;
+          top: -18px;
+          transform: translateX(-50%);
+          pointer-events: none;
+          z-index: 1;
+          color: rgba(255,255,255,0.6);
+          width: 12px;
+          height: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .nk-default-marker svg {
+          width: 12px;
+          height: 12px;
+          display: block;
+        }
       `
         ; (document.head || document.documentElement).appendChild(s)
     }
@@ -209,6 +222,23 @@
     input.max = CONFIG.max
     input.value = currentVal
     input.className = "nk-input"
+
+    // маркер дефолтного значения на треке
+    const defaultNorm = (CONFIG.default - CONFIG.min) / (CONFIG.max - CONFIG.min)
+    const defaultPct  = defaultNorm * 100
+    const defMarker   = document.createElement("div")
+    defMarker.className = "nk-default-marker"
+    defMarker.style.left = `${defaultPct}%`
+    const defNS  = "http://www.w3.org/2000/svg"
+    const defSvg = document.createElementNS(defNS, "svg")
+    defSvg.setAttribute("viewBox", "0 0 36 36")
+    defSvg.setAttribute("fill", "none")
+    const defPath = document.createElementNS(defNS, "path")
+    defPath.setAttribute("d", "M17.98 26.54L3.21 11.77H32.75L17.98 26.54Z")
+    defPath.setAttribute("fill", "currentColor")
+    defSvg.appendChild(defPath)
+    defMarker.appendChild(defSvg)
+    track.appendChild(defMarker)
 
     handle.append(arrow, dot)
     track.append(fill, handle)

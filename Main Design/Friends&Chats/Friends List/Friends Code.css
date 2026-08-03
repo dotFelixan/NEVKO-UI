@@ -121,6 +121,17 @@
 :not(.friendInviteContainer) .ingame.awayOrSnooze .ContextMenuButton .SVGIcon_DownArrowContextMenu {
     fill: var(--ingameidle-status);
 }
+
+.friendRequestButton .SVGIcon_FriendRequest .friendBodyFull, 
+.friendRequestButton .SVGIcon_FriendRequest .friendHead, 
+.friendRequestButton .SVGIcon_FriendRequest .friendArm, 
+.friendRequestButton .SVGIcon_FriendRequest .friendBody {
+    fill: #8B929A;
+}
+/*Background Color Game*/
+.ingame .AvatarAndUser {
+	background-color: rgba(92, 126, 16, .5);
+}
 /*Hover Account Menu Color*/
 .AvatarAndUser {
 	transition: background-color .25s ease-out;
@@ -147,4 +158,8 @@
 	
 	max-width: 98px;
 }
-
+/*Window Buttons*/
+.DesktopUI .title-area-icon:hover,
+.friendsui-container .title-area-icon:hover {
+    background: #6363632e;
+}

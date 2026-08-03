@@ -135,6 +135,20 @@
         }
       }
     },
+    "Steam Modes Button": {
+      "description": "PlaceHolder",
+      "default": "no",
+      "tab": "UI Personalization",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetJs": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Header/Steam Modes Button.js"
+          }
+        }
+      }
+    },
     "Compact Manage Downloads Button": {
       "description": "PlaceHolder",
       "default": "no",
@@ -177,6 +191,56 @@
           "TargetCss": {
             "affects": ["^Steam$"],
             "src": "Main Design/Header/Account Button Style/Balance and Nickname.css"
+          }
+        }
+      }
+    },
+    "Remove Window Buttons": {
+      "description": "Hide specific window control buttons",
+      "default": "None",
+      "tab": "UI Personalization",
+      "values": {
+        "None": {},
+        "[Collapse] Only": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/collapse-o.css"
+          }
+        },
+        "[Expand] Only": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/expand-o.css"
+          }
+        },
+        "[Close] Only": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/close-o.css"
+          }
+        },
+        "[Collapse + Expand]": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/collapse-expand.css"
+          }
+        },
+        "[Collapse + Close]": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/collapse-close.css"
+          }
+        },
+        "[Expand + Close]": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/expand-close.css"
+          }
+        },
+        "All": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/hide all.css"
           }
         }
       }
@@ -297,7 +361,7 @@
     },
 	{
       "MatchRegexString": "^Steam$",
-      "TargetJs": "Patches/WIP Badges for Settings/WIP Badges.js"
+      "TargetJs": "Patches/Badges for Settings/Settings Badges.js"
     },
 	{
       "MatchRegexString": "^Steam$",
