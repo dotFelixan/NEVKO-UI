@@ -35,6 +35,12 @@
       color: "#FFA500",
       tooltip: "This feature is not yet stable and is still in development.",
     },
+	
+    "Steam Settings Preloader": {
+      label: "Alpha",
+      color: "#289CFF",
+      tooltip: "This feature is not yet stable and is still in development.",
+    },
   }
 
   // ── стили ──────────────────────────────────────────────────────────────────

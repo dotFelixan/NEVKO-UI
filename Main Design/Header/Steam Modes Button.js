@@ -70,12 +70,33 @@
     "latam":      "Modos de Steam",
   }
 
+  // карта ISO кодов → Steam языки для фолбэка через navigator.language
+  const ISO_TO_STEAM = {
+    "ru": "russian", "uk": "ukrainian", "de": "german", "fr": "french",
+    "pl": "polish",  "es": "spanish",   "pt": "portuguese", "it": "italian",
+    "nl": "dutch",   "cs": "czech",     "hu": "hungarian",  "ro": "romanian",
+    "el": "greek",   "fi": "finnish",   "sv": "swedish",    "no": "norwegian",
+    "da": "danish",  "tr": "turkish",   "ar": "arabic",     "th": "thai",
+    "vi": "vietnamese", "id": "indonesian", "ko": "koreana",
+    "ja": "japanese", "zh": "schinese", "en": "english",    "br": "brazilian",
+  }
+
   function getTooltipText() {
-    const lang = window?.g_strLanguage
+    // Steam хранит язык в нескольких местах
+    const steamLang = window?.g_strLanguage
+      || window?.GetCurrentLanguage?.()
+      || document.documentElement.getAttribute("xml:lang")
       || document.documentElement.lang
-      || navigator.language?.toLowerCase()?.split("-")[0]
-      || "english"
-    return TOOLTIP_TRANSLATIONS[lang] || TOOLTIP_TRANSLATIONS["english"]
+      || ""
+
+    if (steamLang && TOOLTIP_TRANSLATIONS[steamLang]) {
+      return TOOLTIP_TRANSLATIONS[steamLang]
+    }
+
+    // фолбэк через navigator.language (ISO код → Steam название)
+    const iso = navigator.language?.toLowerCase()?.split("-")[0] || "en"
+    const mapped = ISO_TO_STEAM[iso] || "english"
+    return TOOLTIP_TRANSLATIONS[mapped] || TOOLTIP_TRANSLATIONS["english"]
   }
 
   // ── стили ──────────────────────────────────────────────────────────────────

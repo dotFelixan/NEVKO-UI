@@ -163,6 +163,7 @@
         }
       }
     },
+	
     "Account Button Style": {
       "description": "PlaceHolder",
       "default": "Hide Balance",
@@ -241,6 +242,100 @@
           "TargetCss": {
             "affects": ["^.*$"],
             "src": "Main Design/Header/Window Buttons/hide all.css"
+          }
+        }
+      }
+    },
+	
+			"DRIVER = 3": {
+			  "description": "",
+			  "default": "",
+			  "tab": "UI Personalization",
+			  "values": { "": {} }
+			},
+    "Hiding Library Items": {
+      "description": "Hide specific elements from the library home screen",
+      "default": "None",
+      "tab": "UI Personalization",
+      "values": {
+        "None": {},
+        "[What's New] Only": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Library/Hide Library Items/News.css"
+          }
+        },
+        "[Add Shelf] Only": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Library/Hide Library Items/Shelf.css"
+          }
+        },
+        "Both": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Library/Hide Library Items/Both.css"
+          }
+        }
+      }
+    },
+    "Remove Shiny Effect": {
+      "description": "Remove shiny effect on game card hover.",
+      "default": "yes",
+      "tab": "UI Personalization",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetCss": {
+            "affects": ["^Steam$"], 
+			"src": "Main Design/Library/Remove Shiny Effect/noShiny.css"
+          }
+        }
+      }
+    },
+    "Achievements Tab": {
+      "description": "Hide specific elements from the achievements tab",
+      "default": "None",
+      "tab": "UI Personalization",
+      "values": {
+        "None": {},
+        "[Recent] Only": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Library/Hide Library Items/Achievements/Recent.css"
+          }
+        },
+        "[Unreached Achievements] Only": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Library/Hide Library Items/Achievements/Missed Achievements.css"
+          }
+        },
+        "Both": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Library/Hide Library Items/Achievements/Both.css"
+          }
+        }
+      }
+    },
+	
+			"DRIVER = 70": {
+			  "description": "",
+			  "default": "",
+			  "tab": "UI Personalization",
+			  "values": { "": {} }
+			},
+	"Steam Settings Preloader": {
+      "description": "On each Steam launch, automatically opens the Settings window, silently navigates through the Friends & Chat, Library, and Accessibility tabs, enforces the configured toggles and hides the specified rows, then closes the window - all without user interaction.",
+      "default": "no",
+      "tab": "UI Personalization",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetJs": {
+            "affects": ["^.*$"],
+            "src": "Patches/Forced Disable & Remove Settings/Force Disable Settings.js"
           }
         }
       }
@@ -363,9 +458,15 @@
       "MatchRegexString": "^Steam$",
       "TargetJs": "Patches/Badges for Settings/Settings Badges.js"
     },
+	
 	{
       "MatchRegexString": "^Steam$",
       "TargetJs": "Patches/Driver Settings/Driver.js"
+    },
+	
+	{
+      "MatchRegexString": "^Steam$",
+      "TargetJs": "Patches/Forced Disable & Remove Settings/Settings Preloader.js"
     }
   ]
 }

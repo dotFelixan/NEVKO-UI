@@ -10,10 +10,15 @@ const CONFIG = {
     "DRIVER = 3": "Library",
     "DRIVER = 4": "Social",
     "DRIVER = 5": "Chats",
+	
+    "DRIVER = 70": "Experimental",
+	
 	"DRIVER = 88": "Main",
 	"DRIVER = 89": "Main",
+	
 	"DRIVER = 98": "Misc",
     "DRIVER = 99": "Misc",
+	
   },
 
   styles: {

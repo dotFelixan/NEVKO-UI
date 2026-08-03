@@ -48,17 +48,17 @@ const TRANSLATIONS = {
   el:      { myProfile: "Προβολή προφίλ", activities: "Δραστηριότητες", inventory: "Αποθήκη", friends: "Φίλοι", changeStatus: "Αλλαγή κατάστασης", back: "Πίσω", online: "Σε σύνδεση", away: "Λείπω", invisible: "Αόρατος", offline: "Εκτός σύνδεσης" },
 }
 
-// тексты "Настройки магазина" на всех языках
+// тексты "Настройки магазина" на всех языках (в нижнем регистре для сравнения без учёта регистра)
 const STORE_SETTINGS_LABELS = new Set([
-  "Store Preferences", "Preferencias de la tienda", "Paramètres du magasin",
-  "Store-Einstellungen", "Preferenze dello store", "Preferências da loja",
-  "Ustawienia sklepu", "Mağaza Tercihleri", "Налаштування магазину",
-  "Настройки магазина", "ストア設定", "스토어 환경설정",
+  "store preferences", "preferencias de la tienda", "paramètres du magasin",
+  "store-einstellungen", "preferenze dello store", "preferências da loja",
+  "ustawienia sklepu", "mağaza tercihleri", "налаштування магазину",
+  "настройки магазина", "ストア設定", "스토어 환경설정",
   "商店偏好设置", "商店偏好設定", "การตั้งค่าร้านค้า",
-  "Nastavení obchodu", "Butiksindstillinger", "Winkelvoorkeuren",
-  "Kaupan asetukset", "Butikkinnstillinger", "Butiksinställningar",
-  "Áruházi beállítások", "Preferințe magazin",
-  "Ρυθμίσεις καταστήματος",
+  "nastavení obchodu", "butiksindstillinger", "winkelvoorkeuren",
+  "kaupan asetukset", "butikkinnstillinger", "butiksinställningar",
+  "áruházi beállítások", "preferințe magazin",
+  "ρυθμίσεις καταστήματος",
 ])
 
 ;(() => {
@@ -186,8 +186,8 @@ const STORE_SETTINGS_LABELS = new Set([
     // убираем "View my profile" и "Настройки магазина"
     document.querySelectorAll(btnSel).forEach((btn) => {
       const text = btn.textContent?.trim()
-      if (allProfileLabels.has(text))      btn.remove()
-      if (STORE_SETTINGS_LABELS.has(text)) btn.style.setProperty("display", "none", "important")
+      if (allProfileLabels.has(text))                         btn.remove()
+      if (STORE_SETTINGS_LABELS.has(text?.toLowerCase()))    btn.style.setProperty("display", "none", "important")
     })
 
     // кнопка смены статуса
