@@ -1,15 +1,18 @@
-;(() => {
+; (() => {
   "use strict"
 
   // ─── CONFIG ────────────────────────────────────────────────────────────────
   const CONFIG = {
-    targetLabel:  "Rounding Avatars",
+    targetLabel: "Rounding Avatars",
     hideSelector: "._2o2fXzn99OddeqZMjbDuxQ",
     fieldSelector: ".eKmEXJCm_lgme24Fp_HWt",
-    storageKey:   "nevko-avatar-rounding",
-    min:     0,
-    max:     50,
+    storageKey: "nevko-avatar-rounding",
+    min: 0,
+    max: 50,
     default: 50,
+    // Rounding for avatars with a custom frame OR a game icon.
+    // Change this one value (0–50) to control both cases at once.
+    framedAvatarRounding: 4,
   }
 
   // достаём сохранённое значение, если нет — берём дефолт
@@ -40,40 +43,59 @@
       ._3h-QRJGxnVOIExtHD1R0f2 {
         border-radius: var(--avatar-radius, 50%) !important;
       }
-      ._3h-QRJGxnVOIExtHD1R0f2:has(+ ._2nPONxDUmK4rQXzK4Y3vG2) {
-        border-radius: 10% !important;
+
+      /* Avatar WITH a custom frame but WITHOUT a game icon — use frame-specific rounding.
+         When FavoriteFriend_GameIcon is present (ingame), keep standard avatar rounding. */
+      img.avatar:has(+ .avatarFrame):not(:has(~ .FavoriteFriend_GameIcon)):not(:has(+ .FavoriteFriend_GameIcon)),
+      ._3h-QRJGxnVOIExtHD1R0f2:has(+ .avatarFrame):not(:has(~ .FavoriteFriend_GameIcon)):not(:has(+ .FavoriteFriend_GameIcon)) {
+        border-radius: var(--frame-avatar-radius, 5%) !important;
         outline: unset !important;
       }
+      /* avatarHolder with BOTH a game icon AND a frame — use framed avatar rounding */
+      .avatarHolder:has(.FavoriteFriend_GameIcon):has(.avatarFrame) img.avatar,
+      .avatarHolder:has(.FavoriteFriend_GameIcon):has(.avatarFrame) ._3h-QRJGxnVOIExtHD1R0f2 {
+        border-radius: var(--game-avatar-radius, 0%) !important;
+      }
+
+      /* Frame image and frame container are NEVER rounded — decorative overlay only */
+      .avatarFrame,
+      img.avatarFrameImg {
+        border-radius: 0 !important;
+      }
+
       ._3xUpb5DWXPFNcHHIcv-9pe.right,
       ._3xUpb5DWXPFNcHHIcv-9pe.bottom {
         border-radius: var(--status-radius, 28%);
       }
     `
-    ;(document.head || document.documentElement).appendChild(style)
+      ; (document.head || document.documentElement).appendChild(style)
   }
 
   // инжектируем сохранённое значение через <style> немедленно — до любого рендера
   function injectSavedAsStyle() {
     const id = "nevko-avatar-radius-preload"
     if (document.getElementById(id)) return
-    const val          = getSaved()
-    const norm         = val / CONFIG.max
+    const val = getSaved()
+    const norm = val / CONFIG.max
     const statusRadius = Math.round(norm * 50)
-    const s   = document.createElement("style")
+    const s = document.createElement("style")
     s.id = id
-    s.textContent = `:root { --avatar-radius: ${toRadius(val)} !important; --status-radius: ${statusRadius}% !important; }`
-    ;(document.head || document.documentElement).appendChild(s)
+    s.textContent = `:root { --avatar-radius: ${toRadius(val)} !important; --status-radius: ${statusRadius}% !important; --frame-avatar-radius: ${CONFIG.framedAvatarRounding}% !important; --game-avatar-radius: ${CONFIG.framedAvatarRounding}% !important; }`
+      ; (document.head || document.documentElement).appendChild(s)
   }
 
   // применяем значение: обновляем CSS-переменные и сохраняем в localStorage
   function applyValue(val) {
-    const norm         = val / CONFIG.max
+    const norm = val / CONFIG.max
     const statusRadius = Math.round(norm * 50)
+    const framedRadius = `${CONFIG.framedAvatarRounding}%`
     document.documentElement.style.setProperty("--avatar-radius", toRadius(val))
     document.documentElement.style.setProperty("--status-radius", `${statusRadius}%`)
+    document.documentElement.style.setProperty("--frame-avatar-radius", framedRadius)
+    document.documentElement.style.setProperty("--game-avatar-radius", framedRadius)
     localStorage.setItem(CONFIG.storageKey, val)
     const pre = document.getElementById("nevko-avatar-radius-preload")
-    if (pre) pre.textContent = `:root { --avatar-radius: ${toRadius(val)} !important; --status-radius: ${statusRadius}% !important; }`
+    if (pre) pre.textContent = `:root { --avatar-radius: ${toRadius(val)} !important; --status-radius: ${statusRadius}% !important; --frame-avatar-radius: ${framedRadius} !important; --game-avatar-radius: ${framedRadius} !important; }`
   }
 
   injectSavedAsStyle()
@@ -216,14 +238,14 @@
         display: block;
       }
     `
-    ;(document.head || document.documentElement).appendChild(s)
+      ; (document.head || document.documentElement).appendChild(s)
   }
 
   function buildSlider(currentVal) {
     injectSliderCSS()
 
     const norm = (currentVal - CONFIG.min) / (CONFIG.max - CONFIG.min)
-    const pct  = norm * 100
+    const pct = norm * 100
 
     const row = document.createElement("div")
     row.className = "nk-row"
@@ -256,19 +278,19 @@
     dot.className = "nk-dot"
 
     const input = document.createElement("input")
-    input.type  = "range"
-    input.min   = CONFIG.min
-    input.max   = CONFIG.max
+    input.type = "range"
+    input.min = CONFIG.min
+    input.max = CONFIG.max
     input.value = currentVal
     input.className = "nk-input"
 
     // маркер дефолтного значения на треке
     const defaultNorm = (CONFIG.default - CONFIG.min) / (CONFIG.max - CONFIG.min)
-    const defaultPct  = defaultNorm * 100
-    const defMarker   = document.createElement("div")
+    const defaultPct = defaultNorm * 100
+    const defMarker = document.createElement("div")
     defMarker.className = "nk-default-marker"
     defMarker.style.left = `${defaultPct}%`
-    const defNS  = "http://www.w3.org/2000/svg"
+    const defNS = "http://www.w3.org/2000/svg"
     const defSvg = document.createElementNS(defNS, "svg")
     defSvg.setAttribute("viewBox", "0 0 36 36")
     defSvg.setAttribute("fill", "none")
@@ -304,24 +326,24 @@
 
     reset.addEventListener("click", () => {
       const def = CONFIG.default
-      const n   = (def - CONFIG.min) / (CONFIG.max - CONFIG.min)
-      const p   = n * 100
-      input.value         = def
-      fill.style.width    = `${p}%`
-      handle.style.left   = `${p}%`
-      label.textContent   = formatLabel(def)
+      const n = (def - CONFIG.min) / (CONFIG.max - CONFIG.min)
+      const p = n * 100
+      input.value = def
+      fill.style.width = `${p}%`
+      handle.style.left = `${p}%`
+      label.textContent = formatLabel(def)
       updateResetVisibility(def)
       applyValue(def)
     })
 
     input.addEventListener("input", () => {
       const val = Number(input.value)
-      const n   = (val - CONFIG.min) / (CONFIG.max - CONFIG.min)
-      const p   = n * 100
+      const n = (val - CONFIG.min) / (CONFIG.max - CONFIG.min)
+      const p = n * 100
 
-      fill.style.width    = `${p}%`
-      handle.style.left   = `${p}%`
-      label.textContent   = formatLabel(val)
+      fill.style.width = `${p}%`
+      handle.style.left = `${p}%`
+      label.textContent = formatLabel(val)
       updateResetVisibility(val)
 
       clearTimeout(debounceTimer)
@@ -336,7 +358,7 @@
   function processField(field) {
     if (seen.has(field)) return
 
-    // ищем поле именно с текстом "Rounding Avatars" — не трогаем чужие элементы
+    // ищем поле именно с текстом "Rounding Avatars" — не трогаем ��ужие элементы
     const hasLabel = [...field.querySelectorAll("*")].some(el =>
       [...el.childNodes].some(
         n => n.nodeType === Node.TEXT_NODE && n.textContent.trim() === CONFIG.targetLabel
@@ -348,7 +370,7 @@
 
     // скрываем оригинальный дропдаун Steam
     field.querySelector(CONFIG.hideSelector)
-         ?.style.setProperty("display", "none", "important")
+      ?.style.setProperty("display", "none", "important")
 
     const val = getSaved()
     field.appendChild(buildSlider(val))

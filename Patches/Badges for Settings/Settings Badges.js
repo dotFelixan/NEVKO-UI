@@ -25,19 +25,20 @@
       tooltip: "This feature is not yet stable and is still in development.",
     },
 
-    "Avatar Decoration": {
-      label: "Beta",
-      color: "#FFA500",
-      tooltip: "This feature is not yet stable and is still in development.",
-    },
     "Badges for Contributors": {
       label: "Alpha",
       color: "#289CFF",
       tooltip: "This feature is not yet stable and is still in development.",
     },
-    "Steam Modes Button": {
+	
+    "Relative Last Seen": {
       label: "Beta",
       color: "#FFA500",
+      tooltip: "This feature is not yet stable and is still in development.",
+    },
+    "Bypass Age Verification": {
+      label: "Alpha",
+      color: "#289CFF",
       tooltip: "This feature is not yet stable and is still in development.",
     },
 	

@@ -33,6 +33,8 @@
 	border-radius: var(--button-radius) 0 0 var(--button-radius);
 	background: var(--main-background) !important;
     padding-bottom: 0.5px !important;
+	
+	margin-right: -1px;
 }
 /*Костыль*/
 .ip-YZhijAMZcuRoXBGiye ._1KrJ3sFAqPBN9mfpaNTU5F {

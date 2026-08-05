@@ -44,9 +44,38 @@ const TRANSLATIONS = {
   sv:      { myProfile: "Visa min profil", activities: "Aktiviteter", inventory: "Inventarie", friends: "Vänner", changeStatus: "Ändra status", back: "Tillbaka", online: "Online", away: "Borta", invisible: "Osynlig", offline: "Offline" },
   hu:      { myProfile: "Profilom megtekintése", activities: "Tevékenységek", inventory: "Felszerelés", friends: "Barátok", changeStatus: "Állapot módosítása", back: "Vissza", online: "Elérhető", away: "Nincs a gépnél", invisible: "Láthatatlan", offline: "Nem elérhető" },
   ro:      { myProfile: "Vezi profilul meu", activities: "Activități", inventory: "Inventar", friends: "Prieteni", changeStatus: "Schimbă starea", back: "Înapoi", online: "Online", away: "Plecat", invisible: "Invizibil", offline: "Offline" },
-  bg:      { myProfile: "Виж профила ми", activities: "Дейности", inventory: "Инвентар", friends: "Приятели", changeStatus: "Промяна на статус", back: "Назад", online: "На линия", away: "Отсъстващ", invisible: "Невидим", offline: "Извън линия" },
+  bg:      { myProfile: "Виж профила ми", activities: "Дейности", inventory: "Инвентар", friends: "Приятели", changeStatus: "Промяна на статус", back: "Назад", online: "На линия", away: "Отсъстващ", invisible: "Невидим", offline: "Извъ���� линия" },
   el:      { myProfile: "Προβολή προφίλ", activities: "Δραστηριότητες", inventory: "Αποθήκη", friends: "Φίλοι", changeStatus: "Αλλαγή κατάστασης", back: "Πίσω", online: "Σε σύνδεση", away: "Λείπω", invisible: "Αόρατος", offline: "Εκτός σύνδεσης" },
 }
+
+// тексты нативной кнопки "Открыть профиль", которую Steam бета добавляет сам — нужно убрать
+// (отличаются от наших myProfile, поэтому хранятся отдельно; всё в нижнем регистре)
+const STEAM_NATIVE_PROFILE_LABELS = new Set([
+  "открыть мой профиль",          // ru beta
+  "view my profile",               // en beta (capitalized вариант уже покрыт toLowerCase)
+  "ver mi perfil",                 // es
+  "mein profil anzeigen",          // de
+  "afficher mon profil",           // fr
+  "visualizza profilo",            // it
+  "ver meu perfil",                // pt
+  "wyświetl mój profil",           // pl
+  "profilimi görüntüle",           // tr
+  "переглянути мій профіль",       // uk
+  "プロフィールを表示する",          // ja
+  "내 프로필 보기",                  // ko
+  "查看我的个人资料",                // zh-cn
+  "查看我的個人資料",                // zh-tw
+  "ดูโปรไฟล์ของฉัน",               // th
+  "zobrazit můj profil",           // cs
+  "se min profil",                 // da/no
+  "bekijk mijn profiel",           // nl
+  "näytä profiilini",              // fi
+  "visa min profil",               // sv
+  "profilom megtekintése",         // hu
+  "vezi profilul meu",             // ro
+  "виж профила ми",                // bg
+  "προβολή προφίλ",                // el
+])
 
 // тексты "Настройки магазина" на всех языках (в нижнем регистре для сравнения без учёта регистра)
 const STORE_SETTINGS_LABELS = new Set([
@@ -72,7 +101,7 @@ const STORE_SETTINGS_LABELS = new Set([
   const lang = TRANSLATIONS[rawLang] ? rawLang : rawLang.split("-")[0]
   const t = (key) => TRANSLATIONS[lang]?.[key] ?? TRANSLATIONS.en[key] ?? key
 
-  const allProfileLabels = new Set(Object.values(TRANSLATIONS).map((l) => l.myProfile))
+  const allProfileLabels = new Set(Object.values(TRANSLATIONS).map((l) => l.myProfile.toLowerCase()))
   const { mainContainer: containerSel, buttonClass: btnSel, driver: driverSel } = CONFIG.selectors
 
   let observer = null
@@ -186,8 +215,9 @@ const STORE_SETTINGS_LABELS = new Set([
     // убираем "View my profile" и "Настройки магазина"
     document.querySelectorAll(btnSel).forEach((btn) => {
       const text = btn.textContent?.trim()
-      if (allProfileLabels.has(text))                         btn.remove()
-      if (STORE_SETTINGS_LABELS.has(text?.toLowerCase()))    btn.style.setProperty("display", "none", "important")
+      const lower = text?.toLowerCase()
+      if (allProfileLabels.has(lower) || STEAM_NATIVE_PROFILE_LABELS.has(lower)) btn.remove()
+      if (STORE_SETTINGS_LABELS.has(lower))    btn.style.setProperty("display", "none", "important")
     })
 
     // кнопка смены статуса

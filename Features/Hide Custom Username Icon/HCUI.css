@@ -4,3 +4,10 @@
 ._1YqYJ2yaHfODWbIB0abgzQ {
     display: none;
 }
+/* Веб костыль*/
+span.player_nickname_hint {
+  font-size: 0;
+}
+span.player_nickname_hint span {
+  font-size: 11px;
+}

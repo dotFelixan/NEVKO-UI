@@ -11,6 +11,10 @@
 ._3yD46y5pd3zOGR7CzKs0mC > div {
     font-size: 0;
 }
+/*Hide Badge*/
+._3yD46y5pd3zOGR7CzKs0mC .nevko-badge-mini {
+	display: none;
+}
 
 		/* Main */
 /* Hide Button Background */

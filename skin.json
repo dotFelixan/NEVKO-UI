@@ -16,7 +16,7 @@
 
   "header_image": "https://i.imgur.com/2aRCvrt.png",
   "splash_image": "https://i.imgur.com/dqCDCH2.png",
-  "tags": ["Customizable", "Features", "Compact", "Accents"],
+  "tags": ["Customizable", "Features", "Accents", "UI"],
 
   "Conditions": {
 
@@ -98,8 +98,59 @@
         "no": {},
         "yes": {
           "TargetCss": {
-            "affects": [".*"],
+            "affects": ["^.*$", ".*"],
             "src": "Features/Hide Custom Username Icon/HCUI.css"
+          }
+        }
+      }
+    },
+			"DRIVER = 61": {
+			  "description": "",
+			  "default": "",
+			  "tab": "General",
+			  "values": { "": {} }
+			},
+    "Relative Last Seen": {
+      "description": "Replace fuzzy 'X hours ago' with exact time",
+      "default": "",
+      "tab": "General",
+      "values": {
+        "Disable": {
+          "TargetJs": {
+            "affects": ["^.*$", ".*"],
+            "src": "Features/Relative Last Seen/Disable Time.js"
+          }
+        },
+        "Exact Time": {
+          "TargetJs": {
+            "affects": ["^.*$", ".*"],
+            "src": "Features/Relative Last Seen/LastSeen.js"
+          }
+        },
+        "Exact Time with Seconds": {
+          "TargetJs": {
+            "affects": ["^.*$", ".*"],
+            "src": "Features/Relative Last Seen/LastSeen Seconds.js"
+          }
+        }
+      }
+    },
+			"DRIVER = 65": {
+			  "description": "",
+			  "default": "",
+			  "tab": "General",
+			  "values": { "": {} }
+			},
+	"Bypass Age Verification": {
+      "description": "PlaceHolder",
+      "default": "no",
+      "tab": "General",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetJs": {
+            "affects": [".*"],
+            "src": "Features/Bypass Age Verification/Bypass.js"
           }
         }
       }
@@ -248,16 +299,16 @@
             "src": "Main Design/Header/Account Button Style/Minimal.css"
           }
 		},
-        "Hide Balance": {
-          "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Design/Header/Account Button Style/Balance.css"
-          }
-		},
         "Hide Nickname": {
           "TargetCss": {
             "affects": ["^Steam$"],
             "src": "Main Design/Header/Account Button Style/Nickname.css"
+          }
+		},
+        "Hide Balance": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Header/Account Button Style/Balance.css"
           }
 		},
         "Hide Both": {
@@ -424,15 +475,15 @@
     },
 	
     {
-      "MatchRegexString": "^.*$",
+      "MatchRegexString": "^.*$|.*",
       "TargetJs": "Features/Custom Roundness Avatars/Custom Avatars.js"
     },
     {
-      "MatchRegexString": "^.*$",
+      "MatchRegexString": "^.*$|.*",
       "TargetCss": "Features/Custom Border Radius/Buttons.css"
     },
     {
-      "MatchRegexString": "^.*$",
+      "MatchRegexString": "^.*$|.*",
       "TargetJs": "Features/Custom Border Radius/Buttons.js"
     },
 	

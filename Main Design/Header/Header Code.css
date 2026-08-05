@@ -113,7 +113,7 @@
 ._3Z3ohQ8-1NKnCZkbS6fvy {
 	position: relative;
 
-	left: 118px !important;
+	left: 116px !important;
 	top: 0%;
 	transform: translateY(-70%);
 }
@@ -160,8 +160,8 @@
 	padding: 0px 12px 0px 12px;
 	height: 32px;
 
-	margin-right: -6px;
-	margin-left: 8px;
+    margin-right: -4px;
+    margin-left: 6px;
 	transform: translateY(10%);
 
 	visibility: hidden;
