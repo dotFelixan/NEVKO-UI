@@ -16,20 +16,15 @@
 
   "header_image": "https://i.imgur.com/2aRCvrt.png",
   "splash_image": "https://i.imgur.com/dqCDCH2.png",
-  "tags": ["Customizable", "Features", "Accents", "UI"],
+  "tags": ["Customizable", "Accents", "Features", "Privacy" ],
 
   "Conditions": {
-
-			"DRIVER = 60": {
-			  "description": "",
-			  "default": "",
-			  "tab": "General",
-			  "values": { "": {} }
-			},
+	  
     "Badges for Contributors": {
       "description": "Display special badges for theme contributors on their profiles",
       "default": "yes",
       "tab": "General",
+	  "section": "Contributors",
       "values": {
         "no": {},
         "yes": {
@@ -41,22 +36,25 @@
       }
     },
 
-			"DRIVER = 1": {
-			  "description": "",
-			  "default": "",
-			  "tab": "General",
-			  "values": { "": {} }
-			},
 	"Rounding Avatars": {
       "description": "Change how round or sharp avatars look throughout Steam",
       "default": "",
       "tab": "General",
+	  "section": "Users",
       "values": { "": {} }
     },
-    "Online Indicator Style": {
+	"Rounding Framed Avatars": {
+      "description": "",
+      "default": "",
+      "tab": "General",
+	  "section": "Users",
+      "values": { "": {} }
+    },
+    "Online Indicator": {
       "description": "Replaces default indicator with a modern dot-style badge",
       "default": "Modern",
       "tab": "General",
+	  "section": "Users",
       "values": {
         "Legacy": {
           "TargetCss": {
@@ -74,8 +72,9 @@
     },
     "Avatar Decoration": {
       "description": "Hide avatar frames",
-      "default": "no",
+      "default": "yes",
       "tab": "General",
+	  "section": "Users",
       "values": {
         "no": {},
         "yes": {
@@ -94,6 +93,7 @@
       "description": "Toggle visibility of custom username icon",
       "default": "no",
       "tab": "General",
+	  "section": "Users",
       "values": {
         "no": {},
         "yes": {
@@ -104,16 +104,12 @@
         }
       }
     },
-			"DRIVER = 61": {
-			  "description": "",
-			  "default": "",
-			  "tab": "General",
-			  "values": { "": {} }
-			},
+	
     "Relative Last Seen": {
       "description": "Replace fuzzy 'X hours ago' with exact time",
       "default": "",
       "tab": "General",
+	  "section": "General",
       "values": {
         "Disable": {
           "TargetJs": {
@@ -135,16 +131,12 @@
         }
       }
     },
-			"DRIVER = 65": {
-			  "description": "",
-			  "default": "",
-			  "tab": "General",
-			  "values": { "": {} }
-			},
+	
 	"Bypass Age Verification": {
       "description": "PlaceHolder",
       "default": "no",
       "tab": "General",
+	  "section": "Other",
       "values": {
         "no": {},
         "yes": {
@@ -156,23 +148,19 @@
       }
     },
 	
-			"DRIVER = 89": {
-			  "description": "",
-			  "default": "",
-			  "tab": "UI Personalization",
-			  "values": { "": {} }
-			},
 	"Rounding Buttons": {
       "description": "Change how round or sharp buttons look throughout Steam",
       "default": "",
       "tab": "UI Personalization",
+	  "section": "Main",
       "values": { "": {} }
     },
 	
-    "Remove Window Buttons": {
+    "Window Buttons": {
       "description": "Hide specific window control buttons",
       "default": "None",
       "tab": "UI Personalization",
+	  "section": "Main",
       "values": {
         "None": {},
         "[Collapse] Only": {
@@ -220,16 +208,11 @@
       }
     },
 	
-			"DRIVER = 2": {
-			  "description": "",
-			  "default": "",
-			  "tab": "UI Personalization",
-			  "values": { "": {} }
-			},
 	"Reorder Main Buttons": {
       "description": "Swap the positions of 'Store' and 'Library' buttons in the header",
       "default": "yes",
       "tab": "UI Personalization",
+	  "section": "Header",
       "values": {
         "no": {},
         "yes": {
@@ -244,6 +227,7 @@
       "description": "Remove the profile button from the left side | Useful buttons are moved to Account Menu",
       "default": "yes",
       "tab": "UI Personalization",
+	  "section": "Header",
       "values": {
         "no": {},
         "yes": {
@@ -262,6 +246,7 @@
       "description": "PlaceHolder",
       "default": "no",
       "tab": "UI Personalization",
+	  "section": "Header",
       "values": {
         "no": {},
         "yes": {
@@ -276,6 +261,7 @@
       "description": "PlaceHolder",
       "default": "no",
       "tab": "UI Personalization",
+	  "section": "Header",
       "values": {
         "no": {},
         "yes": {
@@ -287,10 +273,11 @@
       }
     },
 	
-    "Account Button Style": {
+    "Account Button": {
       "description": "PlaceHolder",
       "default": "Hide Balance",
       "tab": "UI Personalization",
+	  "section": "Header",
       "values": {
         "Default": {},
         "Minimal": {
@@ -320,16 +307,11 @@
       }
     },
 	
-			"DRIVER = 3": {
-			  "description": "",
-			  "default": "",
-			  "tab": "UI Personalization",
-			  "values": { "": {} }
-			},
-    "Hiding Library Items": {
+    "Library Items": {
       "description": "Hide specific elements from the library home screen",
       "default": "None",
       "tab": "UI Personalization",
+	  "section": "Library",
       "values": {
         "None": {},
         "[What's New] Only": {
@@ -356,6 +338,7 @@
       "description": "Remove shiny effect on game card hover.",
       "default": "yes",
       "tab": "UI Personalization",
+	  "section": "Library",
       "values": {
         "no": {},
         "yes": {
@@ -370,6 +353,7 @@
       "description": "Hide specific elements from the achievements tab",
       "default": "None",
       "tab": "UI Personalization",
+	  "section": "Library",
       "values": {
         "None": {},
         "[Recent] Only": {
@@ -393,16 +377,11 @@
       }
     },
 	
-			"DRIVER = 70": {
-			  "description": "",
-			  "default": "",
-			  "tab": "UI Personalization",
-			  "values": { "": {} }
-			},
 	"Steam Settings Preloader": {
       "description": "On each Steam launch, automatically opens the Settings window, silently navigates through the Friends & Chat, Library, and Accessibility tabs, enforces the configured toggles and hides the specified rows, then closes the window - all without user interaction.",
       "default": "no",
       "tab": "UI Personalization",
+	  "section": "Experimental",
       "values": {
         "no": {},
         "yes": {
@@ -414,16 +393,11 @@
       }
     },
 	
-			"DRIVER = 88": {
-			  "description": "",
-			  "default": "",
-			  "tab": "Privacy",
-			  "values": { "": {} }
-			},
 	"Blur Account Name": {
       "description": "Apply blur effect to your account/login name",
       "default": "no",
       "tab": "Privacy",
+	  "section": "Main",
       "values": {
         "no": {},
         "yes": {
@@ -438,6 +412,7 @@
       "description": "Apply blur effect to your wallet balance",
       "default": "no",
       "tab": "Privacy",
+	  "section": "Main",
       "values": {
         "no": {},
         "yes": {
@@ -527,14 +502,14 @@
       "MatchRegexString": ".friendsui-container",
       "TargetJs": "Patches/Minimal Resize Window Friends/Window Script.js"
     },
+	
+	{
+      "MatchRegexString": "^.*$",
+      "TargetJs": "Credits/Boosty Button.js"
+    },
 	{
       "MatchRegexString": "^Steam$",
       "TargetJs": "Patches/Badges for Settings/Settings Badges.js"
-    },
-	
-	{
-      "MatchRegexString": "^Steam$",
-      "TargetJs": "Patches/Driver Settings/Driver.js"
     },
 	
 	{

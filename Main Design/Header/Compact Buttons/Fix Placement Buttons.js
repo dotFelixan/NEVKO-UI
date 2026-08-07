@@ -9,14 +9,24 @@
   let titleBarObserver = null
   let bottomBarObserver = null
   let resizeObserver = null
+  let rafPending = false
 
   function applyPosition() {
+    rafPending = false
     if (!currentTitleBar || !currentBottomBar) return
 
-    const offsetWidth = currentTitleBar.offsetWidth
+    // getBoundingClientRect даёт субпиксельную точность, offsetWidth округляет —
+    // это и вызывало периодический сдвиг на 1px
+    const exactWidth = currentTitleBar.getBoundingClientRect().width
     currentBottomBar.style.setProperty("position", "absolute", "important")
     currentBottomBar.style.setProperty("left", "auto", "important")
-    currentBottomBar.style.setProperty("right", `${offsetWidth + OFFSET_BASE}px`, "important")
+    currentBottomBar.style.setProperty("right", `${exactWidth + OFFSET_BASE}px`, "important")
+  }
+
+  function scheduleApply() {
+    if (rafPending) return
+    rafPending = true
+    requestAnimationFrame(applyPosition)
   }
 
   function cleanup() {
@@ -38,7 +48,7 @@
     cleanup()
 
     titleBarObserver = new MutationObserver(() => {
-      requestAnimationFrame(applyPosition)
+      scheduleApply()
     })
     titleBarObserver.observe(currentTitleBar, {
       attributes: true,
@@ -49,7 +59,7 @@
     bottomBarObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         if (mutation.attributeName === "style") {
-          requestAnimationFrame(applyPosition)
+          scheduleApply()
         }
       }
     })
@@ -59,7 +69,7 @@
     })
 
     resizeObserver = new ResizeObserver(() => {
-      requestAnimationFrame(applyPosition)
+      scheduleApply()
     })
     resizeObserver.observe(currentTitleBar)
   }

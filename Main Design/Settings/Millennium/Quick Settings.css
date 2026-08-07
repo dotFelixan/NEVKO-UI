@@ -10,3 +10,17 @@
     --sidebar-width: 60% !important;
     height: 90% !important;
 }
+/* Legacy Sector/Driver Style [Temp?] */
+.SettingsDialogSubHeader {
+    color: rgb(139, 146, 154);
+    font-weight: bold;
+    text-align: center;
+    display: block;
+    width: 100%;
+    font-size: 1.1em;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    background: #23262e;
+	
+	margin-inline-end: unset !important;
+}

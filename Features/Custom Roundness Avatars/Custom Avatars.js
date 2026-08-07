@@ -3,37 +3,78 @@
 
   // ─── CONFIG ────────────────────────────────────────────────────────────────
   const CONFIG = {
-    targetLabel: "Rounding Avatars",
-    hideSelector: "._2o2fXzn99OddeqZMjbDuxQ",
+    // --- слайдер 1: обычные аватарки
+    avatarLabel:       "Rounding Avatars",
+    avatarStorageKey:  "nevko-avatar-rounding",
+    avatarDefault:     50,
+    avatarMin:         0,
+    avatarMax:         50,
+
+    // --- слайдер 2: аватарки с фреймом / игровой иконкой
+    framedLabel:       "Rounding Framed Avatars",
+    framedStorageKey:  "nevko-framed-avatar-rounding",
+    framedDefault:     8,
+    framedMin:         0,
+    framedMax:         50,
+
+    // селекторы
+    hideSelector:  "._2o2fXzn99OddeqZMjbDuxQ",
     fieldSelector: ".eKmEXJCm_lgme24Fp_HWt",
-    storageKey: "nevko-avatar-rounding",
-    min: 0,
-    max: 50,
-    default: 50,
-    // Rounding for avatars with a custom frame OR a game icon.
-    // Change this one value (0–50) to control both cases at once.
-    framedAvatarRounding: 4,
   }
 
-  // достаём сохранённое значение, если нет — берём дефолт
-  const getSaved = () => {
-    const s = localStorage.getItem(CONFIG.storageKey)
-    return s !== null ? Number(s) : CONFIG.default
+  // ─── HELPERS ───────────────────────────────────────────────────────────────
+  const getSaved = (key, def) => {
+    const s = localStorage.getItem(key)
+    return s !== null ? Number(s) : def
   }
 
-  // текст рядом со слайдером
-  const formatLabel = val => {
-    if (val === CONFIG.min) return "Sharp"
-    if (val === CONFIG.max) return "Circle"
+  const formatLabel = (val, max) => {
+    if (val === 0)   return "Sharp"
+    if (val === max) return "Circle"
     return `${val}%`
   }
 
-  // значение → css border-radius
-  const toRadius = val => val === CONFIG.max ? "50%" : `${val}%`
+  const toRadius = (val, max) => val === max ? "50%" : `${val}%`
 
-  // вставляем стили один раз — они нужны чтобы аватарки реагировали на CSS-переменную
+  // ─── CSS VARS ──────────────────────────────────────────────────────────────
+  function buildRootCSS(avatarVal, framedVal) {
+    const norm = avatarVal / CONFIG.avatarMax
+    const statusRadius = Math.round(norm * 50)
+    return `:root {
+      --avatar-radius:       ${toRadius(avatarVal, CONFIG.avatarMax)} !important;
+      --status-radius:       ${statusRadius}% !important;
+      --frame-avatar-radius: ${toRadius(framedVal, CONFIG.framedMax)} !important;
+      --game-avatar-radius:  ${toRadius(framedVal, CONFIG.framedMax)} !important;
+    }`
+  }
+
+  function applyAll() {
+    const av = getSaved(CONFIG.avatarStorageKey, CONFIG.avatarDefault)
+    const fr = getSaved(CONFIG.framedStorageKey, CONFIG.framedDefault)
+    const pre = document.getElementById("nevko-avatar-radius-preload")
+    const css = buildRootCSS(av, fr)
+    if (pre) {
+      pre.textContent = css
+    } else {
+      const s = document.createElement("style")
+      s.id = "nevko-avatar-radius-preload"
+      s.textContent = css
+        ; (document.head || document.documentElement).appendChild(s)
+    }
+    // также ставим через inline style на :root (перебивает specificity)
+    const norm = av / CONFIG.avatarMax
+    const statusRadius = Math.round(norm * 50)
+    document.documentElement.style.setProperty("--avatar-radius",       toRadius(av, CONFIG.avatarMax))
+    document.documentElement.style.setProperty("--status-radius",       `${statusRadius}%`)
+    document.documentElement.style.setProperty("--frame-avatar-radius", toRadius(fr, CONFIG.framedMax))
+    document.documentElement.style.setProperty("--game-avatar-radius",  toRadius(fr, CONFIG.framedMax))
+  }
+
+  // ─── BASE CSS ──────────────────────────────────────────────────────────────
   function injectCSS() {
     if (document.getElementById("nevko-rounding-style")) return
+    // Ставим переменные до вставки style-блока чтобы не было fallback-мигания
+    applyAll()
     const style = document.createElement("style")
     style.id = "nevko-rounding-style"
     style.textContent = `
@@ -44,20 +85,21 @@
         border-radius: var(--avatar-radius, 50%) !important;
       }
 
-      /* Avatar WITH a custom frame but WITHOUT a game icon — use frame-specific rounding.
-         When FavoriteFriend_GameIcon is present (ingame), keep standard avatar rounding. */
-      img.avatar:has(+ .avatarFrame):not(:has(~ .FavoriteFriend_GameIcon)):not(:has(+ .FavoriteFriend_GameIcon)),
-      ._3h-QRJGxnVOIExtHD1R0f2:has(+ .avatarFrame):not(:has(~ .FavoriteFriend_GameIcon)):not(:has(+ .FavoriteFriend_GameIcon)) {
-        border-radius: var(--frame-avatar-radius, 5%) !important;
+      /* аватарка с рамкой (любой статус, включая офлайн) — без игровой иконки */
+      .avatarHolder:has(.avatarFrame):not(:has(.FavoriteFriend_GameIcon)) img.avatar,
+      .avatarHolder:has(.avatarFrame):not(:has(.FavoriteFriend_GameIcon)) ._3h-QRJGxnVOIExtHD1R0f2,
+      ._3h-QRJGxnVOIExtHD1R0f2:has(+ ._2nPONxDUmK4rQXzK4Y3vG2) {
+        border-radius: var(--frame-avatar-radius) !important;
         outline: unset !important;
       }
-      /* avatarHolder with BOTH a game icon AND a frame — use framed avatar rounding */
+
+      /* аватарка с рамкой + игровой иконкой */
       .avatarHolder:has(.FavoriteFriend_GameIcon):has(.avatarFrame) img.avatar,
       .avatarHolder:has(.FavoriteFriend_GameIcon):has(.avatarFrame) ._3h-QRJGxnVOIExtHD1R0f2 {
-        border-radius: var(--game-avatar-radius, 0%) !important;
+        border-radius: var(--game-avatar-radius) !important;
       }
 
-      /* Frame image and frame container are NEVER rounded — decorative overlay only */
+      /* рамка и её изображение остаются прямоугольными */
       .avatarFrame,
       img.avatarFrameImg {
         border-radius: 0 !important;
@@ -71,36 +113,7 @@
       ; (document.head || document.documentElement).appendChild(style)
   }
 
-  // инжектируем сохранённое значение через <style> немедленно — до любого рендера
-  function injectSavedAsStyle() {
-    const id = "nevko-avatar-radius-preload"
-    if (document.getElementById(id)) return
-    const val = getSaved()
-    const norm = val / CONFIG.max
-    const statusRadius = Math.round(norm * 50)
-    const s = document.createElement("style")
-    s.id = id
-    s.textContent = `:root { --avatar-radius: ${toRadius(val)} !important; --status-radius: ${statusRadius}% !important; --frame-avatar-radius: ${CONFIG.framedAvatarRounding}% !important; --game-avatar-radius: ${CONFIG.framedAvatarRounding}% !important; }`
-      ; (document.head || document.documentElement).appendChild(s)
-  }
-
-  // применяем значение: обновляем CSS-переменные и сохраняем в localStorage
-  function applyValue(val) {
-    const norm = val / CONFIG.max
-    const statusRadius = Math.round(norm * 50)
-    const framedRadius = `${CONFIG.framedAvatarRounding}%`
-    document.documentElement.style.setProperty("--avatar-radius", toRadius(val))
-    document.documentElement.style.setProperty("--status-radius", `${statusRadius}%`)
-    document.documentElement.style.setProperty("--frame-avatar-radius", framedRadius)
-    document.documentElement.style.setProperty("--game-avatar-radius", framedRadius)
-    localStorage.setItem(CONFIG.storageKey, val)
-    const pre = document.getElementById("nevko-avatar-radius-preload")
-    if (pre) pre.textContent = `:root { --avatar-radius: ${toRadius(val)} !important; --status-radius: ${statusRadius}% !important; --frame-avatar-radius: ${framedRadius} !important; --game-avatar-radius: ${framedRadius} !important; }`
-  }
-
-  injectSavedAsStyle()
-
-  // стили слайдера — отдельно от основных, чтобы не пересобирать при каждом вызове
+  // ─── SLIDER CSS ────────────────────────────────────────────────────────────
   function injectSliderCSS() {
     if (document.getElementById("nevko-slider-style")) return
     const s = document.createElement("style")
@@ -155,9 +168,7 @@
         overflow: visible;
         z-index: 2;
       }
-      .nk-arrow {
-        display: none;
-      }
+      .nk-arrow { display: none; }
       .nk-dot {
         width: 18px;
         height: 18px;
@@ -207,18 +218,9 @@
         box-shadow: 0 8px 16px 0 rgba(0,0,0,0.3);
         opacity: 0;
       }
-      .nk-reset:hover {
-        background-color: #464d58;
-        color: #fff;
-      }
-      .nk-reset:hover::before {
-        opacity: 1;
-      }
-      /* при дефолтном значении кнопка визуально пропадает */
-      .nk-reset--default {
-        opacity: 0;
-        pointer-events: none;
-      }
+      .nk-reset:hover { background-color: #464d58; color: #fff; }
+      .nk-reset:hover::before { opacity: 1; }
+      .nk-reset--default { opacity: 0; pointer-events: none; }
       .nk-default-marker {
         position: absolute;
         top: -18px;
@@ -232,20 +234,20 @@
         align-items: center;
         justify-content: center;
       }
-      .nk-default-marker svg {
-        width: 12px;
-        height: 12px;
-        display: block;
-      }
+      .nk-default-marker svg { width: 12px; height: 12px; display: block; }
     `
       ; (document.head || document.documentElement).appendChild(s)
   }
 
-  function buildSlider(currentVal) {
+  // ─── SLIDER BUILDER ────────────────────────────────────────────────────────
+  // storageKey, min, max, defaultVal — конфиг конкретного слайдера
+  // onchange(val) — колбэк при изменении (применяет нужные CSS-переменные)
+  function buildSlider({ storageKey, min, max, defaultVal, onchange }) {
     injectSliderCSS()
 
-    const norm = (currentVal - CONFIG.min) / (CONFIG.max - CONFIG.min)
-    const pct = norm * 100
+    const currentVal = getSaved(storageKey, defaultVal)
+    const norm  = (currentVal - min) / (max - min)
+    const pct   = norm * 100
 
     const row = document.createElement("div")
     row.className = "nk-row"
@@ -264,12 +266,12 @@
     handle.className = "nk-handle"
     handle.style.left = `${pct}%`
 
-    const arrowNS = "http://www.w3.org/2000/svg"
-    const arrow = document.createElementNS(arrowNS, "svg")
+    const ns = "http://www.w3.org/2000/svg"
+    const arrow = document.createElementNS(ns, "svg")
     arrow.setAttribute("viewBox", "0 0 36 36")
     arrow.setAttribute("fill", "none")
     arrow.classList.add("nk-arrow")
-    const ap = document.createElementNS(arrowNS, "path")
+    const ap = document.createElementNS(ns, "path")
     ap.setAttribute("d", "M17.98 26.54L3.21 11.77H32.75L17.98 26.54Z")
     ap.setAttribute("fill", "currentColor")
     arrow.appendChild(ap)
@@ -278,23 +280,21 @@
     dot.className = "nk-dot"
 
     const input = document.createElement("input")
-    input.type = "range"
-    input.min = CONFIG.min
-    input.max = CONFIG.max
+    input.type  = "range"
+    input.min   = min
+    input.max   = max
     input.value = currentVal
     input.className = "nk-input"
 
-    // маркер дефолтного значения на треке
-    const defaultNorm = (CONFIG.default - CONFIG.min) / (CONFIG.max - CONFIG.min)
-    const defaultPct = defaultNorm * 100
+    // маркер дефолтного значения
+    const defNorm = (defaultVal - min) / (max - min)
     const defMarker = document.createElement("div")
     defMarker.className = "nk-default-marker"
-    defMarker.style.left = `${defaultPct}%`
-    const defNS = "http://www.w3.org/2000/svg"
-    const defSvg = document.createElementNS(defNS, "svg")
+    defMarker.style.left = `${defNorm * 100}%`
+    const defSvg  = document.createElementNS(ns, "svg")
     defSvg.setAttribute("viewBox", "0 0 36 36")
     defSvg.setAttribute("fill", "none")
-    const defPath = document.createElementNS(defNS, "path")
+    const defPath = document.createElementNS(ns, "path")
     defPath.setAttribute("d", "M17.98 26.54L3.21 11.77H32.75L17.98 26.54Z")
     defPath.setAttribute("fill", "currentColor")
     defSvg.appendChild(defPath)
@@ -307,74 +307,86 @@
 
     const label = document.createElement("span")
     label.className = "nk-label"
-    label.textContent = formatLabel(currentVal)
+    label.textContent = formatLabel(currentVal, max)
 
     const reset = document.createElement("button")
     reset.className = "nk-reset"
     reset.textContent = "Reset"
 
-    // показываем кнопку только когда значение отличается от дефолт��
     const updateResetVisibility = val =>
-      reset.classList.toggle("nk-reset--default", val === CONFIG.default)
-
+      reset.classList.toggle("nk-reset--default", val === defaultVal)
     updateResetVisibility(currentVal)
 
     row.append(reset, trackWrap, label)
 
-    // визуал обновляется мгновенно, applyValue с задержкой — не грузим DOM при спаме
     let debounceTimer = null
 
     reset.addEventListener("click", () => {
-      const def = CONFIG.default
-      const n = (def - CONFIG.min) / (CONFIG.max - CONFIG.min)
+      const n = (defaultVal - min) / (max - min)
       const p = n * 100
-      input.value = def
-      fill.style.width = `${p}%`
-      handle.style.left = `${p}%`
-      label.textContent = formatLabel(def)
-      updateResetVisibility(def)
-      applyValue(def)
+      input.value           = defaultVal
+      fill.style.width      = `${p}%`
+      handle.style.left     = `${p}%`
+      label.textContent     = formatLabel(defaultVal, max)
+      updateResetVisibility(defaultVal)
+      localStorage.setItem(storageKey, defaultVal)
+      onchange(defaultVal)
     })
 
     input.addEventListener("input", () => {
       const val = Number(input.value)
-      const n = (val - CONFIG.min) / (CONFIG.max - CONFIG.min)
-      const p = n * 100
-
-      fill.style.width = `${p}%`
+      const n   = (val - min) / (max - min)
+      const p   = n * 100
+      fill.style.width  = `${p}%`
       handle.style.left = `${p}%`
-      label.textContent = formatLabel(val)
+      label.textContent = formatLabel(val, max)
       updateResetVisibility(val)
-
+      localStorage.setItem(storageKey, val)
       clearTimeout(debounceTimer)
-      debounceTimer = setTimeout(() => applyValue(val), 300)
+      debounceTimer = setTimeout(() => onchange(val), 300)
     })
 
     return row
   }
 
+  // ─── FIELD INJECTION ──────────────────────────────────────────────────────
   const seen = new WeakSet()
 
   function processField(field) {
     if (seen.has(field)) return
 
-    // ищем поле именно с текстом "Rounding Avatars" — не трогаем ��ужие элементы
-    const hasLabel = [...field.querySelectorAll("*")].some(el =>
-      [...el.childNodes].some(
-        n => n.nodeType === Node.TEXT_NODE && n.textContent.trim() === CONFIG.targetLabel
-      )
+    const labelNodes = [...field.querySelectorAll("*")].flatMap(el =>
+      [...el.childNodes].filter(n => n.nodeType === Node.TEXT_NODE)
     )
-    if (!hasLabel) return
+    const text = labelNodes.map(n => n.textContent.trim()).find(t =>
+      t === CONFIG.avatarLabel || t === CONFIG.framedLabel
+    )
+    if (!text) return
 
     seen.add(field)
 
-    // скрываем оригинальный дропдаун Steam
     field.querySelector(CONFIG.hideSelector)
       ?.style.setProperty("display", "none", "important")
 
-    const val = getSaved()
-    field.appendChild(buildSlider(val))
-    applyValue(val)
+    if (text === CONFIG.avatarLabel) {
+      field.appendChild(buildSlider({
+        storageKey:  CONFIG.avatarStorageKey,
+        min:         CONFIG.avatarMin,
+        max:         CONFIG.avatarMax,
+        defaultVal:  CONFIG.avatarDefault,
+        onchange:    () => applyAll(),
+      }))
+    }
+
+    if (text === CONFIG.framedLabel) {
+      field.appendChild(buildSlider({
+        storageKey:  CONFIG.framedStorageKey,
+        min:         CONFIG.framedMin,
+        max:         CONFIG.framedMax,
+        defaultVal:  CONFIG.framedDefault,
+        onchange:    () => applyAll(),
+      }))
+    }
   }
 
   function scan() {
@@ -383,7 +395,7 @@
 
   function init() {
     injectCSS()
-    applyValue(getSaved()) // применяем сразу — до рендера настроек
+    applyAll()
     scan()
     new MutationObserver(scan).observe(document.documentElement, { childList: true, subtree: true })
   }

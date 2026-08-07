@@ -14,3 +14,7 @@
 ._3yD46y5pd3zOGR7CzKs0mC {
     gap: unset;
 }
+/*Hide Badge*/
+._3yD46y5pd3zOGR7CzKs0mC .nevko-badge-mini {
+	display: none;
+}

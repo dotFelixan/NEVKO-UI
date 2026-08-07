@@ -1,6 +1,5 @@
 /* Disable Round Avatars with Cosmetic Border */
 ._3h-QRJGxnVOIExtHD1R0f2:has(+ ._2nPONxDUmK4rQXzK4Y3vG2) {
-	border-radius: 6% !important;
 	outline: unset !important;
 }
 

@@ -14,12 +14,17 @@
   //   "Название настройки": { label: "Beta", color: "#FF0000", tooltip: "..." },
   //
   const BADGES = {
-    "Rounding Buttons": {
+    "Rounding Avatars": {
       label: "Beta",
       color: "#FFA500",
       tooltip: "This feature is not yet stable and is still in development.",
     },
-    "Rounding Avatars": {
+    "Rounding Framed Avatars": {
+      label: "Beta",
+      color: "#FFA500",
+      tooltip: "This feature is not yet stable and is still in development.",
+    },
+    "Rounding Buttons": {
       label: "Beta",
       color: "#FFA500",
       tooltip: "This feature is not yet stable and is still in development.",
