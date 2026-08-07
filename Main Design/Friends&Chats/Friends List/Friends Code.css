@@ -90,10 +90,9 @@
     height: 24px;
 }
 /*Decoration Fix*/
-.currentUserAvatar .X_mJE4BYV5StDPwZhSiAu.avatarFrame.avatarFrame > ._3fM0F85j3aWVzr4RJM9-eu.avatarFrameImg {
-    width: 50%;
-    height: 50%;
-    margin: 3px 2px;
+.currentUserAvatar .avatarFrame {
+    width: 24px;
+    height: 24px;
 }
 /*Colors*/
 .currentUserContainer .nOdcT-MoOaXGePXLyPe0H {

@@ -214,9 +214,8 @@
   }
 
   function isInGame(el) {
-    return !!el.closest(
-      "[class*='ingame'], [class*='awayOrSnooze'], [class*='inGame'], .ingame, .awayOrSnooze"
-    )
+    if (IS_WEB) return false
+    return !!el.closest("[class*='ingame'], [class*='inGame'], .ingame")
   }
 
   function patchLabel(labelEl) {
@@ -245,12 +244,19 @@
   const CLIENT_SELECTOR = "[class*='richPresenceLabel'],[class*='awayStatusLabel']"
   const WEB_SELECTOR = [
     "span.friend_last_online_text",
+    ".friend_block_content .friend_last_online_text",
+    ".friend_block_content .friend_small_text",
+    ".friendBlock .friend_last_online_text",
+    ".friendBlock .friendSmallText",
+    ".persona.offline .friend_last_online_text",
     "span.friendSmallText",
     "span.friend_small_text",
     ".miniprofile_container .friend_status_offline",
     ".miniprofile_container span.friend_status_offline",
     ".profile_in_game.persona.offline .profile_in_game_name",
     "div.profile_in_game_name",
+    ".persona.offline span",
+    ".offline span.friend_last_online_text",
   ].join(",")
   const LABEL_SELECTOR = IS_WEB ? WEB_SELECTOR : CLIENT_SELECTOR
 

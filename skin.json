@@ -24,7 +24,6 @@
       "description": "Display special badges for theme contributors on their profiles",
       "default": "yes",
       "tab": "General",
-	  "section": "Contributors",
       "values": {
         "no": {},
         "yes": {

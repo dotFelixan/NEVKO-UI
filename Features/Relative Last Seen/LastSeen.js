@@ -220,12 +220,12 @@
     Promise.resolve().then(() => writing.delete(el))
   }
 
-  // Returns true if the element is inside an in-game or away/snooze friend row.
-  // richPresenceLabel in those rows shows the game name or game status — not a last-seen time.
+  // Returns true only if the element is inside an ACTIVE in-game row on the client.
+  // On web Steam uses the same fuzzy text for offline friends ("В сети: 7 ч. назад"),
+  // so we must NOT block web elements — only client richPresenceLabel inside ingame rows.
   function isInGame(el) {
-    return !!el.closest(
-      "[class*='ingame'], [class*='awayOrSnooze'], [class*='inGame'], .ingame, .awayOrSnooze"
-    )
+    if (IS_WEB) return false
+    return !!el.closest("[class*='ingame'], [class*='inGame'], .ingame")
   }
 
   function patchLabel(labelEl) {
@@ -250,15 +250,25 @@
   const WEB_SELECTOR = [
     // Friends list page (/friends/) — exact last-seen span
     "span.friend_last_online_text",
+    // Friends list page — status text under friend name (covers "В сети: X ч. назад")
+    ".friend_block_content .friend_last_online_text",
+    ".friend_block_content .friend_small_text",
+    // Общий класс статуса в блоке друга
+    ".friendBlock .friend_last_online_text",
+    ".friendBlock .friendSmallText",
+    ".persona.offline .friend_last_online_text",
     // Profile page friend list sidebar
     "span.friendSmallText",
     "span.friend_small_text",
-    // Miniprofile hover popup — friend_status_offline contains only the last-seen text here
+    // Miniprofile hover popup
     ".miniprofile_container .friend_status_offline",
     ".miniprofile_container span.friend_status_offline",
     // Profile page — "Last Online X hrs ago" under the avatar
     ".profile_in_game.persona.offline .profile_in_game_name",
     "div.profile_in_game_name",
+    // Fallback — любой span внутри offline-блока с нужным текстом
+    ".persona.offline span",
+    ".offline span.friend_last_online_text",
   ].join(",")
   const LABEL_SELECTOR = IS_WEB ? WEB_SELECTOR : CLIENT_SELECTOR
 
