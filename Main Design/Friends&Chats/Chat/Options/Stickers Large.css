@@ -1,0 +1,5 @@
+/* Option "Sticker Size: Large" - stickers in the chat emoticon menu (Emoticon Picker.css) */
+
+:root {
+	--sticker-size: 92px; /* three in a row in the standard menu width */
+}

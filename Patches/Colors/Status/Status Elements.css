@@ -1,0 +1,212 @@
+/* Status */
+
+/* Header */
+:where(.MillenniumWindow_MainSteamWindow, .MillenniumWindow_MainSteamWindow *) {
+	&._3yD46y5pd3zOGR7CzKs0mC.ingame {
+		background-color: var(--ingame-background);
+	}
+	&._3yD46y5pd3zOGR7CzKs0mC:hover {
+		background-color: var(--status-offline-tint);
+	}
+	&._3yD46y5pd3zOGR7CzKs0mC.online:hover {
+		background-color: var(--status-online-tint);
+	}
+	&._3yD46y5pd3zOGR7CzKs0mC.awayOrSnooze:hover {
+		background-color: var(--status-afk-tint);
+	}
+	&._3yD46y5pd3zOGR7CzKs0mC.ingame:hover {
+		background-color: var(--status-playing-tint);
+	}
+	&._3yD46y5pd3zOGR7CzKs0mC.ingame.awayOrSnooze:hover {
+		background-color: var(--status-playing-afk-tint);
+	}
+	&._3yD46y5pd3zOGR7CzKs0mC {
+		color: var(--status-offline);
+	}
+	&._3yD46y5pd3zOGR7CzKs0mC.online {
+		color: var(--status-online);
+	}
+	&._3yD46y5pd3zOGR7CzKs0mC.awayOrSnooze {
+		color: var(--status-afk);
+	}
+	&._3yD46y5pd3zOGR7CzKs0mC.ingame {
+		color: var(--status-playing);
+	}
+	&._3yD46y5pd3zOGR7CzKs0mC.ingame.awayOrSnooze {
+		color: var(--status-playing-afk);
+	}
+}
+
+/* Friends Header */
+:where(.MillenniumWindow_FriendsList, .MillenniumWindow_FriendChatWindow, .friendsui-container, .MillenniumWindow_FriendsList *, .MillenniumWindow_FriendChatWindow *, .friendsui-container *) {
+	&.currentUserContainer .nOdcT-MoOaXGePXLyPe0H {
+		color: var(--status-offline);
+	}
+	&.currentUserContainer .online .nOdcT-MoOaXGePXLyPe0H {
+		color: var(--status-online);
+	}
+	&.currentUserContainer .awayOrSnooze .nOdcT-MoOaXGePXLyPe0H {
+		color: var(--status-afk);
+	}
+	&.currentUserContainer .ingame .nOdcT-MoOaXGePXLyPe0H {
+		color: var(--status-playing);
+	}
+	&.currentUserContainer .ingame.awayOrSnooze .nOdcT-MoOaXGePXLyPe0H {
+		color: var(--status-playing-afk);
+	}
+	&:not(.friendInviteContainer) .ContextMenuButton .SVGIcon_DownArrowContextMenu {
+		fill: var(--status-offline);
+	}
+	&:not(.friendInviteContainer) .online .ContextMenuButton .SVGIcon_DownArrowContextMenu {
+		fill: var(--status-online);
+	}
+	&:not(.friendInviteContainer) .awayOrSnooze .ContextMenuButton .SVGIcon_DownArrowContextMenu {
+		fill: var(--status-afk);
+	}
+	&:not(.friendInviteContainer) .ingame .ContextMenuButton .SVGIcon_DownArrowContextMenu {
+		fill: var(--status-playing);
+	}
+	&:not(.friendInviteContainer) .ingame.awayOrSnooze .ContextMenuButton .SVGIcon_DownArrowContextMenu {
+		fill: var(--status-playing-afk);
+	}
+	&.ingame .AvatarAndUser {
+		background-color: var(--ingame-background);
+	}
+	&.AvatarAndUser:hover {
+		background-color: var(--status-offline-tint);
+	}
+	&.online .AvatarAndUser:hover {
+		background-color: var(--status-online-tint);
+	}
+	&.awayOrSnooze .AvatarAndUser:hover {
+		background-color: var(--status-afk-tint);
+	}
+	&.ingame .AvatarAndUser:hover {
+		background-color: var(--status-playing-tint);
+	}
+	&.ingame.awayOrSnooze .AvatarAndUser:hover {
+		background-color: var(--status-playing-afk-tint);
+	}
+}
+
+/* Quick Access */
+:where(.MillenniumWindow_FriendsList, .MillenniumWindow_FriendChatWindow, .friendsui-container, .MillenniumWindow_FriendsList *, .MillenniumWindow_FriendChatWindow *, .friendsui-container *) {
+	/* Hover Tile */
+	&.quickAccessFriends>.favoriteElement:has(.friend.online):hover::before {
+		background-color: var(--status-online-tint) !important;
+	}
+	&.quickAccessFriends>.favoriteElement:has(.friend.awayOrSnooze:not(.ingame)):hover::before {
+		background-color: var(--status-afk-tint) !important;
+	}
+	&.quickAccessFriends>.favoriteElement:has(.friend.ingame):hover::before {
+		background-color: var(--status-playing-tint) !important;
+	}
+	&.quickAccessFriends>.favoriteElement:has(.friend.ingame.awayOrSnooze):hover::before {
+		background-color: var(--status-playing-afk-tint) !important;
+	}
+	&.friend.offline {
+		color: var(--status-offline);
+	}
+	&.friend.online {
+		color: var(--status-online);
+	}
+	&.quickAccessFriends .friend.awayOrSnooze {
+		color: var(--status-afk);
+	}
+	&.friend.ingame {
+		color: var(--status-playing);
+	}
+	&.friend.ingame.awayOrSnooze {
+		color: var(--status-playing-afk);
+	}
+}
+
+/* Status Indicator */
+
+/* Modern */
+@container style(--nk-status-indicator: modern) {
+	/* Color Online Icons */
+	._3xUpb5DWXPFNcHHIcv-9pe.right,
+	._3xUpb5DWXPFNcHHIcv-9pe.bottom,
+	.favoriteElement .avatarStatus,
+	.friend.offline .avatarStatus {
+		background-color: var(--status-offline);
+	}
+	.online ._3xUpb5DWXPFNcHHIcv-9pe.right,
+	.online ._3xUpb5DWXPFNcHHIcv-9pe.bottom,
+	.friend.online .avatarStatus {
+		background: var(--status-online) !important;
+	}
+	.awayOrSnooze ._3xUpb5DWXPFNcHHIcv-9pe.right,
+	.awayOrSnooze ._3xUpb5DWXPFNcHHIcv-9pe.bottom,
+	.friend.awayOrSnooze .avatarStatus {
+		background: var(--status-afk) !important;
+	}
+	.ingame ._3xUpb5DWXPFNcHHIcv-9pe.right,
+	.ingame ._3xUpb5DWXPFNcHHIcv-9pe.bottom,
+	.friend.ingame .avatarStatus {
+		background: var(--status-playing) !important;
+	}
+	.ingame.awayOrSnooze ._3xUpb5DWXPFNcHHIcv-9pe.right,
+	.ingame.awayOrSnooze ._3xUpb5DWXPFNcHHIcv-9pe.bottom,
+	.friend.ingame.awayOrSnooze .avatarStatus {
+		background: var(--status-playing-afk) !important;
+	}
+	/* Chat header: the avatar is a copy outside of a friend row, the status is on its holder */
+	#nk-chat-header .avatarHolder > .avatarStatus {
+		background-color: var(--status-offline);
+	}
+	#nk-chat-header .avatarHolder.online > .avatarStatus {
+		background: var(--status-online) !important;
+	}
+	#nk-chat-header .avatarHolder.awayOrSnooze > .avatarStatus {
+		background: var(--status-afk) !important;
+	}
+	#nk-chat-header .avatarHolder.ingame > .avatarStatus {
+		background: var(--status-playing) !important;
+	}
+	#nk-chat-header .avatarHolder.ingame.awayOrSnooze > .avatarStatus {
+		background: var(--status-playing-afk) !important;
+	}
+}
+
+/* Legacy */
+@container style(--nk-status-indicator: legacy) {
+	/* Outline Color */
+	._3h-QRJGxnVOIExtHD1R0f2 {
+		outline-color: var(--status-offline);
+	}
+	.online ._3h-QRJGxnVOIExtHD1R0f2 {
+		outline-color: var(--status-online);
+	}
+	.awayOrSnooze ._3h-QRJGxnVOIExtHD1R0f2 {
+		outline-color: var(--status-afk);
+	}
+	.ingame ._3h-QRJGxnVOIExtHD1R0f2 {
+		outline-color: var(--status-playing);
+	}
+	.ingame.awayOrSnooze ._3h-QRJGxnVOIExtHD1R0f2 {
+		outline-color: var(--status-playing-afk);
+	}
+}
+
+/* Device Icons next to the name (phone, Steam Deck, Big Picture, VR): status colors of the theme */
+/* Steam paints them with its own greens and blues */
+.PersonaStatusIcon {
+	color: var(--status-offline);
+}
+.PersonaStatusIcon.online {
+	color: var(--status-online);
+}
+.PersonaStatusIcon.awayOrSnooze {
+	color: var(--status-afk);
+}
+.PersonaStatusIcon.ingame {
+	color: var(--status-playing);
+}
+.PersonaStatusIcon.ingame.awayOrSnooze {
+	color: var(--status-playing-afk);
+}
+.PersonaStatusIcon svg * {
+	fill: currentColor !important;
+}

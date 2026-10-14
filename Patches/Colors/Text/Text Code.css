@@ -1,0 +1,17 @@
+/* Text & Icons */
+:root,
+body {
+	/* Main */
+	--text-bright-color: #FFFFFF;
+	--text-light-color: #DFE3E6;
+	--text-soft-color: #DCDEDF;
+	--text-muted-color: #81878F;
+	--icon-color: #8B929A;
+	--text-dark-color: #000000;
+
+	/* Quick Access Page */
+	--page-indicator-color: rgba(255, 255, 255, .55);
+
+	/* Rich Presence */
+	--rich-presence-details-color: #FFFFFFAA;
+}

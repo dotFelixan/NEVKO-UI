@@ -1,0 +1,783 @@
+/* Friends / Chats buttons + search field below | Script: Friends Tabs.js | Chats tab: Recent Chats plugin */
+
+/* Column Width: same as Quick Access + its 4px margins (480px; full width when it shows 8 tiles in a row) */
+/* Sides: 15px everywhere, as the profile / close buttons of the window */
+:root {
+	--nk-friends-column: 488px;
+}
+:root[data-nk-qa-columns="8"] {
+	--nk-friends-column: 100%;
+}
+
+/* Layout */
+.socialTabSearchContainer {
+	height: auto !important;
+	min-height: 0 !important;
+}
+.socialTabSearchContainer .socialTabContainer {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+
+	/* Same sides as Quick Access (480px + its 4px margins, tiles at 15px), 8px rhythm */
+	width: 100%;
+	max-width: var(--nk-friends-column);
+	height: auto;
+	margin: 0 auto;
+	padding: 6px 15px 8px;
+	box-sizing: border-box;
+}
+/* Friends tab = label + search in one Steam button: split them */
+.socialTabContainer > .friendTab:not(#recent-chats-tab-host, #nk-chats-tab) {
+	display: contents;
+}
+
+/* Buttons */
+.socialTabContainer > .friendTab:not(#recent-chats-tab-host, #nk-chats-tab) > .tabLabel,
+.socialTabContainer > #recent-chats-tab-host,
+.socialTabContainer > #nk-chats-tab {
+	order: 1;
+	flex: 1 1 0 !important;
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+
+	height: 32px !important;
+	min-width: 0;
+	margin: 0 !important;
+	padding: 0 12px !important;
+	box-sizing: border-box !important;
+
+	border-radius: var(--button-radius);
+	background: var(--button-background) !important;
+	box-shadow: none !important;
+	opacity: 1 !important;
+
+	color: var(--text-muted-color) !important;
+	font-family: unset !important;
+	font-size: 14px !important;
+	font-weight: bold !important;
+	text-transform: none !important;
+	letter-spacing: 0 !important;
+
+	cursor: pointer !important;
+	user-select: none;
+	transition: background-color .15s ease-out, color .1s ease-in-out;
+}
+.socialTabContainer > #recent-chats-tab-host,
+.socialTabContainer > #nk-chats-tab {
+	order: 2;
+}
+.socialTabContainer > :is(#recent-chats-tab-host, #nk-chats-tab) > .tabLabel {
+	margin: 0;
+	padding: 0;
+	font: inherit;
+	color: inherit;
+	text-transform: none;
+	cursor: pointer;
+}
+/* Remove */
+.socialTabContainer > #recent-chats-tab-host::before {
+	display: none !important;
+}
+
+/* Hover */
+.socialTabContainer > .friendTab:not(#recent-chats-tab-host, #nk-chats-tab) > .tabLabel:hover,
+.socialTabContainer > #recent-chats-tab-host:hover,
+.socialTabContainer > #nk-chats-tab:hover {
+	background: var(--button-hover-background) !important;
+	color: var(--text-bright-color) !important;
+}
+
+/* Active */
+.socialTabContainer > .friendTab.activeTab:not(#recent-chats-tab-host, #nk-chats-tab) > .tabLabel,
+.socialTabContainer > #recent-chats-tab-host.activeTab {
+	background: var(--SystemAccentColor-Transparent) !important;
+	color: var(--SystemAccentColor) !important;
+}
+
+/* Search */
+.socialTabContainer .friendsTabButtonsContainer {
+	order: 3;
+	flex: 0 0 100%;
+
+	height: 32px;
+	margin: 0;
+	padding: 0;
+}
+.socialTabContainer .TabSearchButton {
+	position: relative;
+	display: flex;
+	align-items: center;
+
+	width: 100%;
+	height: 32px;
+	margin: 0;
+	padding: 0 10px 0 14px;
+	box-sizing: border-box;
+	overflow: hidden;
+
+	border-radius: 16px;
+	background: var(--button-background);
+
+	cursor: text;
+}
+/* Placeholder (text from Steam, set by script) */
+.socialTabContainer .TabSearchButton::before {
+	content: var(--nk-search-text, "Search");
+	position: absolute;
+	left: 14px;
+
+	color: var(--text-muted-color);
+	font-size: 13px;
+	text-transform: none;
+	letter-spacing: 0;
+	pointer-events: none;
+}
+.socialTabContainer .TabSearchButton:has(input)::before {
+	content: none;
+}
+.socialTabContainer .tabSearchTransitionGroup {
+	flex: 1;
+	min-width: 0;
+	height: 100%;
+}
+.socialTabContainer .socialSearchContainer {
+	position: static !important;
+	width: 100% !important;
+	height: 100% !important;
+	background: transparent !important;
+	animation: none !important;
+	transition: none !important;
+	transform: none !important;
+	opacity: 1 !important;
+}
+.socialTabContainer .socialSearchContainer :is(form, .inputContainer) {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	background: transparent !important;
+}
+.socialTabContainer input.friendSearchInput {
+	flex: 1;
+	min-width: 0;
+	height: 100% !important;
+	margin: 0 !important;
+	padding: 0 !important;
+
+	border: none !important;
+	border-radius: 0 !important;
+	background: transparent !important;
+	box-shadow: none !important;
+
+	color: var(--text-bright-color) !important;
+	font-size: 13px !important;
+}
+.socialTabContainer input.friendSearchInput::placeholder {
+	color: var(--text-muted-color);
+	font-style: normal;
+}
+.socialTabContainer .friendSearchClear {
+	position: static !important;
+	flex-shrink: 0;
+	cursor: pointer;
+}
+.socialTabContainer .searchIconButton {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	height: 18px;
+	margin: 0 0 0 auto;
+	padding: 0;
+	cursor: text;
+}
+.socialTabContainer .searchIconButton svg {
+	display: block;
+	margin: 0 !important;
+}
+.socialTabContainer .searchIconButton svg,
+.socialTabContainer .searchIconButton svg * {
+	fill: var(--text-muted-color) !important;
+	cursor: text !important;
+}
+
+/* Chats open: plugin's own search in the same place */
+html[data-recent-chats-open] .socialTabContainer .friendsTabButtonsContainer {
+	display: none !important;
+}
+.rcp-toolbar {
+	gap: 8px !important;
+	width: 100%;
+	max-width: var(--nk-friends-column);
+	margin: 0 auto;
+	padding: 0 15px 8px !important;
+	box-sizing: border-box;
+	background: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+}
+.rcp-toolbar .rcp-search {
+	height: 32px !important;
+	padding: 0 30px 0 14px !important;
+
+	border: none !important;
+	border-radius: 16px !important;
+	background: var(--button-background) !important;
+	box-shadow: none !important;
+
+	color: var(--text-bright-color) !important;
+	font-size: 13px !important;
+}
+.rcp-toolbar .rcp-search::placeholder {
+	color: var(--text-muted-color);
+	font-style: normal;
+}
+.rcp-toolbar :is(.rcp-search-form, .rcp-search-container) {
+	height: 32px;
+}
+.rcp-toolbar .rcp-search-clear {
+	height: 32px;
+	right: 4px;
+}
+.rcp-toolbar .rcp-refresh {
+	flex-shrink: 0;
+	width: 32px;
+	height: 32px;
+	margin: 0 !important;
+	padding: 0;
+	border-radius: 16px;
+	background: var(--button-background);
+	color: var(--text-muted-color);
+	cursor: pointer;
+	transition: background-color .15s ease-out, color .1s ease-in-out;
+}
+.rcp-toolbar .rcp-refresh:hover {
+	background: var(--button-hover-background);
+	color: var(--text-bright-color);
+}
+
+/* Group Chats section lives in the Chats tab (plugin only, without it stays with friends) */
+html:has(#recent-chats-tab-host):not([data-recent-chats-open]) .FriendsListChatSection {
+	display: none !important;
+}
+
+/* Chats tab = one list: search, Group Chats, Recent Chats */
+/* Plugin panel and Steam's list block become rows of the same column */
+html[data-recent-chats-open] #recent-chats-panel-host,
+html[data-recent-chats-open] #recent-chats-panel-host > .rcp-panel {
+	display: contents !important;
+}
+html[data-recent-chats-open] .rcp-panel > .rcp-toolbar {
+	order: 1;
+	flex: 0 0 auto;
+}
+html[data-recent-chats-open] #recent-chats-panel-host ~ .FriendsListContent.Panel {
+	order: 2;
+	transition: none !important;
+	display: flex !important;
+	flex: 0 0 auto !important;
+	height: auto !important;
+	min-height: 0 !important;
+}
+html[data-recent-chats-open] #recent-chats-panel-host ~ .FriendsListContent.Panel > :not(.FriendsListChatSection) {
+	display: none !important;
+}
+html[data-recent-chats-open] .rcp-panel > :not(.rcp-toolbar) {
+	order: 3;
+}
+/* One scroll for the whole tab: window header and search stay, groups and chats scroll together */
+/* --nk-friends-header-height: set by script (header height changes with Quick Access) */
+html[data-recent-chats-open] .friendlist {
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+/* No scrollbar: it would run along the window header and push the header aside */
+html[data-recent-chats-open] .friendlist::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+}
+html[data-recent-chats-open] .friendlist > .friendListHeaderContainer {
+	position: sticky;
+	top: 0;
+	z-index: 30; /* above Steam's own z-index in the list (group title) */
+	flex: 0 0 auto;
+}
+html[data-recent-chats-open] .rcp-panel > .rcp-toolbar {
+	position: sticky;
+	top: var(--nk-friends-header-height, 0px);
+	z-index: 29;
+	max-width: none;
+	padding-left: max(15px, calc((100% - var(--nk-friends-column)) / 2 + 15px)) !important;
+	padding-right: max(15px, calc((100% - var(--nk-friends-column)) / 2 + 15px)) !important;
+	background: var(--main-background) !important;
+	box-shadow: none !important;
+}
+html[data-recent-chats-open] .rcp-panel > .rcp-list {
+	flex: 0 0 auto !important;
+	min-height: 0;
+	overflow: visible !important;
+}
+html[data-recent-chats-open] .rcp-panel > .rcp-list > .rcp-list-content {
+	flex: 0 0 auto;
+	max-height: none;
+	overflow: visible !important;
+}
+/* One background under the three parts */
+html[data-recent-chats-open] .friendlist {
+	background: var(--main-background);
+}
+html[data-recent-chats-open] .rcp-panel > .rcp-list,
+html[data-recent-chats-open] .FriendsListChatSection .chatRoomListContainer {
+	background: transparent !important;
+}
+
+/* List Headers: Group Chats (Steam's title bar), Recent Chats (text from Steam, set by script) */
+html[data-recent-chats-open] .FriendsListChatSection .chatSectionTitle,
+html[data-recent-chats-open] .rcp-panel > .rcp-list::before {
+	display: flex;
+	align-items: center;
+	flex: 0 0 auto;
+
+	width: 100%;
+	height: 28px;
+	margin: 0;
+	padding: 0 15px;
+	box-sizing: border-box;
+
+	border: none;
+	background: transparent !important;
+	box-shadow: none !important;
+
+	color: var(--text-muted-color);
+	font-size: 13px;
+	font-weight: bold;
+	text-transform: none;
+	letter-spacing: 0;
+}
+html[data-recent-chats-open] .rcp-panel > .rcp-list::before {
+	content: var(--nk-recent-chats-text, "Recent Chats") var(--nk-recent-count, "");
+}
+
+/* Group Chats Header: title, new group, fold */
+html[data-recent-chats-open] .FriendsListChatSection .voiceRoomDragBar {
+	order: 1;
+	flex: 1;
+	min-width: 0;
+	cursor: default; /* height is automatic here, nothing to drag */
+}
+html[data-recent-chats-open] .FriendsListChatSection .groupChatSectionTitle {
+	padding: 0;
+	color: inherit;
+	font: inherit;
+	height: 28px;
+	line-height: 28px;
+	text-transform: none;
+	letter-spacing: 0;
+	cursor: default;
+}
+/* Counters (set by script) */
+html[data-recent-chats-open] .FriendsListChatSection .groupChatSectionTitle::after {
+	content: var(--nk-group-count, "");
+}
+html[data-recent-chats-open] .FriendsListChatSection .createChatRoomButton {
+	order: 2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 24px;
+	height: 24px;
+	margin: 0 4px 0 0;
+	padding: 0;
+	color: var(--text-muted-color);
+	cursor: pointer;
+}
+html[data-recent-chats-open] .FriendsListChatSection .ToggleGroupChatList {
+	order: 3;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 24px;
+	height: 24px;
+	cursor: pointer;
+}
+/* Line icons (plus, chevron) instead of Steam's */
+html[data-recent-chats-open] .FriendsListChatSection :is(.createChatRoomButton, .ToggleGroupChatList) svg {
+	display: none;
+}
+html[data-recent-chats-open] .FriendsListChatSection :is(.createChatRoomButton, .ToggleGroupChatList)::before {
+	content: "";
+	width: 16px;
+	height: 16px;
+
+	background-color: var(--text-muted-color);
+	-webkit-mask: var(--nk-icon) center / contain no-repeat;
+	mask: var(--nk-icon) center / contain no-repeat;
+	transition: background-color .1s ease-in-out, transform .2s ease-out;
+}
+html[data-recent-chats-open] .FriendsListChatSection :is(.createChatRoomButton, .ToggleGroupChatList):hover::before {
+	background-color: var(--text-bright-color);
+}
+html[data-recent-chats-open] .FriendsListChatSection .createChatRoomButton {
+	--nk-icon: url("../../../../Patches/Icons/Gamescope/add.svg");
+}
+/* Open: chevron up, folded: down */
+html[data-recent-chats-open] .FriendsListChatSection .ToggleGroupChatList {
+	--nk-icon: url("../../../../Patches/Icons/Gamescope/arrow-up.svg");
+}
+html[data-recent-chats-open] .FriendsListChatSection.Collapsed .ToggleGroupChatList::before {
+	transform: rotate(180deg);
+}
+
+/* Group Chats List: as tall as its groups, no resize height from Steam */
+html[data-recent-chats-open] .FriendsListChatSection {
+	width: 100%;
+}
+html[data-recent-chats-open] .FriendsListChatSection .chatRoomListContainer {
+	height: auto !important;
+	min-height: 0 !important;
+	max-height: none !important;
+	overflow: visible !important;
+	transition: none !important;
+}
+html[data-recent-chats-open] .FriendsListChatSection.Collapsed .chatRoomListContainer {
+	display: none;
+}
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomList {
+	padding-top: 0;
+}
+/* Remove */
+html[data-recent-chats-open] .FriendsListChatSection .FriendsListInsetShadowCtn {
+	display: none !important;
+}
+
+/* Rows: plaques like Quick Access tiles | recent chats (plugin) and groups (Steam) look the same */
+.rcp-list .rcp-row,
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomListGroupItem_header {
+	display: flex !important;
+	align-items: center;
+	gap: 10px;
+
+	width: auto !important;
+	height: auto !important;
+	min-height: 52px !important;
+	margin: 0 15px 8px !important; /* 8px between plaques, as between the Quick Access tiles */
+	padding: 8px 10px 8px 8px !important;
+	box-sizing: border-box;
+
+	border: none !important;
+	border-radius: var(--button-radius);
+	background: var(--button-background) !important;
+	box-shadow: none !important;
+
+	cursor: pointer;
+	transition: background-color .15s ease-out;
+}
+/* Wide window: the list (headers, rows) takes the full width like the friends list; */
+/* buttons and search stay in one column with Quick Access */
+.rcp-list .rcp-row:hover,
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomListGroupItem_header:hover {
+	background: var(--button-hover-background) !important;
+}
+.rcp-list .rcp-row-wrapper {
+	border: none !important;
+	background: transparent !important;
+}
+/* Chat that is open in the docked chat (class from Chat/Chat.js): accent plaque */
+.rcp-list .rcp-row-wrapper.nk-chat-open .rcp-row {
+	background: var(--SystemAccentColor-Transparent) !important;
+}
+.rcp-list .rcp-row-wrapper.nk-chat-open .rcp-row:hover {
+	background: color-mix(in srgb, var(--SystemAccentColor) 28%, transparent) !important;
+}
+
+/* Avatars (theme rounding) */
+.rcp-list .rcp-avatar-holder,
+.rcp-list .rcp-avatar,
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomGroupAvatar {
+	flex-shrink: 0;
+	width: 36px !important;
+	height: 36px !important;
+	margin: 0 !important;
+	border: none !important;
+	border-radius: var(--avatar-radius, 50%) !important;
+	box-sizing: border-box;
+}
+.rcp-list .rcp-avatar-holder {
+	position: relative;
+	display: block;
+	overflow: visible;
+}
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomGroupAvatar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	background: var(--button-background);
+}
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomGroupAvatar_initials {
+	width: auto;
+	height: auto;
+	padding: 0;
+	color: var(--text-muted-color);
+	font-size: 13px;
+	line-height: 1;
+}
+
+/* Texts: name (+ badge) and message on the left */
+.rcp-list .rcp-copy,
+html[data-recent-chats-open] .FriendsListChatSection .groupNameStatusContainer {
+	flex: 1;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+}
+/* Names keep their status color (Steam), size / weight only */
+.rcp-list .rcp-name,
+html[data-recent-chats-open] .FriendsListChatSection .chatRoomName {
+	font-size: 14px !important;
+	font-weight: bold !important;
+	line-height: 19px !important;
+}
+.rcp-list .rcp-name {
+	display: flex !important;
+	align-items: center;
+	min-width: 0;
+}
+html[data-recent-chats-open] .FriendsListChatSection .chatRoomName {
+	color: var(--text-light-color) !important;
+}
+.rcp-list .rcp-snippet,
+.rcp-list .rcp-snippet-text {
+	color: var(--text-soft-color) !important;
+	font-size: 13px !important;
+	line-height: 17px !important;
+}
+
+/* Right column: time on top, unread count under it */
+.rcp-list .rcp-meta {
+	display: flex !important;
+	flex-direction: column;
+	align-items: flex-end;
+	justify-content: space-between;
+	align-self: stretch;
+	flex-shrink: 0;
+	gap: 0;
+	min-width: 0;
+	max-width: none;
+	height: 36px; /* = avatar: time + unread count must not make the plaque taller */
+	padding: 0;
+	overflow: visible;
+}
+.rcp-list .rcp-time {
+	color: var(--text-muted-color) !important;
+	font-size: 12px !important;
+	line-height: 17px;
+	height: 17px;
+	white-space: nowrap;
+}
+/* Time text from script (localized / exact): the plugin's own "17h" is hidden */
+.rcp-list .rcp-time[data-nk-time] {
+	font-size: 0 !important;
+}
+.rcp-list .rcp-time[data-nk-time]::after {
+	content: attr(data-nk-time);
+	font-size: 12px;
+}
+.rcp-list .rcp-meta .rcp-unread {
+	position: static !important;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	flex-shrink: 0;
+	width: auto !important;
+	min-width: 18px !important;
+	height: 18px !important;
+	margin: 0 !important;
+	padding: 0 5px !important;
+	border: none !important;
+	box-sizing: border-box;
+
+	border-radius: 9px;
+	background: var(--SystemAccentColor) !important;
+	box-shadow: none !important;
+
+	color: var(--text-bright-color) !important;
+	font-size: 11px;
+	font-weight: bold;
+	line-height: 1;
+}
+
+/* Remove (show channels button) */
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomListGroupItem_header > div:has(> .openGroupButton) {
+	display: none !important;
+}
+
+/* No plugin: placeholder Chats button (dimmed) + its tooltip */
+.socialTabContainer > #nk-chats-tab {
+	opacity: .55 !important;
+}
+.socialTabContainer > #nk-chats-tab:hover {
+	opacity: .8 !important;
+}
+#nk-chats-tip {
+	position: fixed;
+	z-index: 999999;
+
+	max-width: 240px;
+	padding: 6px 8px;
+	border-radius: 2px;
+	background-color: var(--tooltip-background);
+	box-shadow: 1px 1px 8px var(--tooltip-shadow), 2px 2px 16px 1px var(--tooltip-shadow);
+
+	color: var(--tooltip-text);
+	font-size: 13px;
+	font-weight: normal;
+	line-height: 18px;
+	text-align: center;
+	white-space: normal;
+
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity .25s;
+}
+#nk-chats-tip.nk-shown {
+	opacity: 1;
+}
+
+/* Remove: bar under the list, resize grip icon (the corner still resizes the window) */
+.friendlist > .friendListFooter {
+	display: none !important;
+}
+.friendsui-container .window_resize_grip {
+	background: none !important;
+	opacity: 0;
+}
+
+/* Chat Rows: status colors of the theme (the plugin copies Steam's own shades) */
+.rcp-list .rcp-row .rcp-name {
+	color: var(--status-offline) !important;
+}
+.rcp-list .rcp-row.online .rcp-name {
+	color: var(--status-online) !important;
+}
+.rcp-list .rcp-row.awayOrSnooze .rcp-name {
+	color: var(--status-afk) !important;
+}
+.rcp-list .rcp-row.ingame .rcp-name {
+	color: var(--status-playing) !important;
+}
+.rcp-list .rcp-row.ingame.awayOrSnooze .rcp-name {
+	color: var(--status-playing-afk) !important;
+}
+/* Hover: status tint, like Quick Access tiles */
+.rcp-list .rcp-row.online:hover {
+	background: var(--status-online-tint) !important;
+}
+.rcp-list .rcp-row.awayOrSnooze:hover {
+	background: var(--status-afk-tint) !important;
+}
+.rcp-list .rcp-row.ingame:hover {
+	background: var(--status-playing-tint) !important;
+}
+.rcp-list .rcp-row.ingame.awayOrSnooze:hover {
+	background: var(--status-playing-afk-tint) !important;
+}
+/* Badge next to the name */
+.rcp-list .rcp-name > :is(.nevko-badge, .nevko-badge-mini, .nevko-badge-modern) {
+	flex-shrink: 0;
+	margin: 0 0 0 5px !important;
+}
+
+/* Fade under the search while the list is scrolled (class from script) */
+html[data-recent-chats-open] .rcp-panel > .rcp-toolbar::after {
+	content: "";
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	height: 16px;
+
+	background: linear-gradient(var(--main-background), transparent);
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity .15s ease-out;
+}
+html[data-recent-chats-open].nk-chats-scrolled .rcp-panel > .rcp-toolbar::after {
+	opacity: 1;
+}
+
+/* Unread messages in total, on the Chats button (number from script) */
+.socialTabContainer > #recent-chats-tab-host[data-nk-unread]::after {
+	content: attr(data-nk-unread);
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+
+	min-width: 18px;
+	height: 18px;
+	margin-left: 8px;
+	padding: 0 5px;
+	box-sizing: border-box;
+	border-radius: 9px;
+	background: var(--SystemAccentColor);
+
+	color: var(--text-bright-color);
+	font-size: 11px;
+	font-weight: bold;
+	line-height: 1;
+}
+
+/* Chat row avatar = link to the profile (click handled by script) */
+.rcp-list .rcp-avatar-holder,
+.rcp-list .rcp-avatar-holder * {
+	cursor: pointer !important;
+}
+
+/* Empty Hints */
+
+/* No group chats (Steam) / no recent chats (plugin): icon above centered text */
+.ChatRoomList_Empty,
+.rcp-empty {
+	padding: 12px 15px 16px !important;
+
+	font-size: 12px !important;
+	line-height: 18px !important;
+	text-align: center;
+	color: var(--text-muted-color) !important;
+}
+.ChatRoomList_Empty::before,
+.rcp-empty::before {
+	content: "";
+	display: block;
+	width: 28px;
+	height: 28px;
+	margin: 0 auto 6px;
+
+	background: var(--text-muted-color);
+	-webkit-mask: var(--nk-icon) center / contain no-repeat;
+	mask: var(--nk-icon) center / contain no-repeat;
+}
+.ChatRoomList_Empty {
+	--nk-icon: url("../../../../Patches/Icons/Steam/Friends.svg");
+}
+.rcp-empty {
+	--nk-icon: url("../../../../Patches/Icons/Steam/ChatBubble.svg");
+}
+
+/* One line break instead of an empty line */
+.ChatRoomList_Empty br + br {
+	display: none;
+}
+
+/* Link */
+.ChatRoomList_Empty a {
+	color: var(--text-bright-color) !important;
+}

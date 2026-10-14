@@ -1,0 +1,616 @@
+/* Quick Access */
+
+.quickAccessFriends {
+	display: grid !important;
+	grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+	grid-template-rows: auto 8px auto auto auto !important;
+	grid-auto-rows: 0 !important;
+	align-content: start !important;
+	justify-items: stretch !important;
+	column-gap: 8px !important;
+	row-gap: 0px !important;
+
+	position: relative !important;
+	padding: 0 11px !important; /* + 4px margin = 15px, as the profile / close buttons */
+	margin-top: 2px;
+	margin-bottom: 2px;
+	max-width: 480px !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
+	box-sizing: border-box !important;
+
+	overflow: visible !important;
+	height: auto !important;
+	z-index: 2 !important;
+	-webkit-app-region: no-drag !important;
+}
+
+/* Wide Window: all 8 tiles in one row (attribute from Quick.js) */
+.quickAccessFriends[data-nk-qa-columns="8"] {
+	grid-template-columns: repeat(8, minmax(0, 1fr)) !important;
+	grid-template-rows: auto 0 auto auto auto !important;
+	max-width: none !important; /* stretches with the window like the list below */
+}
+.quickAccessFriends[data-nk-qa-columns="8"] > :is(.nk-qa-row-spacer-row3, .nk-qa-row-spacer-row4) {
+	display: none !important;
+}
+
+/* Up to 4 favorites: one row, no empty second row (attribute from Quick.js) */
+.quickAccessFriends[data-nk-qa-rows="1"] {
+	grid-template-rows: auto 0 auto auto auto !important;
+}
+.quickAccessFriends[data-nk-qa-rows="1"] > :is(.nk-qa-row-spacer-row3, .nk-qa-row-spacer-row4) {
+	display: none !important;
+}
+
+/* Spacer Height */
+.quickAccessFriends .nk-qa-row-spacer[data-nk-kind="avatar"] {
+	width: 100% !important;
+	height: 96px !important;
+	min-width: 0 !important;
+
+	visibility: hidden !important;
+	pointer-events: none !important;
+}
+.quickAccessFriends .nk-qa-row-spacer[data-nk-kind="name"] {
+	visibility: hidden !important;
+	pointer-events: none !important;
+}
+
+
+/* Size */
+.quickAccessFriends>.favoriteElement {
+	position: relative !important;
+	width: 100% !important;
+	height: 96px !important;
+	min-width: 0 !important;
+	box-sizing: border-box !important;
+
+	border-radius: var(--button-radius, 8px) !important;
+	overflow: hidden !important;
+}
+
+/* Background */
+.quickAccessFriends>.favoriteElement::before {
+	content: "" !important;
+	position: absolute !important;
+	inset: 0 !important;
+	z-index: 0 !important;
+	pointer-events: none !important;
+
+	transition: background-color .25s ease-out !important;
+}
+
+/* Fixed Height (Steam stretches it on hover) */
+.favoriteElement .friend.quickAccessFriend {
+	width: 100% !important;
+	height: 100% !important;
+	max-height: 100% !important;
+	overflow: hidden !important;
+}
+
+/*  Nickname  */
+
+/* Container */
+.quickAccessFriends .playerNameQuickAccessContainer {
+	display: block !important;
+	width: 100% !important;
+	min-width: 0 !important;
+	max-width: 100% !important;
+	margin: 0 !important;
+
+	text-align: center !important;
+	overflow: hidden !important;
+	white-space: nowrap !important;
+}
+
+/* Name */
+.quickAccessFriends .playerNameQuickAccessContainer .playerName {
+	position: absolute;
+	left: 0;
+	right: 0;
+
+	display: flex !important;
+	align-items: flex-start;
+	gap: 4px;
+
+	width: fit-content !important;
+	max-width: calc(100% - 2 * var(--nk-qa-name-margin)) !important;
+	height: 18px;
+	box-sizing: border-box;
+
+	margin-left: auto !important;
+	margin-right: auto !important;
+	margin-bottom: 12px;
+
+	overflow: hidden !important;
+	text-overflow: clip !important;
+	white-space: normal !important;
+	word-break: break-all;
+	vertical-align: top !important;
+
+	font-size: 13px;
+	font-weight: bold;
+	line-height: 18px;
+
+	--nk-qa-name-margin: 10px;
+	--nk-qa-badge-margin: 8px;
+	--nk-qa-fade: 20px;
+	-webkit-mask: none;
+	mask: none;
+	animation: nk-qa-name-cut linear both;
+	animation-timeline: scroll(self block);
+}
+
+/* Badge */
+.quickAccessFriends .playerNameQuickAccessContainer .playerName:has(> :is(.nevko-badge-modern, .nevko-badge-mini)) {
+	max-width: calc(100% - 2 * var(--nk-qa-badge-margin)) !important;
+}
+.quickAccessFriends .playerNameQuickAccessContainer .playerName > :is(.nevko-badge-modern, .nevko-badge-mini) {
+	flex: none;
+	align-self: center;
+	margin: 0 !important;
+}
+
+/* Fade */
+/* Remove Steam Fade */
+.quickAccessFriends .playerNameQuickAccessContainer {
+	-webkit-mask-image: none !important;
+	mask-image: none !important;
+}
+
+/* Long Name */
+.quickAccessFriends .playerNameQuickAccessContainer .playerName:has(> :is(.nevko-badge-modern, .nevko-badge-mini)) {
+	animation-name: nk-qa-name-cut-badge;
+}
+@keyframes nk-qa-name-cut {
+	from, to {
+		-webkit-mask: linear-gradient(to right, #000 calc(100% - var(--nk-qa-fade)), transparent);
+		mask: linear-gradient(to right, #000 calc(100% - var(--nk-qa-fade)), transparent);
+	}
+}
+/* Long Name with Badge */
+@keyframes nk-qa-name-cut-badge {
+	from, to {
+		-webkit-mask: linear-gradient(to right, #000 calc(100% - 20px - var(--nk-qa-fade)), transparent calc(100% - 20px), transparent calc(100% - 16px), #000 calc(100% - 16px));
+		mask: linear-gradient(to right, #000 calc(100% - 20px - var(--nk-qa-fade)), transparent calc(100% - 20px), transparent calc(100% - 16px), #000 calc(100% - 16px));
+	}
+}
+
+/* Hover */
+
+/* Remove */
+.quickAccessFriends .favoriteElement:hover .friend {
+	background-color: unset;
+	box-shadow: unset;
+}
+.friendStatusHover.offline:hover,
+.friendStatusHover.offline.Friend_ContextMenuActive {
+	background-color: unset;
+}
+.quickAccessFriends .favoriteElement:hover .friend .playerName {
+	color: unset;
+}
+
+/* Avatar */
+
+/* Size&Placement */
+.favoriteElement .avatarHolder {
+	position: absolute !important;
+	top: 40% !important;
+	left: 50% !important;
+	width: 48px !important;
+	height: 48px !important;
+	transform: translate(-50%, -50%) !important;
+	z-index: 1 !important;
+
+	background-size: cover !important;
+	background-position: center !important;
+	background-repeat: no-repeat !important;
+}
+.favoriteElement ._3h-QRJGxnVOIExtHD1R0f2 {
+	position: absolute !important;
+	top: 50% !important;
+	left: 50% !important;
+	width: 36px !important;
+	height: 36px !important;
+	transform: translate(-50%, -50%) !important;
+	z-index: 0 !important;
+
+	object-fit: cover !important;
+	background-size: cover !important;
+	background-position: center !important;
+	background-repeat: no-repeat !important;
+}
+
+/* Image */
+.favoriteElement .avatarHolder .avatar {
+	position: absolute !important;
+	z-index: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+
+	object-fit: cover !important;
+	object-position: center !important;
+	background-size: cover !important;
+	background-position: center !important;
+	background-repeat: no-repeat !important;
+}
+
+/* Frame */
+.favoriteElement .avatarFrame {
+	position: absolute !important;
+	inset: 0 !important;
+	z-index: 2 !important;
+	width: 100% !important;
+	height: 100% !important;
+
+	pointer-events: none !important;
+}
+.favoriteElement .avatarFrame img,
+.favoriteElement img.avatarFrameImg {
+	position: absolute !important;
+	inset: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+
+	object-fit: cover !important;
+}
+
+/* GameIcon */
+.FavoriteFriend_GameIcon {
+	width: 14px;
+	height: 14px;
+	inset-inline-start: 0px;
+	inset-inline-end: unset;
+	bottom: 0px;
+	z-index: 3;
+
+	outline: solid 3px var(--main-background);
+	border-radius: var(--status-radius);
+
+	background-color: unset;
+}
+.FavoriteFriend_GameIcon img {
+	margin-bottom: 6px;
+
+	box-shadow: unset;
+	border: unset;
+	border-radius: unset;
+}
+
+/* Status */
+.favoriteElement .avatarStatus {
+	position: absolute !important;
+	z-index: 3 !important;
+}
+
+/* Remove Zoom */
+.quickAccessFriends>.favoriteElement {
+	transform: none !important;
+}
+
+/* Hover Layer */
+.favoriteElement::after {
+	content: "" !important;
+	position: absolute !important;
+	inset: 0 !important;
+	z-index: 4 !important;
+
+	background: transparent !important;
+	pointer-events: none !important;
+	transition: background-color .15s !important;
+}
+
+/* Pages */
+
+/* Footer */
+.quickAccessFriends .nk-qa-footer {
+	grid-column: 1 / -1 !important;
+	grid-row: 5 !important;
+
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 8px !important;
+
+	margin-top: 8px !important;
+	width: 100% !important;
+}
+
+/* One Page */
+.quickAccessFriends .nk-qa-footer[data-hidden="true"] {
+	display: none !important;
+}
+
+/* Page Number */
+.quickAccessFriends .nk-qa-page-indicator {
+	font-size: 11px !important;
+	line-height: 1 !important;
+	min-width: 34px !important;
+	text-align: center !important;
+
+	user-select: none !important;
+	font-variant-numeric: tabular-nums !important;
+}
+
+/* Arrows */
+.quickAccessFriends .nk-qa-nav {
+	position: relative !important;
+	flex: 0 0 auto !important;
+	width: 32px !important;
+	height: 32px !important;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+
+	border: none;
+	outline: none;
+	appearance: none;
+	-webkit-tap-highlight-color: transparent;
+	cursor: pointer;
+
+	font-size: 0; /* the arrow is an icon (below), not the character */
+	line-height: 1;
+	z-index: 30;
+	border-radius: var(--button-radius, 6px);
+	opacity: .85;
+	transition: background-color .15s, opacity .15s;
+
+	padding: 0;
+	margin: 0;
+}
+/* Arrows of the icon pack */
+.quickAccessFriends .nk-qa-nav::before {
+	content: "";
+	width: 16px;
+	height: 16px;
+	background: currentColor;
+	-webkit-mask: url("../../../../Patches/Icons/Gamescope/arrow-left.svg") center / contain no-repeat;
+	mask: url("../../../../Patches/Icons/Gamescope/arrow-left.svg") center / contain no-repeat;
+}
+.quickAccessFriends .nk-qa-nav-next::before {
+	-webkit-mask-image: url("../../../../Patches/Icons/Gamescope/arrow-right.svg");
+	mask-image: url("../../../../Patches/Icons/Gamescope/arrow-right.svg");
+}
+
+/* Hover */
+.quickAccessFriends .nk-qa-nav:hover {
+	opacity: 1;
+}
+.quickAccessFriends .nk-qa-nav:active {
+	opacity: 1;
+}
+
+/* Disabled (first/last page) */
+.quickAccessFriends .nk-qa-nav:disabled {
+	opacity: .35 !important;
+	filter: grayscale(1) !important;
+	cursor: default !important;
+	pointer-events: none !important;
+}
+
+/* Misc */
+
+/* Nickname Bracket */
+/* At the avatar's top left corner: counted from the tile center (tiles get wider in a wide window) */
+.playerNameQuickAccessContainer .playerNicknameBracket {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	margin: 13px 0 0 -29px;
+
+	width: 20px;
+	height: 20px;
+	padding: 5px 0 0;
+	box-sizing: border-box;
+	overflow: hidden;
+
+	line-height: 16px;
+	text-align: center;
+	border-radius: var(--status-radius);
+	z-index: 2;
+	opacity: 1;
+}
+
+/* Remove Offline/Away Dimming */
+.quickAccessFriends .favoriteElement:hover .friend .avatarHolder img.avatar,
+.friend.offline:hover .avatarHolder img.avatar,
+.friend.offline.Friend_ContextMenuActive .avatarHolder img.avatar {
+	filter: unset;
+}
+.friend.awayOrSnooze .playerNameQuickAccessContainer,
+.quickAccessFriends .friend.friend.awayOrSnooze .avatarHolder img {
+	opacity: unset;
+}
+
+/* Remove Avatar Shadow */
+._3h-QRJGxnVOIExtHD1R0f2 {
+	box-shadow: unset;
+}
+/* Remove Unread Indicator */
+.quickAccessFriends .ChatUnreadMessageIndicator {
+	display: none;
+}
+
+/* Page Flip */
+.quickAccessFriends[data-nk-qa-flip] > :is(.favoriteElement, .playerNameQuickAccessContainer):not([data-nk-qa-hidden]) {
+	animation: nk-qa-page-fade .18s ease-out both;
+}
+@keyframes nk-qa-page-fade {
+	from { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.quickAccessFriends[data-nk-qa-flip] > * {
+		animation: none !important;
+	}
+}
+
+/* Drag */
+
+/* Arrows While Dragging */
+.quickAccessFriends.nk-qa-dragging .nk-qa-nav:not(:disabled) {
+	opacity: 1;
+}
+
+/* Hidden Page */
+.quickAccessFriends > [data-nk-qa-hidden] {
+	display: none !important;
+}
+
+/* Empty */
+
+/* Cells (Quick.js) */
+.quickAccessFriends > .nk-qa-empty-cell {
+	display: none;
+}
+.quickAccessFriends.emptyQuickAccess > .nk-qa-empty-cell {
+	display: block;
+	grid-row: 1;
+	position: relative;
+	height: 96px;
+
+	border-radius: var(--button-radius, 8px);
+	opacity: .5;
+	pointer-events: none;
+}
+.quickAccessFriends.emptyQuickAccess:not([data-nk-qa-columns="8"]) > .nk-qa-empty-cell[data-nk-wide] {
+	display: none;
+}
+
+/* Plus */
+.quickAccessFriends.emptyQuickAccess > .nk-qa-empty-cell:not(.nk-qa-empty-cell ~ .nk-qa-empty-cell)::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	margin: auto;
+	width: 20px;
+	height: 20px;
+
+	-webkit-mask: url("../../../../Patches/Icons/Gamescope/add.svg") center / contain no-repeat;
+	mask: url("../../../../Patches/Icons/Gamescope/add.svg") center / contain no-repeat;
+}
+
+/* Rows: cells, gap, hint */
+.quickAccessFriends.emptyQuickAccess {
+	grid-template-rows: auto 8px auto !important;
+}
+.quickAccessFriends.emptyQuickAccess > :is(.nk-qa-row-spacer, .nk-qa-footer) {
+	display: none !important;
+}
+
+/* Hint */
+.quickAccessFriends.emptyQuickAccess > .quickAccessFriendsMessage {
+	grid-column: 1 / -1;
+	grid-row: 3;
+
+	display: flex !important;
+	align-items: center;
+	justify-content: flex-start;
+	min-height: 32px;
+	box-sizing: border-box;
+	margin: 0 !important;
+	padding: 0 110px 0 0 !important; /* room for the button */
+
+	border: none !important;
+	border-radius: 0;
+	font-size: 12px;
+	line-height: 16px;
+	transition: none;
+}
+
+/* Got It */
+.quickAccessFriends.emptyQuickAccess > .quickAccessFriendsMessageDismiss {
+	grid-column: 1 / -1;
+	grid-row: 3;
+	justify-self: end;
+	align-self: center;
+
+	position: static !important;
+	display: flex;
+	align-items: center;
+	height: 32px;
+	padding: 0 12px !important;
+	box-sizing: border-box;
+
+	border-radius: var(--button-radius, 6px) !important;
+	font-size: 13px !important;
+	font-weight: bold;
+	text-transform: none !important;
+	white-space: nowrap;
+	transition: background-color .15s, color .15s;
+}
+
+/* Dismissed: no block until a drag starts */
+/* Opens 0.1s after the drag starts, in one step: a layout shift in the very moment of dragstart cancels the drag in Chromium */
+.quickAccessFriends.emptyQuickAccess.hintDismissed {
+	grid-template-rows: auto !important;
+	height: 0 !important;
+	margin-top: -4px !important; /* 8px between the profile button and the tabs */
+	margin-bottom: 0 !important;
+	transition: height 0s .1s, margin 0s .1s;
+}
+.quickAccessFriends.emptyQuickAccess.hintDismissed > :is(.quickAccessFriendsMessage, .quickAccessFriendsMessageDismiss) {
+	display: none !important;
+}
+.quickAccessFriends.emptyQuickAccess.hintDismissed > .nk-qa-empty-cell {
+	visibility: hidden;
+	transition: visibility 0s .1s;
+}
+.quickAccessFriends.emptyQuickAccess.hintDismissed > .dropTargetBox {
+	visibility: hidden;
+	transition: visibility 0s .1s, opacity .15s .1s, background-color .15s !important;
+}
+body.in_global_drag .quickAccessFriends.emptyQuickAccess.hintDismissed {
+	height: 96px !important; /* a number, "auto" would not wait */
+	margin-top: 2px !important;
+	margin-bottom: 2px !important;
+}
+body.in_global_drag .quickAccessFriends.emptyQuickAccess.hintDismissed > :is(.nk-qa-empty-cell, .dropTargetBox) {
+	visibility: visible;
+}
+
+/* Drop Zone */
+
+/* Whole block lights up while something is dragged (4px around the tiles) */
+.quickAccessFriends > .dropTargetBox {
+	inset: -4px 7px !important;
+	margin: 0 !important;
+
+	border: none !important;
+	border-radius: calc(var(--button-radius, 6px) + 4px) !important;
+	transform: none !important;
+	transition: opacity .15s, background-color .15s !important;
+}
+
+/* Narrow List */
+
+/* The friends list dragged narrow (attribute from Quick.js): names do not fit, so they fade out */
+/* and the tiles get lower around the avatar */
+.quickAccessFriends > .favoriteElement,
+.quickAccessFriends .nk-qa-row-spacer[data-nk-kind="avatar"] {
+	transition: height .2s ease-out;
+}
+.favoriteElement .avatarHolder {
+	transition: top .2s ease-out, left .2s ease-out;
+}
+.quickAccessFriends .playerNameQuickAccessContainer :is(.playerName, .playerNicknameBracket) {
+	transition: opacity .2s ease-out, margin .2s ease-out;
+}
+.quickAccessFriends[data-nk-qa-compact] > .favoriteElement,
+.quickAccessFriends[data-nk-qa-compact] .nk-qa-row-spacer[data-nk-kind="avatar"] {
+	height: 64px !important; /* 8px + avatar + 8px */
+}
+/* Steam keeps the tile content 2px off its corner: taken back, or the avatar stands off the middle */
+.quickAccessFriends[data-nk-qa-compact] .favoriteElement .avatarHolder {
+	top: calc(50% - 2px) !important;
+	left: calc(50% - 2px) !important;
+}
+.quickAccessFriends[data-nk-qa-compact] .playerNameQuickAccessContainer .playerName {
+	opacity: 0;
+}
+.quickAccessFriends[data-nk-qa-compact] .playerNameQuickAccessContainer .playerNicknameBracket {
+	margin: 5px 0 0 -31px; /* the same corner of the moved avatar */
+}

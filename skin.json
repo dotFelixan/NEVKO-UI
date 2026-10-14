@@ -1,589 +1,972 @@
 {
-  "name": "NEVKO-UI",
-  "version": "0.9.900",
-  "description": "Refresh Design for Steam.",
+  "name": "NEVKO-UI REWRITE",
+  "version": "1.0.0",
+  "description": "Another Design for Steam",
   "author": "dotFelixan",
+
+  "RootColors": "Patches/Colors/root.css",
 
   "github": {
     "owner": "dotFelixan",
     "repo_name": "NEVKO-UI"
   },
-  "discord_support": {
-    "inviteCodeExcludingLink": "UuAQWZ9HxE"
-  },
+
+  "funding": { "boosty": "dotfelixan" },
+  "discord_support": { "inviteCodeExcludingLink": "UuAQWZ9HxE" },
 
   "header_image": "https://i.imgur.com/2aRCvrt.png",
   "splash_image": "https://i.imgur.com/dqCDCH2.png",
-  "tags": ["Refresh", "Redesign", "Customizable", "Features", "Accents", "AMOLED", "WIP"],
-
-  "UseDefaultPatches": true,
-  "Steam-WebKit": "webkit.css",
-  "RootColors": "Misc/Accents Code/root.css",
+  "tags": ["Customizable", "Accents", "Features", "Privacy" ],
 
   "Conditions": {
-    "DRIVER = 1": {
-      "description": "",
-      "default": "",
-      "tab": "General",
-      "values": {
-        "": {}
-      }
-    },
-    "Rounding Avatars": {
-      "description": "Choose the shape style for all user avatars throughout Steam",
-      "default": "Rounded Square",
-      "tab": "General",
-      "values": {
-        "Sharp": {
-          "TargetCss": {
-            "affects": [".*"],
-            "src": "General/Rounding Avatars/Sharp.css"
-          }
-        },
-        "Rounded Square": {
-          "TargetCss": {
-            "affects": [".*"],
-            "src": "General/Rounding Avatars/Rounded Square.css"
-          }
-        },
-        "Circle": {
-          "TargetCss": {
-            "affects": [".*"],
-            "src": "General/Rounding Avatars/Circle.css"
-          }
-        }
-      }
-    },
-    "Alternative Online Indicator": {
-      "description": "Replaces default indicator with a modern dot-style badge (like Discord)",
+    "Badges for Contributors": {
+      "description": "Display special badges for theme contributors on their profiles",
       "default": "yes",
       "tab": "General",
+	  "section": "Contributors",
       "values": {
         "no": {},
         "yes": {
-          "TargetCss": {
-            "affects": [".*"],
-            "src": "General/ALT Online Indicator/Status Indicator.css"
+          "TargetJs": {
+            "affects": ["^.*$", ".*"],
+            "src": "Credits/Badges for Contributors.js"
           }
         }
       }
     },
+
+    "Rounding Avatars": {
+      "description": "Change how round or sharp avatars look throughout Steam",
+      "default": "",
+      "tab": "General",
+	  "section": "Users",
+      "values": { "": {} }
+    },
+
+    "Rounding Framed Avatars": {
+      "description": "Change how round avatars with a profile frame look",
+      "default": "",
+      "tab": "General",
+	  "section": "Users",
+      "values": { "": {} }
+    },
+
+    "Online Indicator": {
+      "description": "Replaces default indicator with a modern dot-style badge",
+      "default": "Modern",
+      "tab": "General",
+	  "section": "Users",
+      "values": {
+        "Legacy": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Features/Status Indicator/Legacy Status Indicator.css"
+			}
+          },
+        "Modern": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Features/Status Indicator/Modern Status Indicator.css"
+          }
+        }
+      }
+    },
+
     "Avatar Decoration": {
-      "description": "Toggle visibility of avatar frames | BIG WIP, UNSTABLE",
+      "description": "Hide avatar frames",
+      "default": "yes",
+      "tab": "General",
+	  "section": "Users",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetJs": {
+            "affects": ["^.*$"],
+            "src": "Features/Hide Decoration/HAD.js"
+          },
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Features/Hide Decoration/HAD.css"
+          }
+        }
+      }
+    },
+
+    "Hide Custom Username Icon": {
+      "description": "Toggle visibility of custom username icon",
       "default": "no",
       "tab": "General",
+	  "section": "Users",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetCss": {
+            "affects": ["^.*$", ".*"],
+            "src": "Features/Hide Custom Username Icon/HCUI.css"
+          }
+        }
+      }
+    },
+
+    "Relative Last Seen": {
+      "description": "Exact Time: 'Last seen: Today at 14:00' | Disable: keeps '3 hours ago', only renames the label",
+      "default": "Disable",
+      "tab": "General",
+	  "section": "General",
+      "values": {
+        "Disable": {
+          "TargetJs": {
+            "affects": ["^.*$", ".*"],
+            "src": "Features/Relative Last Seen/Disable Time.js"
+          }
+        },
+        "Exact Time": {
+          "TargetJs": {
+            "affects": ["^.*$", ".*"],
+            "src": "Features/Relative Last Seen/LastSeen.js"
+          }
+        }
+      }
+    },
+
+    "Bypass Age Verification": {
+      "description": "Automatically pass the age check on store pages",
+      "default": "no",
+      "tab": "General",
+	  "section": "Other",
       "values": {
         "no": {},
         "yes": {
           "TargetJs": {
             "affects": [".*"],
-            "src": "General/Hide Decoration/HAD.js"
+            "src": "Features/Bypass Age Verification/Bypass.js"
           }
         }
       }
     },
 
-    "DRIVER = 2": {
-      "description": "",
-      "default": "",
+    "Fake Device Status": {
+      "description": "Show the Big Picture or Mobile mark next to your status (applied on Steam launch)",
+      "default": "Disabled",
       "tab": "General",
+	  "section": "Other",
       "values": {
-        "": {}
-      }
-    },
-    "Badges for Contributors": {
-      "description": "Display special badges for theme contributors on their profiles | Can't be disabled, WIP",
-      "default": "yes",
-      "tab": "General",
-      "values": {
-        "no": {
-          "TargetCss": {
-            "affects": ["http.*steamcommunity.*(id|profiles).[^\\/]+\\/?$"],
-            "src": "General/Badges for Contributors/Badges.css"
-          }
-        },
-        "yes": {}
-      }
-    },
-    "Fonts [WIP]": {
-      "description": "Override the default Steam font with a custom typeface | BIG WIP, NOT WORK",
-      "default": "Steam Default",
-      "tab": "General",
-      "values": {
-        "Steam Default": {},
-        "Inter": {
-          "TargetCss": {
-            "affects": [".*"],
-            "src": "General/Fonts/Inter/Inter.css"
-          }
-        },
-        "VK Sans": {
-          "TargetCss": {
-            "affects": [".*"],
-            "src": "General/Fonts/VK Sans/VK Sans.css"
-          }
-        }
-      }
-    },
-
-    "DRIVER = 3": {
-      "description": "",
-      "default": "",
-      "tab": "UI Personalization",
-      "values": {
-        "": {}
-      }
-    },
-    "Reorder Main Buttons": {
-      "description": "Swap the positions of 'Store' and 'Library' buttons in the header",
-      "default": "yes",
-      "tab": "UI Personalization",
-      "values": {
-        "no": {},
-        "yes": {
+        "Disabled": {},
+        "Big Picture": {
           "TargetCss": {
             "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Header/Reorder Buttons.css"
+            "src": "Features/Client Type/Big Picture.css"
+          }
+        },
+        "Mobile": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Features/Client Type/Mobile.css"
           }
         }
       }
     },
-    "Hide Profile Button": {
-      "description": "Remove the profile button from the left side | Useful buttons are moved to Account Menu",
+
+    "Rounding Buttons": {
+      "description": "Change how round or sharp buttons look throughout Steam",
+      "default": "",
+      "tab": "UI Personalization",
+	  "section": "Main",
+      "values": { "": {} }
+    },
+
+    "Button Press Animation": {
+      "description": "Buttons shrink slightly when pressed",
       "default": "yes",
       "tab": "UI Personalization",
+      "section": "Main",
       "values": {
         "no": {},
         "yes": {
-          "TargetCss": {
-            "affects": ["^Steam$", "Menu$", "SuperNav$"],
-            "src": "Main Refresh UI/Refresh Header/Compact Profile Button/Hide Profile Button.css"
-          },
           "TargetJs": {
-            "affects": ["Menu$", "SuperNav$"],
-            "src": "Main Refresh UI/Refresh Header/Compact Profile Button/Profile Buttons in Account Menu.js"
+            "affects": ["^.*$"],
+            "src": "Features/Animations/Actions/Button Press.js"
           }
         }
       }
     },
-    "Remove Window Buttons": {
+
+    "Window Buttons": {
       "description": "Hide specific window control buttons",
       "default": "None",
       "tab": "UI Personalization",
+	  "section": "Main",
       "values": {
         "None": {},
         "[Collapse] Only": {
           "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Header/Main Window Buttons/collapse-o.css"
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/collapse-o.css"
           }
         },
         "[Expand] Only": {
           "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Header/Main Window Buttons/expand-o.css"
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/expand-o.css"
           }
         },
         "[Close] Only": {
           "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Header/Main Window Buttons/close-o.css"
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/close-o.css"
           }
         },
         "[Collapse + Expand]": {
           "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Header/Main Window Buttons/collapse-expand.css"
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/collapse-expand.css"
           }
         },
         "[Collapse + Close]": {
           "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Header/Main Window Buttons/collapse-close.css"
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/collapse-close.css"
           }
         },
         "[Expand + Close]": {
           "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Header/Main Window Buttons/expand-close.css"
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/expand-close.css"
           }
         },
         "All": {
           "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Header/Main Window Buttons/hide all.css"
-          }
-        }
-      }
-    },
-    "Move Bottom Buttons to Top Bar": {
-      "description": "",
-      "default": "yes",
-      "tab": "UI Personalization",
-      "values": {
-        "no": {
-          "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Header/Fancy Bottom.css"
-          }
-        },
-        "yes": {
-          "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Header/Compact Buttons/Compact Buttons.css"
-          },
-          "TargetJs": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Header/Compact Buttons/Compact Buttons.js"
-          }
-        }
-      }
-    },
-    "Move URL Bar to Bottom": {
-      "description": "Position the URL/address bar at the bottom of the window",
-      "default": "yes",
-      "tab": "UI Personalization",
-      "values": {
-        "no": {
-          "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Header/Top URL Bar.css"
-          }
-        },
-        "yes": {
-          "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Header/Bottom URL Bar.css"
+            "affects": ["^.*$"],
+            "src": "Main Design/Header/Window Buttons/hide all.css"
           }
         }
       }
     },
 
-    "DRIVER = 4": {
-      "description": "",
-      "default": "",
+    "Reorder Main Buttons": {
+      "description": "Swap the positions of 'Store' and 'Library' buttons in the header",
+      "default": "yes",
       "tab": "UI Personalization",
+	  "section": "Header",
       "values": {
-        "": {}
-      }
-    },
-    "Library Side": {
-      "description": "Choose which side of the screen to display the game library list",
-      "default": "Left Side",
-      "tab": "UI Personalization",
-      "values": {
-        "Left Side": {
-          "affects": ["^Steam$"],
-          "src": "Main Refresh UI/Refresh Library/Flip Sides/Fix Button Flip Gamepage.css"
-        },
-        "Right Side": {
+        "no": {},
+        "yes": {
           "TargetCss": {
             "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Library/Flip Sides/Flip Library.css"
+            "src": "Main Design/Header/Reorder Buttons.css"
           }
         }
       }
     },
-    "Gamepage Side": {
-      "description": "Choose which side to display game details and information panel",
-      "default": "Left Side",
+
+    "Hide Profile Button": {
+      "description": "Remove the profile button from the left side | Useful buttons are moved to Account Menu",
+      "default": "yes",
       "tab": "UI Personalization",
+	  "section": "Header",
       "values": {
-        "Left Side": {},
-        "Right Side": {
+        "no": {},
+        "yes": {
           "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Library/Flip Sides/Flip Gamepage.css"
+            "affects": ["^Steam$", "Menu$", "SuperNav$", "Supernav$"],
+            "src": "Main Design/Header/Compact Profile Button/Hide Profile Button.css"
+          },
+          "TargetJs": {
+            "affects": ["^Steam$", "Menu$", "SuperNav$", "Supernav$"],
+            "src": "Main Design/Header/Compact Profile Button/Profile Buttons in Account Menu.js"
           }
         }
       }
     },
-    "Resize Library List": {
-      "description": "Adjust the width of the game library sidebar",
-      "default": "Default",
+
+    "Main Buttons": {
+      "description": "Show header buttons as text, icons, or both",
+      "default": "Text and Icons",
       "tab": "UI Personalization",
+      "section": "Header",
       "values": {
-        "Small": {
+        "Text and Icons": {
           "TargetCss": {
             "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Library/Library Sizes/Small.css"
+            "src": "Features/Main Buttons Icons/Text and Icons.css"
           }
         },
-        "Default": {
+        "Icons": {
           "TargetCss": {
             "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Library/Library Sizes/Default.css"
+            "src": "Features/Main Buttons Icons/Icons.css"
           }
         },
-        "Medium": {
-          "TargetCss": {
+        "Text": {}
+      }
+    },
+
+    "Steam Modes Button": {
+      "description": "Add a header button with a menu to launch Big Picture or SteamVR",
+      "default": "no",
+      "tab": "UI Personalization",
+	  "section": "Header",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetJs": {
             "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Library/Library Sizes/Medium.css"
-          }
-        },
-        "Big": {
-          "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Library/Library Sizes/Big.css"
+            "src": "Main Design/Header/Steam Modes Button.js"
           }
         }
       }
     },
-    "Game Page Content Location": {
-      "description": "",
-      "default": "Center [All]",
+
+    "Compact Manage Downloads Button": {
+      "description": "Shrink the downloads button in the header to an icon with a progress bar",
+      "default": "no",
       "tab": "UI Personalization",
+	  "section": "Header",
       "values": {
-        "[All] Center": {},
-        "[All] Left Side": {
+        "no": {},
+        "yes": {
           "TargetCss": {
             "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Library/Game Buttons Location/leftside-all.css"
-          }
-        },
-        "[All] Right Side": {
-          "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Library/Game Buttons Location/rightside-all.css"
-          }
-        },
-        "[Game Links] Right Side Only": {
-          "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Library/Game Buttons Location/rightside-links.css"
-          }
-        },
-        "[Game Links] Left Side Only": {
-          "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Library/Game Buttons Location/leftside-links.css"
-          }
-        },
-        "[Compact] Left Side": {
-          "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Library/Game Buttons Location/compact-left.css"
-          }
-        },
-        "[Compact] Right Side": {
-          "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Library/Game Buttons Location/compact-right.css"
+            "src": "Main Design/Header/Compact Buttons/Compact Download Button.css"
           }
         }
       }
     },
-    "Hiding Library Items": {
+
+    "Account Button": {
+      "description": "Choose what the account button in the header shows",
+      "default": "Hide Balance",
+      "tab": "UI Personalization",
+	  "section": "Header",
+      "values": {
+        "Default": {},
+        "Minimal": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Header/Account Button Style/Minimal.css"
+          }
+		},
+        "Hide Nickname": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Header/Account Button Style/Nickname.css"
+          }
+		},
+        "Hide Balance": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Header/Account Button Style/Balance.css"
+          }
+		},
+        "Hide Both": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Header/Account Button Style/Balance and Nickname.css"
+          }
+        }
+      }
+    },
+
+    "Library Items": {
       "description": "Hide specific elements from the library home screen",
       "default": "None",
       "tab": "UI Personalization",
+	  "section": "Library",
       "values": {
         "None": {},
         "[What's New] Only": {
           "TargetCss": {
             "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Library/Hide Library Items/News.css"
+            "src": "Main Design/Library/Hide Library Items/News.css"
           }
         },
         "[Add Shelf] Only": {
           "TargetCss": {
             "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Library/Hide Library Items/Shelf.css"
+            "src": "Main Design/Library/Hide Library Items/Shelf.css"
           }
         },
         "Both": {
           "TargetCss": {
             "affects": ["^Steam$"],
-            "src": "Main Refresh UI/Refresh Library/Hide Library Items/Both.css"
+            "src": "Main Design/Library/Hide Library Items/Both.css"
           }
         }
       }
     },
 
-    "DRIVER = 5": {
-      "description": "",
-      "default": "",
+    "Remove Shiny Effect": {
+      "description": "Remove shiny effect on game card hover.",
+      "default": "yes",
       "tab": "UI Personalization",
+	  "section": "Library",
       "values": {
-        "": {}
-      }
-    },
-    "Refresh Friends & Chat": {
-      "description": "Apply a refreshed modern design to the Friends & Chat panel | BIG WIP",
-      "default": "Disabled",
-      "tab": "UI Personalization",
-      "values": {
-        "Disabled": {},
-        "Enabled": {
+        "no": {},
+        "yes": {
           "TargetCss": {
-            "affects": [".friendsui-container"],
-            "src": "Main Refresh UI/Refresh Chats/Chats Code.css"
+            "affects": ["^Steam$"], 
+			"src": "Main Design/Library/Remove Shiny Effect/noShiny.css"
           }
         }
       }
     },
-    "Style Menu": {
-      "description": "Choose the visual density style for dropdown menus",
-      "default": "Spacious",
+
+    "Achievements Tab": {
+      "description": "Hide specific elements from the achievements tab",
+      "default": "None",
       "tab": "UI Personalization",
+	  "section": "Library",
       "values": {
-        "Legacy": {},
-        "Spacious": {
+        "None": {},
+        "[Recent] Only": {
           "TargetCss": {
-            "affects": ["^Steam$", ".friendsui-container", "Supernav$", "Menu$"],
-            "src": "Main Refresh UI/Refresh Menu/Spacious.css"
+            "affects": ["^Steam$"],
+            "src": "Main Design/Library/Hide Library Items/Achievements/Recent.css"
           }
         },
-        "Compact": {
+        "[Unreached Achievements] Only": {
           "TargetCss": {
-            "affects": ["^Steam$", ".friendsui-container", "Supernav$", "Menu$"],
-            "src": "Main Refresh UI/Refresh Menu/Compact.css"
+            "affects": ["^Steam$"],
+            "src": "Main Design/Library/Hide Library Items/Achievements/Missed Achievements.css"
+          }
+        },
+        "Both": {
+          "TargetCss": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Library/Hide Library Items/Achievements/Both.css"
           }
         }
       }
     },
 
-    "Refresh Settings": {
-      "description": "Enable experimental redesigned settings interface | BIG WIP",
-      "default": "Disabled",
-      "tab": "Refresh Presets",
+    "Hide Unread Count in Friends": {
+      "description": "Hide unread message counters next to friends",
+      "default": "yes",
+      "tab": "UI Personalization",
+      "section": "Friends&Chat",
       "values": {
-        "Disabled": {},
-        "Enabled": {}
+        "no": {},
+        "yes": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Friends List/Unread/Hide Unread Count.css"
+          }
+        }
+      }
+    },
+
+    "Hide Unread Messages Group": {
+      "description": "Hide the 'Unread Messages' group in the friends list",
+      "default": "yes",
+      "tab": "UI Personalization",
+      "section": "Friends&Chat",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Friends List/Unread/Hide Unread Group.css"
+          }
+        }
+      }
+    },
+
+    "Default Friends Tab": {
+      "description": "Tab opened on Steam launch (Chats requires the Recent Chats plugin)",
+      "default": "Friends",
+      "tab": "UI Personalization",
+      "section": "Friends&Chat",
+      "values": {
+        "Friends": {},
+        "Chats": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Friends List/Tabs & Search/Options/Default Tab Chats.css"
+          }
+        }
+      }
+    },
+
+    "Group Chats Position": {
+      "description": "Show group chats above or below recent chats",
+      "default": "Top",
+      "tab": "UI Personalization",
+      "section": "Friends&Chat",
+      "values": {
+        "Top": {},
+        "Bottom": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Friends List/Tabs & Search/Options/Group Chats Bottom.css"
+          }
+        }
+      }
+    },
+
+    "Hide Friends Tabs": {
+      "description": "Hide the Friends / Chats tabs above the list",
+      "default": "no",
+      "tab": "UI Personalization",
+      "section": "Friends&Chat",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Friends List/Tabs & Search/Options/Hide Tabs.css"
+          }
+        }
+      }
+    },
+
+    "Rounding Messages": {
+      "description": "Change how round message bubbles look",
+      "default": "",
+      "tab": "UI Personalization",
+      "section": "Friends&Chat",
+      "values": { "": {} }
+    },
+
+    "Message Field Buttons": {
+      "description": "Place emoticon and attachment buttons outside or inside the message field",
+      "default": "Outside",
+      "tab": "UI Personalization",
+      "section": "Friends&Chat",
+      "values": {
+        "Outside": {},
+        "Inside": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Chat/Options/Message Buttons Inside.css"
+          }
+        }
+      }
+    },
+
+    "Emoticon Size": {
+      "description": "Size of emoticons in the emoticon menu",
+      "default": "Small",
+      "tab": "UI Personalization",
+      "section": "Friends&Chat",
+      "values": {
+        "Small": {},
+        "Medium": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Chat/Options/Emoticons Medium.css"
+          }
+        },
+        "Large": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Chat/Options/Emoticons Large.css"
+          }
+        }
+      }
+    },
+
+    "Stickers in Menu": {
+      "description": "Animate stickers in the menu on hover or always",
+      "default": "Animated on Hover",
+      "tab": "UI Personalization",
+      "section": "Friends&Chat",
+      "values": {
+        "Animated on Hover": {},
+        "Always Animated": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Chat/Options/Stickers Always Animated.css"
+          }
+        }
+      }
+    },
+
+    "Sticker Size": {
+      "description": "Size of stickers in the emoticon menu",
+      "default": "Small",
+      "tab": "UI Personalization",
+      "section": "Friends&Chat",
+      "values": {
+        "Small": {},
+        "Medium": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Chat/Options/Stickers Medium.css"
+          }
+        },
+        "Large": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Chat/Options/Stickers Large.css"
+          }
+        }
+      }
+    },
+
+    "Emoticon Side Panel": {
+      "description": "Dock the emoticon menu as a side panel on click",
+      "default": "no",
+      "tab": "UI Personalization",
+      "section": "Friends&Chat",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Chat/Options/Emoticon Panel.css"
+          },
+          "TargetJs": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Chat/Options/Emoticon Panel.js"
+          }
+        }
+      }
+    },
+
+    "Chat Header Background": {
+      "description": "Show the friend's mini profile background behind the chat header",
+      "default": "yes",
+      "tab": "UI Personalization",
+      "section": "Friends&Chat",
+      "values": {
+        "yes": {},
+        "no": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Chat/Options/No Header Background.css"
+          }
+        }
+      }
+    },
+
+    "Emoji Style": {
+      "description": "Emoji look in the emoticon menu (sets are loaded from the internet)",
+      "default": "System",
+      "tab": "UI Personalization",
+      "section": "Friends&Chat",
+      "values": {
+        "System": {},
+        "Apple": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Chat/Options/Emoji Apple.css"
+          }
+        },
+        "Google": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Chat/Options/Emoji Google.css"
+          }
+        },
+        "Twitter": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Chat/Options/Emoji Twitter.css"
+          }
+        },
+        "Facebook": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Chat/Options/Emoji Facebook.css"
+          }
+        }
+      }
+    },
+
+    "Emoticons in Message Field": {
+      "description": "Show Steam emoticons as pictures while typing",
+      "default": "yes",
+      "tab": "UI Personalization",
+      "section": "Friends&Chat",
+      "values": {
+        "yes": {},
+        "no": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Chat/Options/No Field Emoticons.css"
+          }
+        }
+      }
+    },
+
+    "My Messages Side": {
+      "description": "Show your own messages on the right or on the left",
+      "default": "Right",
+      "tab": "UI Personalization",
+      "section": "Friends&Chat",
+      "values": {
+        "Left": {},
+        "Right": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Chat/Options/My Messages Right.css"
+          }
+        }
+      }
+    },
+
+    "Chat Avatars": {
+      "description": "Show avatars beside messages in one-on-one chats",
+      "default": "no",
+      "tab": "UI Personalization",
+      "section": "Friends&Chat",
+      "values": {
+        "yes": {},
+        "no": {
+          "TargetCss": {
+            "affects": ["^.*$"],
+            "src": "Main Design/Friends&Chats/Chat/Options/Hide Chat Avatars.css"
+          }
+        }
+      }
+    },
+
+    "Context Menu": {
+      "description": "Refresh: redesigned context menus | Legacy: default Steam menus",
+      "default": "Refresh",
+      "tab": "UI Personalization",
+      "section": "Menus",
+      "values": {
+        "Legacy": {},
+        "Refresh": {
+          "TargetCss": {
+            "affects": ["^.*$", ".*"],
+            "src": "Main Design/Context Menu/Context Menu.css"
+          },
+          "TargetJs": {
+            "affects": ["^Steam$"],
+            "src": "Main Design/Context Menu/Context Menu Renderer.js"
+          }
+        }
       }
     },
 
     "Blur Account Name": {
-      "description": "Apply blur effect to your account/login name in the Account Menu",
+      "description": "Apply blur effect to your account/login name",
       "default": "no",
       "tab": "Privacy",
+	  "section": "Main",
       "values": {
         "no": {},
         "yes": {
           "TargetCss": {
-            "affects": ["Menu$", "SuperNav$"],
-            "src": "Extra/Privacy/Bluring/Login Account.css"
+            "affects": [".*"],
+            "src": "Features/Privacy/Login Account.css"
           }
         }
       }
     },
+
     "Blur Balance": {
-      "description": "Apply blur effect to your wallet balance in the Account Menu",
+      "description": "Apply blur effect to your wallet balance",
       "default": "no",
       "tab": "Privacy",
+	  "section": "Main",
       "values": {
         "no": {},
         "yes": {
           "TargetCss": {
-            "affects": ["Menu$", "SuperNav$"],
-            "src": "Extra/Privacy/Bluring/Balance in Menu.css"
-          }
-        }
-      }
-    },
-    "Hide Balance": {
-      "description": "Completely hide your wallet balance from the account button",
-      "default": "yes",
-      "tab": "Privacy",
-      "values": {
-        "no": {},
-        "yes": {
-          "TargetCss": {
-            "affects": ["^Steam$"],
-            "src": "Extra/Privacy/Hide/Account Balance.css"
+            "affects": ["^Steam$", "Menu$", "SuperNav$", "Supernav$"],
+            "src": "Features/Privacy/Balance in Menu.css"
           }
         }
       }
     }
-  },
 
+  },
+  
+  "UseDefaultPatches": true,
   "Patches": [
     {
-      "MatchRegexString": ".*",
-      "TargetJs": "Misc/Category Settings Script/TitleCategory.js"
+      "MatchRegexString": "^Steam$",
+      "TargetJs": "Features/Client Type/Client Type.js"
     },
     {
       "MatchRegexString": "^Steam$",
-      "TargetJs": "Misc/Category Settings Script/TitleCategory.js"
-    },
-  
-    {
-      "MatchRegexString": ".*",
-      "TargetJs": "webkit.js"
+      "TargetJs": "Patches/Tooltips Above Web Pages/Tooltip Popups.js"
     },
     {
-      "MatchRegexString": ".*",
-      "TargetCss": "Misc/Accents Code/accents-config.css"
+      "MatchRegexString": "^.*$",
+      "TargetJs": "Patches/Hide Account Items in Steam Menu/Hide Account Items in Steam Menu.js"
     },
-
     {
-      "MatchRegexString": "^Steam$",
-      "TargetCss": "Main Refresh UI/Refresh Header/Header Code.css"
+      "MatchRegexString": "^.*$|.*",
+      "TargetCss": "Patches/Tooltips Above Web Pages/Tooltip Popups.css"
     },
     {
       "MatchRegexString": "^Steam$",
-      "TargetJs": "Main Refresh UI/Refresh Header/Header Script.js"
+      "TargetCss": "Main Design/Header/Header Code.css"
     },
     {
       "MatchRegexString": "^Steam$",
-      "TargetCss": "Main Refresh UI/Refresh Library/Library Code.css"
+      "TargetJs": "Main Design/Header/Header Scripts.js"
     },
     {
       "MatchRegexString": "^Steam$",
-      "TargetCss": "Main Refresh UI/Refresh Settings/Settings Code.css"
+      "TargetCss": "Patches/Icons/Header Icons.css"
+    },
+    {
+      "MatchRegexString": ".friendsui-container",
+      "TargetCss": "Main Design/Friends&Chats/Friends List/Friends Code.css"
+    },
+    {
+      "MatchRegexString": ".friendsui-container",
+      "TargetJs": "Main Design/Friends&Chats/Friends List/Friends Scripts.js"
+    },
+    {
+      "MatchRegexString": ".friendsui-container",
+      "TargetCss": "Main Design/Friends&Chats/Friends List/Tabs & Search/Friends Tabs.css"
+    },
+    {
+      "MatchRegexString": ".friendsui-container",
+      "TargetJs": "Main Design/Friends&Chats/Friends List/Tabs & Search/Friends Tabs.js"
+    },
+    {
+      "MatchRegexString": ".friendsui-container",
+      "TargetCss": "Main Design/Friends&Chats/Friends List/List/Friends List.css"
+    },
+    {
+      "MatchRegexString": ".friendsui-container",
+      "TargetJs": "Main Design/Friends&Chats/Friends List/List/Friends List.js"
+    },
+    {
+      "MatchRegexString": ".friendsui-container",
+      "TargetCss": "Main Design/Friends&Chats/Chat/Chat.css"
+    },
+    {
+      "MatchRegexString": ".friendsui-container",
+      "TargetJs": "Main Design/Friends&Chats/Chat/Chat.js"
+    },
+    {
+      "MatchRegexString": ".friendsui-container",
+      "TargetCss": "Main Design/Friends&Chats/Chat/Emoticon Picker.css"
+    },
+    {
+      "MatchRegexString": ".friendsui-container",
+      "TargetJs": "Main Design/Friends&Chats/Chat/Emoji Pack.js"
+    },
+    {
+      "MatchRegexString": ".friendsui-container",
+      "TargetCss": "Main Design/Friends&Chats/Friends List/Quick Access/Quick.css"
+    },
+    {
+      "MatchRegexString": ".friendsui-container",
+      "TargetJs": "Main Design/Friends&Chats/Friends List/Quick Access/Quick.js"
     },
     {
       "MatchRegexString": "^Steam$",
-      "TargetCss": "Main Refresh UI/Refresh Settings/Millennium Code.css"
-    },
-    {
-      "MatchRegexString": "^Steam$",
-      "TargetCss": "Misc/Remove Stuff/RemoveShadow.css"
-    },
-    {
-      "MatchRegexString": "^Steam$",
-      "TargetCss": "Misc/Remove Stuff/RemoveUseless.css"
-    },
-    {
-      "MatchRegexString": "^Steam$",
-      "TargetCss": "Misc/Remove Stuff/Resizer Library.css"
-    },
-    {
-      "MatchRegexString": ".ModalDialogPopup",
-      "TargetCss": "Misc/Fix Millennium Stuff/SVGLocation.css"
-    },
-    {
-      "MatchRegexString": "^Steam$",
-      "TargetCss": "Misc/Return Old Style Tooltips/Legacy Tooltip.css"
-    },
-    {
-      "MatchRegexString": "^Steam$",
-      "TargetCss": "Misc/OLD Accents Code/Main Steam Elements.css"
-    },
-    {
-      "MatchRegexString": "Menu$",
-      "TargetCss": "Misc/OLD Accents Code/Main Steam Elements.css"
-    },
-    {
-      "MatchRegexString": "SuperNav$",
-      "TargetCss": "Misc/OLD Accents Code/Main Steam Elements.css"
+      "TargetCss": "Main Design/Settings/Millennium/Quick Settings.css"
     },
 	
     {
-      "MatchRegexString": ".*",
-      "TargetJs": "Misc/Auto Detect Light/LightorDark.js"
+      "MatchRegexString": "^.*$|.*",
+      "TargetJs": "Features/Rounding/Rounding Sliders.js"
+    },
+    {
+      "MatchRegexString": "^.*$|.*",
+      "TargetCss": "Features/Rounding/Buttons.css"
+    },
+	
+    {
+      "MatchRegexString": "^Steam$",
+      "TargetCss": "Main Design/Header/Compact Buttons/Compact Top Buttons.css"
     },
     {
       "MatchRegexString": "^Steam$",
-      "TargetJs": "Misc/Right Click Swap Steam/SteamButtons.js"
+      "TargetJs": "Main Design/Header/Compact Buttons/Fix Placement Buttons.js"
     },
-    {
-      "MatchRegexString": ".*",
-      "TargetJs": "General/Rounding Avatars/Custom Avatar Roundness Script.js"
-    },
-    {
+	
+	{
       "MatchRegexString": "^Steam$",
-      "TargetJs": "General/Rounding Avatars/Custom Avatar Roundness Script.js"
+      "TargetJs": "Patches/STEAM Button Patch/STEAM Button Patch.js"
+    },
+	
+	{
+      "MatchRegexString": "^.*$|.*",
+      "TargetCss": "Patches/Colors/Accents/Accents Code.css"
+    },
+	{
+      "MatchRegexString": "^.*$|.*",
+      "TargetCss": "Patches/Colors/Backgrounds/Backgrounds Code.css"
+    },
+	{
+      "MatchRegexString": "^.*$|.*",
+      "TargetCss": "Patches/Colors/Buttons/Buttons Code.css"
+    },
+	{
+      "MatchRegexString": "^.*$|.*",
+      "TargetCss": "Patches/Colors/Status/Status Code.css"
+    },
+	{
+      "MatchRegexString": "^.*$|.*",
+      "TargetCss": "Patches/Colors/Text/Text Code.css"
+    },
+	{
+      "MatchRegexString": "^.*$|.*",
+      "TargetCss": "Patches/Colors/Tooltips/Tooltips Code.css"
+    },
+	{
+      "MatchRegexString": "^.*$|.*",
+      "TargetCss": "Patches/Colors/Accents/Accents Elements.css"
+    },
+	{
+      "MatchRegexString": "^.*$|.*",
+      "TargetCss": "Patches/Colors/Backgrounds/Backgrounds Elements.css"
+    },
+	{
+      "MatchRegexString": "^.*$|.*",
+      "TargetCss": "Patches/Colors/Buttons/Buttons Elements.css"
+    },
+	{
+      "MatchRegexString": "^.*$|.*",
+      "TargetCss": "Patches/Colors/Status/Status Elements.css"
+    },
+	{
+      "MatchRegexString": "^.*$|.*",
+      "TargetCss": "Patches/Colors/Text/Text Elements.css"
+    },
+	{
+      "MatchRegexString": "^.*$|.*",
+      "TargetCss": "Patches/Colors/Tooltips/Tooltips Elements.css"
+    },
+	
+	{
+      "MatchRegexString": "^.*$",
+      "TargetCss": "Patches/Legacy Style Tooltips/Legacy Tooltip.css"
+    },
+	{
+      "MatchRegexString": "^.*$",
+      "TargetCss": "Patches/Remove ALL Sleep Icons/Sleep Icons.css"
+    },
+	{
+      "MatchRegexString": ".friendsui-container",
+      "TargetJs": "Patches/Minimal Resize Window Friends/Window Script.js"
+    },
+	
+	{
+      "MatchRegexString": "^.*$",
+      "TargetJs": "Credits/Boosty Button.js"
+    },
+    {
+      "MatchRegexString": "^.*$",
+      "TargetJs": "Main Design/Settings/NEVKO Section/NEVKO Section.js"
+    },
+    {
+      "MatchRegexString": "^.*$|.*",
+      "TargetCss": "Main Design/Settings/NEVKO Section/NEVKO Section.css"
+    },
+	{
+      "MatchRegexString": "^Steam$",
+      "TargetJs": "Patches/Badges for Settings/Settings Badges.js"
+    },
+	
+	{
+      "MatchRegexString": "^Steam$",
+      "TargetJs": "Patches/Forced Disable & Remove Settings/Apply Forced Settings.js"
+    },
+    {
+      "MatchRegexString": "^.*$",
+      "TargetJs": "Patches/Forced Disable & Remove Settings/Force Disable Settings.js"
     }
   ]
 }

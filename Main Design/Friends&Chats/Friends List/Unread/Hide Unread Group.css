@@ -1,0 +1,6 @@
+/* Friends tab: no "Unread Messages" group at the top of the list | Its rows are marked .unreadFriend by Steam */
+
+.friendlistListContainer:not(.rcp-list) .unreadChatsGroup,
+.friendlistListContainer:not(.rcp-list) .friendGroup:has(.unreadFriend) {
+	display: none !important;
+}

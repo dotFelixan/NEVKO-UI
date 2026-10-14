@@ -1,0 +1,25 @@
+/* Backgrounds */
+:root,
+body {
+	/* Secondary */
+	--secondary-background: color-mix(in srgb, var(--main-background) 95%, white);
+
+	/* Quick Settings */
+	--quick-settings-background: #171D25;
+	--section-header-background: #23262E;
+
+	/* Menu */
+	--menu-background: #3D4450;
+	--menu-item-hover-background: #FFFFFF;
+	--menu-shadow: rgba(0, 0, 0, .67);
+
+	/* Context Menu */
+	--context-menu-background: var(--main-background);
+
+	/* Shadow */
+	--shadow-soft: rgba(0, 0, 0, .3);
+
+	/* Badge Skeleton */
+	--skeleton-color: rgba(255, 255, 255, .06);
+	--skeleton-shine: rgba(255, 255, 255, .16);
+}

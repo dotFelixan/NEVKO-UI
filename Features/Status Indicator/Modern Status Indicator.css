@@ -1,0 +1,196 @@
+/* Modern Status Indicator | Colors in Status Elements.css */
+
+/* Marker */
+:root {
+	--nk-status-indicator: modern;
+}
+
+/* Return Icon */
+.nibodjvvrm86uCfnnAn4g ._3xUpb5DWXPFNcHHIcv-9pe.bottom,
+.nibodjvvrm86uCfnnAn4g ._3xUpb5DWXPFNcHHIcv-9pe.right,
+._3xUpb5DWXPFNcHHIcv-9pe {
+	visibility: visible !important;
+}
+
+._3h-QRJGxnVOIExtHD1R0f2 {
+	outline: unset !important;
+}
+._3h-QRJGxnVOIExtHD1R0f2 {
+	outline-color: unset !important;
+}
+.online ._3h-QRJGxnVOIExtHD1R0f2 {
+	outline-color: unset !important;
+}
+.awayOrSnooze ._3h-QRJGxnVOIExtHD1R0f2 {
+	outline: unset !important;
+}
+.ingame ._3h-QRJGxnVOIExtHD1R0f2 {
+	outline-color: unset !important;
+}
+.ingame.awayOrSnooze ._3h-QRJGxnVOIExtHD1R0f2 {
+	outline: unset !important;
+}
+
+/* Remove SVG Icon */
+.friend.quickAccessFriend.friend.awayOrSnooze .avatarHolder .avatarStatus,
+.ChatTabContent .friend.awayOrSnooze .avatarHolder .avatarStatus,
+.awayOrSnooze ._3xUpb5DWXPFNcHHIcv-9pe {
+	-webkit-mask: unset;
+	-webkit-mask-size: unset;
+	mask: unset;
+	mask-size: unset;
+	opacity: 1;
+}
+.awayOrSnooze ._3xUpb5DWXPFNcHHIcv-9pe.bottom {
+	-webkit-mask: unset;
+	mask: unset;
+}
+
+/* Replace to Alt Online icon */
+._3xUpb5DWXPFNcHHIcv-9pe.right {
+	top: unset;
+	left: unset;
+	width: 20%;
+	height: 20%;
+	margin-bottom: 1px;
+	margin-right: 1px;
+	z-index: 2;
+
+	outline: solid 2px var(--main-background);
+}
+._3xUpb5DWXPFNcHHIcv-9pe.bottom {
+	top: unset;
+	left: unset;
+	width: 20%;
+	height: 20%;
+	margin-bottom: 1px;
+	margin-right: 1px;
+	z-index: 2;
+
+	outline: solid 2px var(--main-background);
+}
+._3yD46y5pd3zOGR7CzKs0mC .nibodjvvrm86uCfnnAn4g ._3xUpb5DWXPFNcHHIcv-9pe.right {
+	width: 28%;
+	height: 28%;
+}
+/* Friends Window */
+.favoriteElement .avatarStatus {
+	width: 12px !important;
+	height: 12px !important;
+	right: 0px !important;
+	bottom: 0px !important;
+	transform: none !important;
+
+	outline: solid 3px var(--main-background);
+
+	border-radius: var(--status-radius);
+}
+
+/* Friends list, Chats list (plugin), chat header: the same dot in the avatar's corner instead of Steam's bar beside it */
+.friendlistListContainer .friend .avatarHolder,
+#nk-chat-header .avatarHolder {
+	position: relative;
+	overflow: visible;
+}
+.friendlistListContainer .friend .avatarHolder > .avatarStatus,
+#nk-chat-header .avatarHolder > .avatarStatus {
+	position: absolute !important;
+	inset: auto 0 0 auto !important;
+	z-index: 2;
+	display: block !important;
+	width: 10px !important;
+	height: 10px !important;
+	margin: 0 !important;
+	transform: none !important;
+
+	border-radius: var(--status-radius);
+	outline: solid 2px var(--main-background);
+	opacity: 1;
+}
+
+/* Device (phone, Steam Deck, Big Picture, VR): the device's icon in the status color stands in place of the dot, */
+/* on a patch of the row's color. It is Steam's icon from beside the name, moved over the avatar's corner */
+/* (the avatar is drawn 31px wide and ends 41px from the row's corner; the patch goes 4px past it) */
+.friendlistListContainer:not(.rcp-list) .friend .PersonaStatusIcon {
+	position: absolute;
+	top: auto;
+	right: auto;
+	bottom: calc(100% - 45px);
+	left: auto;
+	inset-inline-end: calc(100% - 45px);
+	z-index: 3;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: auto; /* the patch is the icon and 2px around it */
+	height: auto;
+	margin: 0;
+	padding: 2px;
+
+	border-radius: 5px;
+	background: var(--main-background);
+	box-shadow: inset 0 0 0 20px transparent, inset 0 0 0 20px var(--button-background); /* layers of the row's color */
+
+	transition: box-shadow .15s ease-out;
+}
+.friendlistListContainer:not(.rcp-list) .friend .PersonaStatusIcon svg {
+	width: 14px;
+	height: 14px;
+	margin: 0;
+}
+/* The phone takes under half of its picture: drawn bigger, and the patch is cut to the phone itself (7x12px) */
+.friendlistListContainer:not(.rcp-list) .friend .PersonaStatusIcon.MobilePhoneIcon {
+	bottom: calc(100% - 45px);
+	inset-inline-end: calc(100% - 46px);
+	width: 15px; /* 2px around the phone: the status dot under it is covered */
+	height: 20px;
+	padding: 0;
+	border-radius: 6px;
+}
+.friendlistListContainer:not(.rcp-list) .friendGroup.gameGroup:not(.OtherGamesGroup) .friend .PersonaStatusIcon.MobilePhoneIcon {
+	bottom: calc(100% - 43px);
+	inset-inline-end: calc(100% - 44px);
+}
+.friendlistListContainer:not(.rcp-list) .friend .PersonaStatusIcon.MobilePhoneIcon svg {
+	flex: none;
+	width: 17px;
+	height: 17px;
+}
+/* Game card: its rows are 2px tighter */
+.friendlistListContainer:not(.rcp-list) .friendGroup.gameGroup:not(.OtherGamesGroup) .friend .PersonaStatusIcon {
+	bottom: calc(100% - 43px);
+	inset-inline-end: calc(100% - 43px);
+}
+
+/* Party in one row (several avatars side by side): the dots stand at the left corner, where the next avatar */
+/* does not cover them */
+.friendlistListContainer:not(.rcp-list) .friend[data-nk-party="lead"] .avatarHolder > .avatarStatus {
+	inset: auto auto 0 0 !important;
+}
+
+/* Hovered row: the dot's outline and the device's patch take the row's status tint, at the row's pace */
+.friendlistListContainer:not(.rcp-list) .friend { --nk-row-tint: var(--status-offline-tint); }
+.friendlistListContainer:not(.rcp-list) .friend.online { --nk-row-tint: var(--status-online-tint); }
+.friendlistListContainer:not(.rcp-list) .friend.awayOrSnooze { --nk-row-tint: var(--status-afk-tint); }
+.friendlistListContainer:not(.rcp-list) .friend.ingame { --nk-row-tint: var(--status-playing-tint); }
+.friendlistListContainer:not(.rcp-list) .friend.ingame.awayOrSnooze { --nk-row-tint: var(--status-playing-afk-tint); }
+
+.friendlistListContainer:not(.rcp-list) .friend .avatarHolder > .avatarStatus {
+	outline: none;
+	box-shadow: 0 0 0 2px transparent, 0 0 0 2px transparent, 0 0 0 2px var(--main-background);
+
+	transition: box-shadow .15s ease-out;
+}
+.friendlistListContainer:not(.rcp-list) .friend:hover .avatarHolder > .avatarStatus {
+	box-shadow: 0 0 0 2px var(--nk-row-tint), 0 0 0 2px transparent, 0 0 0 2px var(--main-background);
+}
+.friendlistListContainer:not(.rcp-list) .friend:hover .PersonaStatusIcon {
+	box-shadow: inset 0 0 0 20px var(--nk-row-tint), inset 0 0 0 20px transparent;
+}
+/* Game card: the row lies on the card's plaque */
+.friendlistListContainer:not(.rcp-list) .friendGroup.gameGroup:not(.OtherGamesGroup) .friend:hover .avatarHolder > .avatarStatus {
+	box-shadow: 0 0 0 2px var(--nk-row-tint), 0 0 0 2px var(--button-background), 0 0 0 2px var(--main-background);
+}
+.friendlistListContainer:not(.rcp-list) .friendGroup.gameGroup:not(.OtherGamesGroup) .friend:hover .PersonaStatusIcon {
+	box-shadow: inset 0 0 0 20px var(--nk-row-tint), inset 0 0 0 20px var(--button-background);
+}

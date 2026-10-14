@@ -1,0 +1,15 @@
+._2FxbHJzYoH024ko7zqcJOf {
+	transition: opacity .25s !important;
+	text-overflow: ellipsis !important;
+	box-sizing: border-box !important;
+	pointer-events: none !important;
+	white-space: nowrap !important;
+	border-radius: 2px;
+	width: fit-content !important;
+	user-select: none !important;
+	overflow: hidden !important;
+	font-size: 13px !important;
+
+	background: unset;
+	text-shadow: unset;
+}

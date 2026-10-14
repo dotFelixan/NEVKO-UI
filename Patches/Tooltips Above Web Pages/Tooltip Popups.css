@@ -1,0 +1,22 @@
+/* Tooltip Popups | Window for Tooltip Popups.js */
+
+/* Transparent Window */
+html.ContextMenuPopup:has(.nk-tooltip-popup-window),
+html.ContextMenuPopup:has(.nk-tooltip-popup-window) body {
+	background: transparent !important;
+}
+
+/* Fade In */
+@keyframes nk-tooltip-in {
+	from {
+		opacity: 0;
+	}
+}
+.nk-tooltip-popup {
+	animation: nk-tooltip-in .2s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+	.nk-tooltip-popup {
+		animation: none;
+	}
+}

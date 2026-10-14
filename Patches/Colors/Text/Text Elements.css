@@ -1,0 +1,81 @@
+/* Text & Icons */
+
+/* Header */
+:where(.MillenniumWindow_MainSteamWindow, .MillenniumWindow_MainSteamWindow *) {
+	&._2UyOBeiSdBayaFdRa39N2O:nth-of-type(1) {
+		color: var(--text-bright-color);
+	}
+	&.bSKGlAJG2UVWTsntEJY2v .GG9wVQz6PLlhGHlJyZh4E > path {
+		fill: var(--text-bright-color);
+	}
+	&._7AlhCx3XGzBeIrQaCneUD ._19axKcqYRuaJ8vdYKYmtTQ {
+		color: var(--text-muted-color);
+	}
+	&._2foCkpRXhqq0UGVE50BWqj ._1KrJ3sFAqPBN9mfpaNTU5F,
+	&._1TdaAqMFadi0UTqilrkelR ._1KrJ3sFAqPBN9mfpaNTU5F,
+	&.ip-YZhijAMZcuRoXBGiye ._1KrJ3sFAqPBN9mfpaNTU5F {
+		color: var(--icon-color);
+	}
+	&.ip-YZhijAMZcuRoXBGiye ._3wJnTtcTLEp0R7eQj_mK8Y {
+		color: var(--text-muted-color);
+	}
+	&._3yD46y5pd3zOGR7CzKs0mC ._2jphjrSifC6orDT4g_7Wd {
+		color: var(--text-muted-color);
+	}
+	&.RtSv39ZoBOySnb8XQ5hJf._3qhGkQ5qLVNQQ-J2-uPoHt:not(._1QQWjaXmb1eTHZpeIhQA_5):hover ._34bQcTHo5QKzuujoEyU1tm {
+		color: var(--text-bright-color);
+	}
+	&._13vrqU6oOqmmxrsZSW5O39:hover ._34bQcTHo5QKzuujoEyU1tm,
+	&._3arz-hc3FJ0QKXLPRUSaah:hover ._34bQcTHo5QKzuujoEyU1tm {
+		color: var(--text-bright-color);
+	}
+	&.title-area-icon .SVGIcon_Minimize polyline,
+	&.title-area-icon .SVGIcon_Restore polyline,
+	&.title-area-icon.minimizeButton svg line,
+	&.title-area-icon .SVGIcon_Maximize rect,
+	&.title-area-icon .SVGIcon_Maximize line,
+	&.title-area-icon .SVGIcon_Restore rect,
+	&.title-area-icon .SVGIcon_X_Line line {
+		stroke: var(--icon-color);
+	}
+}
+
+/* Friends Header */
+:where(.MillenniumWindow_FriendsList, .MillenniumWindow_FriendChatWindow, .friendsui-container, .MillenniumWindow_FriendsList *, .MillenniumWindow_FriendChatWindow *, .friendsui-container *) {
+	&.friendRequestButton .SVGIcon_FriendRequest .friendBodyFull,
+	&.friendRequestButton .SVGIcon_FriendRequest .friendHead,
+	&.friendRequestButton .SVGIcon_FriendRequest .friendArm,
+	&.friendRequestButton .SVGIcon_FriendRequest .friendBody {
+		fill: var(--icon-color);
+	}
+}
+
+/* Quick Access */
+:where(.MillenniumWindow_FriendsList, .MillenniumWindow_FriendChatWindow, .friendsui-container, .MillenniumWindow_FriendsList *, .MillenniumWindow_FriendChatWindow *, .friendsui-container *) {
+	&.quickAccessFriends .nk-qa-page-indicator {
+		color: var(--page-indicator-color) !important;
+	}
+	&.quickAccessFriends .nk-qa-nav {
+		color: var(--text-muted-color);
+	}
+	&.quickAccessFriends .nk-qa-nav:not(:disabled):hover {
+		color: var(--text-bright-color);
+	}
+}
+
+/* Quick Settings */
+:where(.MillenniumWindow_MainSteamWindow, .MillenniumWindow_MainSteamWindow *) {
+	&.SettingsDialogSubHeader {
+		color: var(--icon-color);
+	}
+}
+
+/* Compact Buttons */
+:where(.MillenniumWindow_MainSteamWindow, .MillenniumWindow_MainSteamWindow *) {
+	&.ip-YZhijAMZcuRoXBGiye ._3wJnTtcTLEp0R7eQj_mK8Y {
+		color: var(--icon-color);
+	}
+	&.ip-YZhijAMZcuRoXBGiye ._1sCy-pm412Smb0wJx0W-4 {
+		color: var(--icon-color);
+	}
+}

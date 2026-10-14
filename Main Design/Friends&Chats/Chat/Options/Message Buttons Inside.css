@@ -1,0 +1,78 @@
+/* Option "Message Field Buttons: Inside" - emoticons and attachment inside the field, send is a separate button (base: Chat.css) */
+
+/* Row: [field | emoticons | attachment] [voice] [send]; send is taken to the far right, the row keeps room for it */
+html .chatWindow .chatEntry {
+	position: relative;
+	gap: 0;
+	padding-inline-end: 63px !important; /* 15px side + 40px send + 8px */
+}
+
+/* Field: left half of the pill */
+html .chatWindow .chatEntryControls {
+	position: static;
+	padding-inline-end: 0;
+	border-radius: 20px 0 0 20px;
+}
+
+/* Emoticons and attachment: the pill goes on through them */
+html .chatWindow .chatEntryActionsGroup .chatSubmitButton {
+	order: 1;
+	align-self: stretch;
+	align-items: flex-end;
+	width: 36px;
+	min-width: 36px;
+	max-width: 36px;
+	height: auto;
+	padding: 0 0 10px;
+
+	border-radius: 0;
+}
+html .chatWindow .chatEntryActionsGroup .EmbedButton {
+	order: 2;
+	width: 44px;
+	min-width: 44px;
+	max-width: 44px;
+	padding-inline-end: 8px;
+	border-radius: 0 20px 20px 0;
+}
+html .chatWindow .chatEntryActionsGroup .chatSubmitButton,
+html .chatWindow .chatEntryActionsGroup .chatSubmitButton:hover {
+	background: var(--button-background);
+}
+html .chatWindow .chatEntryActionsGroup .chatSubmitButton svg {
+	opacity: .75;
+	transition: opacity .15s;
+}
+html .chatWindow .chatEntryActionsGroup .chatSubmitButton:hover svg {
+	opacity: 1;
+}
+
+/* Voice */
+html .chatWindow .ChatMessageEntryVoice {
+	order: 3;
+	margin-inline-start: 8px;
+}
+
+/* Send: separate round 40px button at the right edge */
+html .chatWindow .chatEntryControls .chatSubmitButton {
+	position: absolute;
+	inset-inline-end: 15px;
+	bottom: 15px;
+	width: 40px;
+	min-width: 40px;
+	max-width: 40px;
+	height: 40px;
+	min-height: 40px;
+}
+html .chatWindow .chatEntryControls .chatSubmitButton svg {
+	width: 20px;
+	height: 20px;
+}
+html .chatWindow .chatEntryControls .chatSubmitButton.disabled {
+	background: var(--button-background);
+}
+
+/* On a chat background (Chat.css) the separate send button is solid too */
+html .chatDialogs[data-nk-chat-bg] .chatWindow .chatEntryControls .chatSubmitButton.disabled {
+	background: var(--nk-solid);
+}

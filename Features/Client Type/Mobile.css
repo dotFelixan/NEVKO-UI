@@ -1,0 +1,5 @@
+/* Option "Fake Device Status: Mobile" (script: Client Type.js) */
+
+:root {
+	--nk-client-type: mobile;
+}

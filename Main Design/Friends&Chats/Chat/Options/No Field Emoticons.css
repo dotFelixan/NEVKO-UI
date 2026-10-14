@@ -1,0 +1,5 @@
+/* Option "Emoticons in Message Field: no" - Steam emoticon codes stay text (:name:) while a message is written (Emoji Pack.js) */
+
+:root {
+	--nk-field-emoticons: off;
+}

@@ -1,0 +1,9 @@
+/* Option "Chat Avatars: no" - no avatars beside the messages of a one-on-one chat (who wrote is told by the side or */
+/* by the chat header); group chats keep theirs, they tell the people apart */
+
+.chatWindow[data-nk-chat="friend"] .ChatMessageBlock {
+	padding-left: 0;
+}
+.chatWindow[data-nk-chat="friend"] .ChatMessageBlock > .ChatSpeaker {
+	display: none;
+}

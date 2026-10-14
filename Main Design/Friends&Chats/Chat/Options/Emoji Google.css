@@ -1,0 +1,5 @@
+/* Option "Emoji Style: Google" - emoji in the emoticon menu as pictures of this set (Emoji Pack.js) */
+
+:root {
+	--nk-emoji-set: google;
+}

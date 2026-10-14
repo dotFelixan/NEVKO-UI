@@ -1,0 +1,10 @@
+/* Option "Stickers in Menu: Always Animated" - no still copies of the stickers in the emoticon menu (Emoji Pack.js) */
+
+:root {
+	--nk-sticker-motion: always;
+}
+
+/* No still copies: the stickers themselves are shown */
+.contextMenu .Picker .StickerButton > img {
+	visibility: visible !important;
+}

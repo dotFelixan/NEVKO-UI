@@ -1,0 +1,717 @@
+/* Friends tab list: group headers, game cards, friend plaques, action buttons, parties in one row */
+/* Script: Friends List.js | Colors of names: Friends Code.css */
+
+/* Icons */
+.friendsui-container {
+	--nk-icon-chevron: url("../../../../Patches/Icons/Gamescope/arrow-up.svg");
+	--nk-icon-chat: url("../../../../Patches/Icons/Steam/ChatBubble.svg");
+	--nk-icon-join: url("../../../../Patches/Icons/Gamescope/play.svg");
+}
+
+/* No scrollbar (as in the Chats tab): rows keep the same 15px sides as everything above */
+.friendlistListContainer:not(.rcp-list)::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+}
+
+/* Group Header: "In Game · 6", chevron on the right */
+.friendlistListContainer:not(.rcp-list) .groupName {
+	display: flex !important;
+	align-items: center;
+	gap: 6px;
+
+	height: 28px;
+	margin: 0;
+	padding: 0 15px;
+	box-sizing: border-box;
+
+	border: none !important;
+	background: transparent !important;
+
+	color: var(--text-muted-color) !important;
+	font-size: 13px !important;
+	font-weight: bold !important;
+	text-transform: none !important;
+	letter-spacing: 0 !important;
+
+	cursor: pointer;
+}
+.friendlistListContainer:not(.rcp-list) .groupName .gameGroupContainer {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	min-width: 0;
+
+	color: inherit;
+	font: inherit;
+}
+/* Count: "(6)" -> "· 6" (number from script) */
+.friendlistListContainer:not(.rcp-list) .groupName > .groupCount {
+	margin: 0;
+	color: inherit;
+	font: inherit;
+	opacity: 1 !important; /* Steam shows it only on hover */
+}
+.friendlistListContainer:not(.rcp-list) .groupName > .groupCount[data-nk-count] {
+	font-size: 0 !important;
+}
+.friendlistListContainer:not(.rcp-list) .groupName > .groupCount[data-nk-count]::after {
+	content: "\B7  " attr(data-nk-count); /* middle dot */
+	font-size: 13px;
+}
+/* Remove (line, plus / minus) */
+.friendlistListContainer:not(.rcp-list) .groupName > hr,
+.friendlistListContainer:not(.rcp-list) .groupName .ExpandPlusMinus > svg {
+	display: none !important;
+}
+/* Chevron (the group folds on a click anywhere in the header, the chevron is drawn at its right end) */
+.friendlistListContainer:not(.rcp-list) .groupName::after {
+	content: "";
+	flex-shrink: 0;
+	width: 16px;
+	height: 16px;
+	margin-left: auto;
+
+	background-color: var(--text-muted-color);
+	-webkit-mask: var(--nk-icon-chevron) center / contain no-repeat;
+	mask: var(--nk-icon-chevron) center / contain no-repeat;
+	transition: background-color .1s ease-in-out, transform .2s ease-out;
+}
+.friendlistListContainer:not(.rcp-list) .groupName:hover::after {
+	background-color: var(--text-bright-color);
+}
+.friendlistListContainer:not(.rcp-list) .groupName.Collapsed::after {
+	transform: rotate(180deg);
+}
+.friendlistListContainer:not(.rcp-list) .groupName .ExpandPlusMinus {
+	display: none !important;
+}
+
+/* Game Card: friends in the same game on one plaque (not "Other Games") */
+.friendlistListContainer:not(.rcp-list) .friendGroup.gameGroup:not(.OtherGamesGroup) {
+	margin: 0 15px 8px; /* 8px between plaques, as between the Quick Access tiles */
+	padding: 2px 0 4px;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+}
+.friendlistListContainer:not(.rcp-list) .friendGroup.gameGroup:not(.OtherGamesGroup) > .groupName {
+	height: 34px;
+	padding: 0 10px;
+	color: var(--status-playing) !important;
+}
+.friendlistListContainer:not(.rcp-list) .friendGroup.gameGroup:not(.OtherGamesGroup) > .groupName .groupCount {
+	color: var(--text-muted-color);
+}
+
+/* Friend Row */
+.friendlistListContainer:not(.rcp-list) .friend {
+	display: flex !important;
+	align-items: center;
+	gap: 10px;
+
+	width: auto !important;
+	height: auto !important;
+	min-height: 52px;
+	margin: 0 15px 8px !important;
+	padding: 8px 12px 8px 8px !important;
+	box-sizing: border-box;
+
+	border: none !important;
+	border-radius: var(--button-radius);
+	background: var(--button-background) !important;
+	box-shadow: none !important;
+
+	transition: background-color .15s ease-out;
+}
+/* Inside a game card: rows without their own plaque */
+.friendlistListContainer:not(.rcp-list) .friendGroup.gameGroup:not(.OtherGamesGroup) .friend {
+	min-height: 48px;
+	margin: 0 4px !important;
+	padding: 6px 8px 6px 6px !important;
+	background: transparent !important;
+}
+/* Hover: status tint */
+.friendlistListContainer:not(.rcp-list) .friend.friend:hover {
+	background: var(--status-offline-tint) !important;
+}
+.friendlistListContainer:not(.rcp-list) .friend.friend.online:hover {
+	background: var(--status-online-tint) !important;
+}
+.friendlistListContainer:not(.rcp-list) .friend.friend.awayOrSnooze:hover {
+	background: var(--status-afk-tint) !important;
+}
+.friendlistListContainer:not(.rcp-list) .friend.friend.ingame:hover {
+	background: var(--status-playing-tint) !important;
+}
+.friendlistListContainer:not(.rcp-list) .friend.friend.ingame.awayOrSnooze:hover {
+	background: var(--status-playing-afk-tint) !important;
+}
+
+/* Row Parts */
+/* Remove: Steam's party bracket (parties are one row here), game icon inside a game card */
+.friendlistListContainer:not(.rcp-list) .friend > span:empty,
+.friendlistListContainer:not(.rcp-list) .friendGroup.gameGroup:not(.OtherGamesGroup) .friend > .FriendInGameIcon {
+	display: none !important;
+}
+/* Game icon: between the avatar and the texts */
+.friendlistListContainer:not(.rcp-list) .friend > .FriendInGameIcon {
+	position: static !important;
+	order: 2;
+	flex-shrink: 0;
+	width: 22px !important;
+	height: 22px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+.friendlistListContainer:not(.rcp-list) .friend > .FriendInGameIcon .gameIcon {
+	position: static !important;
+	display: block;
+	width: 22px !important;
+	height: 22px !important;
+	margin: 0 !important;
+	border-radius: 4px;
+}
+/* Remove: Steam's shadow under game icons (rows, game card headers, favorites) */
+.FriendInGameIcon,
+.FriendInGameIcon img,
+.FavoriteFriend_GameIcon img,
+.friendlistListContainer .groupName .groupIcon {
+	box-shadow: none !important;
+}
+/* Avatar */
+.friendlistListContainer:not(.rcp-list) .friend > div:has(> .avatarHolder) {
+	position: relative !important;
+	order: 1;
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+
+	width: auto !important;
+	height: 36px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+.friendlistListContainer:not(.rcp-list) .friend .avatarHolder {
+	position: relative !important;
+	inset: auto !important;
+	flex-shrink: 0;
+	width: 36px !important;
+	height: 36px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	box-sizing: border-box;
+}
+.friendlistListContainer:not(.rcp-list) .friend .avatarHolder .avatar {
+	width: 36px !important;
+	height: 36px !important;
+}
+/* Name + status */
+.friendlistListContainer:not(.rcp-list) .friend > .labelHolder {
+	position: static !important;
+	order: 3;
+	flex: 1;
+	min-width: 0;
+	height: auto !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+.friendlistListContainer:not(.rcp-list) .friend .statusAndName {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+	height: auto;
+}
+.friendlistListContainer:not(.rcp-list) .friend .playerName {
+	font-size: 14px !important;
+	font-weight: bold !important;
+	line-height: 19px !important;
+}
+.friendlistListContainer:not(.rcp-list) .friend .richPresenceContainer {
+	position: static !important;
+	height: auto !important;
+	margin: 0 !important;
+}
+.friendlistListContainer:not(.rcp-list) .friend .richPresenceLabel {
+	height: auto !important;
+	font-size: 12px !important;
+	line-height: 16px !important;
+}
+
+/* Action Buttons (from script): join game, open chat */
+.nk-friend-actions {
+	order: 4;
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+	gap: 8px; /* as between the buttons of the window header */
+	margin-left: auto;
+}
+.nk-friend-button {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	border: none;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+
+	cursor: pointer;
+	transition: background-color .15s ease-out;
+}
+.nk-friend-button::before {
+	content: "";
+	width: 16px;
+	height: 16px;
+
+	background-color: var(--text-muted-color);
+	-webkit-mask: var(--nk-icon) center / contain no-repeat;
+	mask: var(--nk-icon) center / contain no-repeat;
+	transition: background-color .1s ease-in-out;
+}
+.nk-friend-button:hover {
+	background: var(--button-hover-background);
+}
+.nk-friend-button:hover::before {
+	background-color: var(--text-bright-color);
+}
+.nk-friend-chat {
+	--nk-icon: var(--nk-icon-chat);
+}
+.nk-friend-join {
+	--nk-icon: var(--nk-icon-join);
+}
+/* Avatar = link to the profile (click handled by script) */
+.friendlistListContainer:not(.rcp-list) .friend .avatarHolder,
+.friendlistListContainer:not(.rcp-list) .friend .avatarHolder * {
+	cursor: pointer !important;
+}
+/* Unread count on the chat button (the "Hide Unread Count in Friends" option hides it) */
+.nk-friend-chat[data-nk-unread]::after {
+	content: attr(data-nk-unread);
+	position: absolute;
+	top: -5px;
+	right: -5px;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	min-width: 16px;
+	height: 16px;
+	padding: 0 4px;
+	box-sizing: border-box;
+	border-radius: 8px;
+	background: var(--SystemAccentColor);
+
+	color: var(--text-bright-color);
+	font-size: 10px;
+	font-weight: bold;
+	line-height: 1;
+}
+
+/* Party: friends playing together = one row (the others are hidden, picked in a menu) */
+.friendlistListContainer:not(.rcp-list) .friend[data-nk-party="member"] {
+	display: none !important;
+}
+.nk-party-avatars {
+	display: flex;
+	align-items: center;
+}
+/* The others' avatars: same structure as Steam's, so the status indicator of the theme works on them */
+.friendlistListContainer:not(.rcp-list) .friend .nk-party-avatars > .avatarHolder {
+	margin-left: -12px !important;
+	border-radius: var(--avatar-radius, 50%);
+	background: var(--main-background);
+	box-shadow: 0 0 0 2px var(--main-background); /* gap between overlapping avatars */
+}
+/* Names of the whole party instead of the first one */
+.friendlistListContainer:not(.rcp-list) .friend[data-nk-party="lead"] .statusAndName > :not(.nk-party-names) {
+	display: none !important;
+}
+.nk-party-names {
+	overflow: hidden;
+	color: var(--nk-status);
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 19px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.nk-friend-button[hidden] {
+	display: none;
+}
+
+/* Remove: inner shadows at the top / bottom of the list */
+.friendlist .FriendsListInsetShadowCtn {
+	display: none !important;
+}
+
+/* Remove: lines between groups */
+.friendlistListContainer:not(.rcp-list) .friendGroup {
+	margin-top: 0 !important;
+	border: none !important;
+}
+.friendlistListContainer:not(.rcp-list) .listContentContainer {
+	padding-top: 2px;
+}
+/* Count on the text line */
+.friendlistListContainer:not(.rcp-list) .groupName > .groupCount {
+	display: flex !important;
+	align-items: center;
+	height: auto !important;
+	padding: 0 !important;
+	line-height: 1 !important;
+}
+/* One space before the dot (the header has a 6px gap already) */
+/* Fixed place: Steam slides the count aside with an animation when the group folds */
+.friendlistListContainer:not(.rcp-list) .groupName > .groupCount,
+.friendlistListContainer:not(.rcp-list) .groupName > .groupCount.collapsed {
+	position: static !important;
+	margin: 0 0 0 -2px !important;
+	transform: none !important;
+	transition: none !important;
+	animation: none !important;
+}
+
+/* Header with its own container (Online, Offline): sort button first, chevron last */
+.friendlistListContainer:not(.rcp-list) .groupHeaderContainer {
+	display: flex !important;
+	align-items: center;
+	gap: 6px;
+
+	height: 28px;
+	margin: 0;
+	padding: 0 15px;
+	box-sizing: border-box;
+	border: none !important;
+	background: transparent !important;
+}
+/* The name block gives its parts (text, count, chevron) to the container row */
+.friendlistListContainer:not(.rcp-list) .groupHeaderContainer > .groupName {
+	display: contents !important;
+}
+.friendlistListContainer:not(.rcp-list) .groupHeaderContainer > .groupName::after {
+	order: 99;
+	margin-left: 2px; /* + gap = 8px after the sort button */
+}
+.friendlistListContainer:not(.rcp-list) .groupHeaderContainer:not(:has(> .SortByRecent)) > .groupName::after {
+	margin-left: auto;
+}
+.friendlistListContainer:not(.rcp-list) .groupHeaderContainer > .SortByRecent {
+	order: 98;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+
+	width: 16px;
+	height: 16px;
+	margin: 0 0 0 auto !important;
+	padding: 0 !important;
+	cursor: pointer;
+}
+.friendlistListContainer:not(.rcp-list) .groupHeaderContainer > .SortByRecent svg {
+	display: block;
+	width: 16px;
+	height: 16px;
+}
+.friendlistListContainer:not(.rcp-list) .groupHeaderContainer > .SortByRecent svg * {
+	fill: var(--text-muted-color);
+	transition: fill .1s ease-in-out;
+}
+.friendlistListContainer:not(.rcp-list) .groupHeaderContainer > .SortByRecent:hover svg * {
+	fill: var(--text-bright-color);
+}
+
+/* Badge next to the name */
+.friendlistListContainer:not(.rcp-list) .friend .playerName {
+	display: flex !important;
+	align-items: center;
+	min-width: 0;
+}
+.friendlistListContainer:not(.rcp-list) .friend .playerName > :is(.nevko-badge, .nevko-badge-mini, .nevko-badge-modern) {
+	flex-shrink: 0;
+	margin: 0 0 0 5px !important;
+}
+
+/* "More players" of a party ("+3 With 3 more players"): Steam's own line is hidden, its number stands in the row */
+/* of the party as a chip before the buttons (from script), the phrase is its tooltip */
+.friendlistListContainer:not(.rcp-list) .SteamPlayerGroupFooter {
+	display: none !important;
+}
+.nk-friend-actions > .nk-party-more {
+	height: 18px;
+	margin-right: -2px; /* 6px to the buttons: the name keeps more room */
+	padding: 0 5px;
+	border-radius: 9px;
+	background: color-mix(in srgb, var(--nk-status) 16%, transparent);
+	color: var(--nk-status);
+	font-size: 11px;
+	font-weight: bold;
+	line-height: 18px;
+	cursor: default;
+}
+
+/* Remove: Steam's party bracket lines (they also push the row to the right) */
+.friendlistListContainer:not(.rcp-list) .friend > .SteamPlayerGroupLines {
+	display: none !important;
+}
+
+/* Game Card Header: bigger game icon right before the name */
+.friendlistListContainer:not(.rcp-list) .friendGroup.gameGroup:not(.OtherGamesGroup) > .groupName {
+	height: 40px;
+	gap: 8px;
+	padding-left: 14px; /* icon centered over the avatars below */
+}
+.friendlistListContainer:not(.rcp-list) .groupName .gameGroupContainer {
+	flex: 0 0 auto;
+	width: auto !important; /* Steam: 40px */
+	margin: 0 6px 0 0 !important; /* game name starts where the nicknames do */
+}
+.friendlistListContainer:not(.rcp-list) .groupName .groupIcon {
+	display: block;
+	width: 28px !important;
+	height: 28px !important;
+	margin: 0 !important;
+	border-radius: 5px;
+}
+
+/* Party menu: names with an arrow, Steam's own friend menu opens beside */
+.nk-party-menu-item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+.nk-party-menu-item > span:first-child {
+	flex: 1;
+}
+.nk-party-menu-item > .nk-party-menu-arrow {
+	color: var(--text-muted-color);
+}
+
+/* Background: theme color under the list instead of Steam's gray gradient (as in the Chats tab) */
+.friendsui-container .friendlist {
+	background: var(--main-background);
+}
+.friendlistListContainer:not(.rcp-list),
+.friendlistListContainer:not(.rcp-list) .listContentContainer,
+.friendlist > .FriendsListContent {
+	background: transparent !important;
+}
+
+/* Fade at the top while the list is scrolled (class from script), as under the search in the Chats tab */
+.friendlistListContainer:not(.rcp-list)::before {
+	content: "";
+	position: sticky;
+	top: 0;
+	z-index: 3;
+
+	display: block;
+	height: 16px;
+	margin-bottom: -16px;
+
+	background: linear-gradient(var(--main-background), transparent);
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity .15s ease-out;
+}
+html.nk-friends-scrolled .friendlistListContainer:not(.rcp-list)::before {
+	opacity: 1;
+}
+
+/* Friend Requests */
+
+/* Incoming: a card = friend row + Accept / Ignore, the Confirm button under the cards applies the choice (Steam's flow) */
+.friendlistListContainer:not(.rcp-list) .friendInviteContainer {
+	display: flex !important;
+	flex-wrap: wrap;
+
+	height: auto !important;
+	margin: 0 15px 8px;
+	padding: 0 0 8px;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+}
+.friendlistListContainer:not(.rcp-list) .friendInviteContainer > .friend {
+	flex: 0 0 100%;
+	margin: 0 !important;
+	background: transparent !important;
+}
+.friendlistListContainer:not(.rcp-list) .friendInviteButtons {
+	order: 2;
+	flex: 0 0 100%;
+	display: flex !important;
+	gap: 8px;
+
+	width: auto;
+	height: auto;
+	margin: 0;
+	padding: 0 8px;
+	box-sizing: border-box;
+}
+/* Word buttons: the text is Steam's own tooltip of the button (any language) */
+.friendlistListContainer:not(.rcp-list) .friendInviteButton,
+.friendlistListContainer:not(.rcp-list) .confirmInviteButton,
+.nk-friend-wide {
+	flex: 1;
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+
+	width: auto;
+	height: 32px;
+	margin: 0;
+	padding: 0 8px;
+	box-sizing: border-box;
+
+	border: none;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	box-shadow: none;
+	opacity: 1 !important;
+
+	color: var(--text-muted-color);
+	font-size: 13px;
+	font-weight: bold;
+	line-height: 1;
+	text-transform: none;
+	white-space: nowrap;
+
+	cursor: pointer;
+	transition: background-color .15s ease-out, color .1s ease-in-out;
+}
+.friendlistListContainer:not(.rcp-list) .friendInviteButton > svg {
+	display: none !important;
+}
+.friendlistListContainer:not(.rcp-list) .friendInviteButton::after {
+	content: attr(title);
+}
+.friendlistListContainer:not(.rcp-list) .friendInviteButton:hover,
+.friendlistListContainer:not(.rcp-list) .confirmInviteButton:not(.dim):hover,
+.nk-friend-wide:hover {
+	background: var(--button-hover-background);
+	color: var(--text-bright-color);
+}
+/* Chosen (Steam removes .dim from the chosen one) */
+.friendlistListContainer:not(.rcp-list) .acceptFriendInvite:not(.dim),
+.friendlistListContainer:not(.rcp-list) .confirmInvites:not(.dim),
+.nk-friend-wide[data-nk-confirm] {
+	background: var(--SystemAccentColor-Transparent) !important;
+	color: var(--SystemAccentColor) !important;
+}
+.friendlistListContainer:not(.rcp-list) .declineFriendInvite:not(.dim) {
+	background: var(--button-hover-background);
+	color: var(--text-bright-color);
+}
+/* "Block user?" under the buttons */
+.friendlistListContainer:not(.rcp-list) .friendInviteBlockContainer {
+	position: static !important;
+	order: 3;
+	flex: 0 0 100%;
+
+	margin: 8px 0 0;
+	padding: 0 8px;
+	box-sizing: border-box;
+	background: transparent !important;
+}
+
+/* Confirm / Ignore All */
+.friendlistListContainer:not(.rcp-list) .confirmInviteRequestContainer {
+	display: block !important;
+	height: auto !important;
+	margin: 0 15px 8px;
+	padding: 0;
+	background: transparent !important;
+}
+.friendlistListContainer:not(.rcp-list) .confirmInviteRequestActions {
+	display: flex !important;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+}
+/* Confirm is only for Ignore (it has the "Block user?" choice): Accept applies at once (script), */
+/* so the button shows up only when something is chosen */
+.friendlistListContainer:not(.rcp-list) .confirmInvites.dim {
+	display: none !important;
+}
+
+/* Back to friends: arrow at the right end of the header instead of the fold chevron */
+.friendlistListContainer:not(.rcp-list) .friendRequests .groupName::after {
+	display: none;
+}
+.friendlistListContainer:not(.rcp-list) .friendRequests {
+	position: relative;
+}
+.friendlistListContainer:not(.rcp-list) .cancelAddFriends {
+	position: absolute !important;
+	top: 6px !important;
+	right: 15px !important;
+	left: auto !important;
+
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	padding: 0;
+
+	background-color: var(--text-muted-color);
+	-webkit-mask: url("../../../../Patches/Icons/Gamescope/arrow-left.svg") center / 20px no-repeat;
+	mask: url("../../../../Patches/Icons/Gamescope/arrow-left.svg") center / 20px no-repeat;
+	cursor: pointer;
+	transition: background-color .1s ease-in-out;
+}
+.friendlistListContainer:not(.rcp-list) .cancelAddFriends:hover {
+	background-color: var(--text-bright-color);
+}
+.friendlistListContainer:not(.rcp-list) .cancelAddFriends > svg {
+	display: none !important;
+}
+
+/* Sent: "Cancel Invite" button under the row (from script, second press confirms) */
+.friendlistListContainer:not(.rcp-list) .friendOutgoingRequests .friend {
+	flex-wrap: wrap;
+	row-gap: 8px;
+}
+.nk-friend-wide {
+	order: 10;
+	flex: 0 0 100%;
+}
+/* Steam only makes "Block user?" transparent until Ignore is chosen: no empty space in the card meanwhile */
+.friendlistListContainer:not(.rcp-list) .friendInviteContainer:not(:has(.declineFriendInvite:not(.dim))) .friendInviteBlockContainer {
+	display: none !important;
+}
+.friendlistListContainer:not(.rcp-list) .friendInviteContainer:has(.declineFriendInvite:not(.dim)) .friendInviteBlockContainer {
+	opacity: 1 !important;
+}
+
+/* Hover: the whole request card, not only the friend row inside it */
+.friendlistListContainer:not(.rcp-list) .friendInviteContainer {
+	transition: background-color .15s ease-out;
+}
+.friendlistListContainer:not(.rcp-list) .friendInviteContainer > .friend.friend,
+.friendlistListContainer:not(.rcp-list) .friendInviteContainer > .friend.friend:hover {
+	background: transparent !important;
+}
+.friendlistListContainer:not(.rcp-list) .friendInviteContainer:hover {
+	background: var(--button-hover-background);
+}
+/* Accept is being applied by the script: no Confirm flash */
+html.nk-accepting-invite .friendlistListContainer:not(.rcp-list) .confirmInvites {
+	display: none !important;
+}
+
+/* Category Drop Zone */
+
+/* Lights up like Quick Access while a friend is dragged (4px around the plaques) */
+.friendGroup.taggedGroup > .dropTargetBox {
+	inset: 0 11px -4px !important;
+	margin: 0 !important;
+
+	border: none !important;
+	border-radius: calc(var(--button-radius, 6px) + 4px) !important;
+	transform: none !important;
+	transition: opacity .15s !important;
+}

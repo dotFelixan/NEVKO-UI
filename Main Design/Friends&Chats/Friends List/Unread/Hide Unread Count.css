@@ -1,0 +1,8 @@
+/* Friends tab: no unread message counters (friend rows, chat buttons, "N unread messages" banner) */
+/* The Chats tab and its button keep their counters */
+
+.friendlistListContainer:not(.rcp-list) .FriendMessageCount,
+.friendlist .unreadMessageViolator,
+.nk-friend-chat[data-nk-unread]::after {
+	display: none !important;
+}

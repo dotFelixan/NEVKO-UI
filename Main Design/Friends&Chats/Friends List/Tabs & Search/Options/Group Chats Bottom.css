@@ -1,0 +1,6 @@
+/* Option "Group Chats Position: Bottom" - in the Chats tab the group chats go under the recent chats */
+/* (the parts of that tab are rows of one column, placed by their order: Friends Tabs.css) */
+
+html[data-recent-chats-open] #recent-chats-panel-host ~ .FriendsListContent.Panel {
+	order: 4 !important; /* Friends Tabs.css sets 2 with the same selector and is loaded after the options */
+}

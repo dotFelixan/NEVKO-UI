@@ -1,0 +1,13 @@
+/* Status */
+:root,
+body {
+	/* Hover */
+	--status-offline-tint: color-mix(in srgb, var(--status-offline) 20%, transparent);
+	--status-online-tint: color-mix(in srgb, var(--status-online) 20%, transparent);
+	--status-afk-tint: color-mix(in srgb, var(--status-afk) 20%, transparent);
+	--status-playing-tint: color-mix(in srgb, var(--status-playing) 20%, transparent);
+	--status-playing-afk-tint: color-mix(in srgb, var(--status-playing-afk) 20%, transparent);
+
+	/* In Game Background */
+	--ingame-background: color-mix(in srgb, var(--status-playing) 35%, transparent);
+}

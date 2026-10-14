@@ -1,0 +1,8 @@
+/* Tooltips */
+:root,
+body {
+	--tooltip-background: #696773;
+	--tooltip-text: #E0E1E6;
+	--tooltip-subtext: #9C9AA6;
+	--tooltip-shadow: #0005;
+}

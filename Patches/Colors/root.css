@@ -1,0 +1,38 @@
+/* Root Colors */
+:root {
+	/*
+	 * @name Main Background
+	 * @description Headers, friends list, menus
+	 */
+	--main-background: #161D25;
+
+	/*
+	 * @name Offline
+	 * @description Status color: offline
+	 */
+	--status-offline: #80848E;
+
+	/*
+	 * @name Online
+	 * @description Status color: online
+	 */
+	--status-online: #57B8F7;
+
+	/*
+	 * @name Away
+	 * @description Status color: away / snooze
+	 */
+	--status-afk: #7FA6C4;
+
+	/*
+	 * @name In Game
+	 * @description Status color: in game
+	 */
+	--status-playing: #4CD18A;
+
+	/*
+	 * @name In Game (Away)
+	 * @description Status color: in game, but away
+	 */
+	--status-playing-afk: #7DAF93;
+}

@@ -1,0 +1,77 @@
+/* Main buttons (Store, Library, Community, Profile, Console): icon only | Icons: Patches/Icons/Steam */
+/* Console is there only when Steam is started with it: the fifth tab */
+
+/* Icon before the text: Store, Library, Community, Profile, Console (DOM order of Steam's tabs, any language) */
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(-n + 5) > ._19axKcqYRuaJ8vdYKYmtTQ {
+	display: flex !important;
+	align-items: center;
+	gap: 6px;
+}
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(-n + 5) > ._19axKcqYRuaJ8vdYKYmtTQ::before {
+	content: "";
+	flex-shrink: 0;
+	width: 20px; /* ~14px drawing: the icons have margins inside their grid */
+	height: 20px;
+	margin: -4px 0; /* the text line keeps its own height and place */
+
+	background-color: currentColor;
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: 16px;
+	mask-size: 16px;
+}
+/* Store */
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(1) > ._19axKcqYRuaJ8vdYKYmtTQ::before {
+	-webkit-mask-image: url("../../Patches/Icons/Steam/Store.svg");
+	mask-image: url("../../Patches/Icons/Steam/Store.svg");
+}
+/* Library: the four squares of library.svg drawn on whole pixels (7px + 2px gap), */
+/* scaled down as a mask their edges land between pixels and look uneven */
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(2) > ._19axKcqYRuaJ8vdYKYmtTQ::before {
+	-webkit-mask-image: none;
+	mask-image: none;
+	background:
+		linear-gradient(currentColor, currentColor) 2px 2px / 7px 7px no-repeat,
+		linear-gradient(currentColor, currentColor) 11px 2px / 7px 7px no-repeat,
+		linear-gradient(currentColor, currentColor) 2px 11px / 7px 7px no-repeat,
+		linear-gradient(currentColor, currentColor) 11px 11px / 7px 7px no-repeat;
+}
+/* Community */
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(3) > ._19axKcqYRuaJ8vdYKYmtTQ::before {
+	-webkit-mask-image: url("../../Patches/Icons/Steam/Community.svg");
+	mask-image: url("../../Patches/Icons/Steam/Community.svg");
+}
+/* Profile */
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(4) > ._19axKcqYRuaJ8vdYKYmtTQ::before {
+	-webkit-mask-image: url("../../Patches/Icons/Steam/User.svg");
+	mask-image: url("../../Patches/Icons/Steam/User.svg");
+}
+/* Console */
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(5) > ._19axKcqYRuaJ8vdYKYmtTQ::before {
+	-webkit-mask-image: url("../../Patches/Icons/Steam/Desktop.svg");
+	mask-image: url("../../Patches/Icons/Steam/Desktop.svg");
+}
+
+/* Remove Text */
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(-n + 5) > ._19axKcqYRuaJ8vdYKYmtTQ {
+	gap: 0;
+	font-size: 0 !important;
+}
+/* Size */
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(-n + 5) {
+	padding: 0 12px !important;
+}
+
+/* Center: without text the line has no height and the icon went up to the top of the button */
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(-n + 5) > ._19axKcqYRuaJ8vdYKYmtTQ {
+	justify-content: center;
+	height: 32px;
+	margin: 0 !important;
+	padding: 0 !important;
+	line-height: 0;
+}
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(-n + 5) > ._19axKcqYRuaJ8vdYKYmtTQ::before {
+	margin: 0;
+}

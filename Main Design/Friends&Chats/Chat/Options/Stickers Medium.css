@@ -1,0 +1,5 @@
+/* Option "Sticker Size: Medium" - stickers in the chat emoticon menu (Emoticon Picker.css) */
+
+:root {
+	--sticker-size: 64px;
+}

@@ -1,0 +1,163 @@
+/* Option "Emoticon Side Panel" - a click on the emoticon button docks the emoticon menu as a side panel (script: Emoticon Panel.js) */
+/* Side: on the right */
+/* Menu look itself: Emoticon Picker.css */
+
+/* While a menu is open Steam covers the whole window with an invisible layer that takes every click. */
+/* For the emoticon menu opened by Emoticon Panel.js (it marks its menus; a reaction picker is not one) it is switched off: the cursor stays "on the button" (no open / close loop), a click reaches */
+/* the button, and the chat can be used beside the docked panel. Closing by a click outside: Emoticon Panel.js */
+.ContextMenuMouseOverlay:has(+ .contextMenu[data-nk-emoticons]) {
+	pointer-events: none;
+}
+
+/* Docked: Steam's popup is stretched over one side from the very top: its tabs stand in the row of the window buttons */
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons] {
+	position: absolute !important;
+	top: 0 !important;
+	right: var(--nk-emoticons-right, 0px) !important;
+	bottom: 0 !important;
+	left: var(--nk-emoticons-left, auto) !important;
+	width: var(--nk-emoticons-width, 340px); /* dragged by its edge: Emoticon Panel.js */
+	height: auto !important;
+	max-height: none !important;
+
+	transform: none !important;
+	animation: none !important;
+	box-shadow: none !important;
+}
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons] > .contextMenuContents {
+	width: 100%;
+	height: 100%;
+	max-height: none;
+	/* 7px + 2px of the list above: the tabs start at 9px, as the window buttons; 8px on the side of the chat: nothing stands right at its edge */
+	padding: 7px var(--nk-emoticons-pad-end, 15px) 15px var(--nk-emoticons-pad-start, 8px) !important;
+	box-sizing: border-box;
+
+	border: none;
+	border-radius: 0;
+	background: none !important; /* the window has the same color; see-through for the window buttons under the top right corner */
+	box-shadow: none;
+}
+/* Only the tabs, the search and the list take the cursor: the title bar and the window buttons work through the rest */
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons],
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons] > .contextMenuContents,
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons] .Picker {
+	pointer-events: none;
+}
+/* Menus are cut out of the window's drag area as a whole: here only the parts listed below are */
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons],
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons] > .contextMenuContents,
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons] .Picker {
+	-webkit-app-region: initial !important; /* not "none": this Chromium reads it as no-drag */
+}
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons] .Picker > :is(.Tabs, .FilterInputContainer, .Content),
+html.nk-emoticons-docked #nk-emoticons-resize {
+	pointer-events: auto;
+	-webkit-app-region: no-drag;
+}
+/* On the right the window buttons share that row: the tabs keep to the left of them */
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons] .Picker > .Tabs {
+	justify-self: start;
+	width: fit-content; /* the rest of the row stays a part of the title bar: the window is dragged by it */
+	max-width: calc(100% - var(--nk-emoticons-buttons-room, calc(var(--nk-window-buttons-room, 96px) + 8px)));
+	margin: -1px 0 1px; /* 1px up: level with the buttons of the chat header beside them */
+}
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons] .Picker {
+	width: 100% !important;
+	min-width: 0 !important; /* Steam: fixed 364px */
+	max-width: none !important;
+	height: 100% !important;
+	max-height: none !important;
+}
+
+/* Room for the panel: its width on its side, plus the dialogs panel when there is one on that side */
+html.nk-emoticons-docked .multiChatDialog .chatDialogs {
+	margin-inline-start: calc(var(--nk-emoticons-room-start, 0px) + var(--nk-left-panel, 0px));
+	margin-inline-end: calc(var(--nk-emoticons-room-end, var(--nk-emoticons-width, 340px)) + var(--nk-right-panel, 0px));
+}
+html.nk-emoticons-docked .multiChatDialog {
+	/* Invite button: at the end of the chat header when the panel is on the right (the window buttons are above the panel then); */
+	/* before the window buttons when the panel is on the left */
+	--nk-invite-end: var(--nk-emoticons-invite-end, 6px); /* 16px before the panel's tabs: the resize grip of the panel is between them */
+	/* Chat header starts where the chat does */
+	--nk-chat-header-start: calc(var(--nk-emoticons-room-start, 0px) + var(--nk-left-panel, 0px) + 15px);
+}
+
+/* Header backdrop is as wide as the chat */
+html.nk-emoticons-docked #nk-chat-header-backdrop {
+	--nk-chat-backdrop-start: calc(var(--nk-emoticons-room-start, 0px) + var(--nk-left-panel, 0px));
+	/* ends 8px before the invite, call and menu buttons, which stand at the end of the chat here (6 + three of 32 + 8 each) */
+	--nk-chat-backdrop-end: calc(var(--nk-emoticons-room-end, var(--nk-emoticons-width, 340px)) + 126px);
+}
+
+/* Button of the open panel */
+html.nk-emoticons-docked .chatWindow .chatEntry .EmoticonPickerButton {
+	color: var(--SystemAccentColor);
+}
+
+/* Resize grip (Emoticon Panel.js): on the edge of the panel that faces the chat */
+#nk-emoticons-resize {
+	display: none;
+}
+html.nk-emoticons-docked #nk-emoticons-resize {
+	display: block;
+	inset-inline-start: var(--nk-emoticons-grip-start, -5px);
+	inset-inline-end: var(--nk-emoticons-grip-end, auto);
+}
+
+/* Docked: tabs in a row above the search (in the popup they are a column on the left) */
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons] .Picker {
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-rows: auto auto minmax(0, 1fr);
+}
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons] .Picker > .Tabs {
+	grid-column: 1;
+	grid-row: 1;
+	flex-direction: row;
+	justify-content: flex-start;
+}
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons] .Picker > .FilterInputContainer {
+	grid-column: 1;
+	grid-row: 2;
+}
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons] .Picker > .Content {
+	grid-column: 1;
+	grid-row: 3;
+}
+
+/* Docked: the emoji list and the pack switch (Emoji Pack.js) follow the one-column layout */
+html.nk-emoticons-docked #nk-emoji-pane {
+	grid-column: 1;
+	grid-row: 2 / 4;
+	pointer-events: auto;
+	-webkit-app-region: no-drag;
+}
+html.nk-emoticons-docked #nk-emoji-packs {
+	grid-column: 1;
+	grid-row: 4;
+	pointer-events: auto;
+	-webkit-app-region: no-drag;
+}
+
+/* Switching chats: Steam removes the old menu and adds a new one, faded out. The new one is shown at once, */
+/* and a still copy of the old panel (Emoticon Panel.js) covers it until it is ready */
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons] {
+	opacity: 1 !important;
+	transition: none !important;
+}
+html.nk-emoticons-docked .contextMenu[data-nk-ghost] {
+	z-index: 1601 !important;
+	/* Not over the window buttons in its top right corner (panel on the right): they would blink under the solid copy */
+	clip-path: polygon(0 0, calc(100% - var(--nk-emoticons-buttons-room, calc(var(--nk-window-buttons-room, 96px) + 8px))) 0, calc(100% - var(--nk-emoticons-buttons-room, calc(var(--nk-window-buttons-room, 96px) + 8px))) 50px, 100% 50px, 100% 100%, 0 100%);
+}
+html.nk-emoticons-docked .contextMenu[data-nk-ghost] > .contextMenuContents {
+	background: var(--main-background) !important; /* solid: the new panel under it must not show through */
+}
+html.nk-emoticons-docked .contextMenu[data-nk-ghost],
+html.nk-emoticons-docked .contextMenu[data-nk-ghost] * {
+	pointer-events: none !important; /* its emoticons would go nowhere */
+}
+
+/* The panel gave way to another menu (of a message, a reaction picker): its copy waits under that menu */
+html.nk-emoticons-docked .contextMenu[data-nk-ghost="parked"] {
+	z-index: 1599 !important;
+}

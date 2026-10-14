@@ -1,0 +1,7 @@
+/* Option "Hide Friends Tabs" - no Friends / Chats buttons above the list (the search under them stays) */
+
+.socialTabContainer > .friendTab:not(#recent-chats-tab-host, #nk-chats-tab) > .tabLabel,
+.socialTabContainer > #recent-chats-tab-host,
+.socialTabContainer > #nk-chats-tab {
+	display: none !important;
+}

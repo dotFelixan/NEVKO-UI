@@ -1,0 +1,68 @@
+/* Header icons from Steam's own set (Steam/*.svg, taken from the Big Picture icons) */
+/* Steam's own drawing is hidden: the svg box is filled with its text color through the icon as a mask, */
+/* so the colors of the theme (normal / hover) keep working */
+
+/* Add Game, Downloads, Friends & Chat, Notifications, Steam Modes */
+._2foCkpRXhqq0UGVE50BWqj svg,
+._2EQ7ghgqIdjKv9jsQC0Zq9 ._1KrJ3sFAqPBN9mfpaNTU5F > svg,
+._1TdaAqMFadi0UTqilrkelR ._1KrJ3sFAqPBN9mfpaNTU5F > svg,
+.NotificationsButton > svg,
+#nk-custom-btn > svg {
+	background-color: currentColor;
+
+	/* The drawing takes almost the whole 36px grid of an icon: 16px of the 20px box gives a ~14px drawing */
+	flex-shrink: 0;
+	width: 20px !important;
+	height: 20px !important;
+
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: 16px;
+	mask-size: 16px;
+}
+._2foCkpRXhqq0UGVE50BWqj svg > *,
+._2EQ7ghgqIdjKv9jsQC0Zq9 ._1KrJ3sFAqPBN9mfpaNTU5F > svg > *,
+._1TdaAqMFadi0UTqilrkelR ._1KrJ3sFAqPBN9mfpaNTU5F > svg > *,
+.NotificationsButton > svg > *,
+#nk-custom-btn > svg > * {
+	display: none !important;
+}
+
+/* Add Game */
+._2foCkpRXhqq0UGVE50BWqj svg {
+	-webkit-mask-image: url("Steam/Add.svg");
+	mask-image: url("Steam/Add.svg");
+}
+/* Downloads */
+._2EQ7ghgqIdjKv9jsQC0Zq9 ._1KrJ3sFAqPBN9mfpaNTU5F > svg {
+	-webkit-mask-image: url("Steam/Download.svg");
+	mask-image: url("Steam/Download.svg");
+}
+/* Friends & Chat */
+._1TdaAqMFadi0UTqilrkelR ._1KrJ3sFAqPBN9mfpaNTU5F > svg {
+	-webkit-mask-image: url("Steam/Friends.svg");
+	mask-image: url("Steam/Friends.svg");
+}
+/* Notifications */
+.NotificationsButton > svg {
+	-webkit-mask-image: url("Steam/Notifications.svg");
+	mask-image: url("Steam/Notifications.svg");
+}
+/* Steam Modes */
+#nk-custom-btn > svg {
+	-webkit-mask-image: url("Steam/Gamepad.svg");
+	mask-image: url("Steam/Gamepad.svg");
+}
+
+/* Steam keeps these three in a 16px box: the bigger icon stays centered in it, the buttons keep their size */
+._2foCkpRXhqq0UGVE50BWqj svg,
+._2EQ7ghgqIdjKv9jsQC0Zq9 ._1KrJ3sFAqPBN9mfpaNTU5F > svg,
+._1TdaAqMFadi0UTqilrkelR ._1KrJ3sFAqPBN9mfpaNTU5F > svg {
+	margin: -2px !important;
+}
+/* Downloads: its box sits 1px above the middle of the button */
+._2EQ7ghgqIdjKv9jsQC0Zq9 ._1KrJ3sFAqPBN9mfpaNTU5F > svg {
+	margin: -1px -2px -3px !important;
+}

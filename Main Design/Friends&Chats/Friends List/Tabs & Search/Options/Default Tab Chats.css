@@ -1,0 +1,5 @@
+/* Option "Default Friends Tab: Chats" - the Chats tab is the one open when the friends window starts (Friends Tabs.js) */
+
+:root {
+	--nk-default-tab: chats;
+}

@@ -1,0 +1,18 @@
+/* Tooltips */
+
+/* Compact Buttons */
+:where(.MillenniumWindow_MainSteamWindow, .MillenniumWindow_MainSteamWindow *) {
+	&._3vCzSrrXZzZjVJFZNg9SGu ._2foCkpRXhqq0UGVE50BWqj ._3OhUxFVlQYr9W5ThxstR8k,
+	&._3vCzSrrXZzZjVJFZNg9SGu ._1TdaAqMFadi0UTqilrkelR ._3OhUxFVlQYr9W5ThxstR8k {
+		box-shadow: 1px 1px 8px var(--tooltip-shadow), 2px 2px 16px 1px var(--tooltip-shadow) !important;
+		background-color: var(--tooltip-background);
+		color: var(--tooltip-text) !important;
+	}
+}
+
+/* Steam Tooltips */
+._2FxbHJzYoH024ko7zqcJOf {
+	box-shadow: 1px 1px 8px var(--tooltip-shadow), 2px 2px 16px 1px var(--tooltip-shadow) !important;
+	background-color: var(--tooltip-background) !important;
+	color: var(--tooltip-text) !important;
+}

@@ -1,0 +1,5 @@
+/* Option "Emoticon Size: Large" - emoticons in the chat emoticon menu (Emoticon Picker.css) */
+
+:root {
+	--emoticon-size: 36px;
+}

@@ -1,0 +1,22 @@
+.MillenniumDesktopSidebar {
+	top: 0px;
+	bottom: 0px;
+	right: 0px;
+	left: 0px;
+	margin: auto;
+
+	--sidebar-width: 60% !important;
+	height: 90% !important;
+}
+/* Legacy Sector/Driver Style [Temp?] */
+.SettingsDialogSubHeader {
+	font-weight: bold;
+	text-align: center;
+	display: block;
+	width: 100%;
+	font-size: 1.1em;
+	margin-top: 6px;
+	margin-bottom: 6px;
+
+	margin-inline-end: unset !important;
+}

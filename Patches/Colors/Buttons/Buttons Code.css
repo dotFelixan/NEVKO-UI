@@ -1,0 +1,19 @@
+/* Buttons */
+:root,
+body {
+	/* Main */
+	--button-background: rgba(103, 112, 123, .2);
+	--button-background-disabled: rgba(103, 112, 123, .12);
+	--button-hover-background: #6363632E;
+
+	/* Millennium Buttons */
+	--settings-button-background: rgba(59, 63, 72, .5);
+	--boosty-button-background: #2F333B;
+	--settings-button-hover-background: #464D58;
+
+	/* Sliders */
+	--slider-track: rgba(255, 255, 255, .15);
+	--slider-marker: rgba(255, 255, 255, .6);
+	--slider-fill: #1A9FFF; /* or var(--SystemAccentColor) */
+	--slider-thumb: #FFFFFF;
+}

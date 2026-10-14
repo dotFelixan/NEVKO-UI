@@ -1,0 +1,196 @@
+/* Context Menu | Colors in Backgrounds / Buttons Elements.css */
+
+/* Marker for Elements.css */
+:root {
+	--nk-menus: nevko;
+}
+
+/* Popup Window */
+html.ContextMenuPopup.ContextMenuPopup,
+html.ContextMenuPopup.ContextMenuPopup body {
+	background: transparent !important;
+}
+
+/* Container */
+/* Remove */
+.PP7LM0Ow1K5qkR8WElLpt.PP7LM0Ow1K5qkR8WElLpt {
+	padding: 0 !important;
+	background: transparent !important;
+	box-shadow: none !important;
+}
+
+/* Menu */
+._2EstNjFIIZm_WUSKm5Wt7n._2EstNjFIIZm_WUSKm5Wt7n {
+	padding: 6px !important;
+	border-radius: var(--button-radius, 8px);
+}
+
+/* Item */
+._2EstNjFIIZm_WUSKm5Wt7n ._1n7Wloe5jZ6fSuvV18NNWI {
+	position: relative;
+	isolation: isolate;
+	padding: 7px 12px;
+	border-top: none !important;
+	transition: color .12s ease-out, border-radius .12s ease-out; /* hover text, pressed corners */
+}
+
+/* Group Plaque */
+._2EstNjFIIZm_WUSKm5Wt7n ._1n7Wloe5jZ6fSuvV18NNWI:not(.ContextMenuAction)::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -2;
+	border-radius: inherit;
+	pointer-events: none;
+}
+
+/* Hover Layer */
+._2EstNjFIIZm_WUSKm5Wt7n ._1n7Wloe5jZ6fSuvV18NNWI:not(.ContextMenuAction)::before {
+	content: "";
+	position: absolute;
+	inset: 1px 3px;
+	z-index: -1;
+	border-radius: max(4px, calc(var(--button-radius, 8px) - 2px));
+	pointer-events: none;
+	transition: background-color .15s ease-out; /* hover fades in / out */
+}
+@media (prefers-reduced-motion: reduce) {
+	._2EstNjFIIZm_WUSKm5Wt7n ._1n7Wloe5jZ6fSuvV18NNWI,
+	._2EstNjFIIZm_WUSKm5Wt7n ._1n7Wloe5jZ6fSuvV18NNWI::before {
+		transition: none;
+	}
+}
+
+/* Group Top */
+._2EstNjFIIZm_WUSKm5Wt7n > ._1n7Wloe5jZ6fSuvV18NNWI.nk-group-first,
+._2EstNjFIIZm_WUSKm5Wt7n > ._1n7Wloe5jZ6fSuvV18NNWI:not(._1n7Wloe5jZ6fSuvV18NNWI ~ ._1n7Wloe5jZ6fSuvV18NNWI),
+._2EstNjFIIZm_WUSKm5Wt7n > :is(._21GPYlKBCLsHQpTsHw_RL_, .WUOrULWKkGLl3ZUQdDXg8, .IjIBR_wDDi2N77Oz4KAT4) + ._1n7Wloe5jZ6fSuvV18NNWI {
+	border-top-left-radius: calc(var(--button-radius, 8px) - 2px);
+	border-top-right-radius: calc(var(--button-radius, 8px) - 2px);
+	padding-top: 9px;
+}
+._2EstNjFIIZm_WUSKm5Wt7n > ._1n7Wloe5jZ6fSuvV18NNWI.nk-group-first::before,
+._2EstNjFIIZm_WUSKm5Wt7n > ._1n7Wloe5jZ6fSuvV18NNWI:not(._1n7Wloe5jZ6fSuvV18NNWI ~ ._1n7Wloe5jZ6fSuvV18NNWI)::before,
+._2EstNjFIIZm_WUSKm5Wt7n > :is(._21GPYlKBCLsHQpTsHw_RL_, .WUOrULWKkGLl3ZUQdDXg8, .IjIBR_wDDi2N77Oz4KAT4) + ._1n7Wloe5jZ6fSuvV18NNWI::before {
+	top: 3px;
+}
+
+/* Group Bottom */
+._2EstNjFIIZm_WUSKm5Wt7n > ._1n7Wloe5jZ6fSuvV18NNWI.nk-group-last,
+._2EstNjFIIZm_WUSKm5Wt7n > ._1n7Wloe5jZ6fSuvV18NNWI:has(+ :is(._21GPYlKBCLsHQpTsHw_RL_, .WUOrULWKkGLl3ZUQdDXg8, .IjIBR_wDDi2N77Oz4KAT4)),
+._2EstNjFIIZm_WUSKm5Wt7n > ._1n7Wloe5jZ6fSuvV18NNWI:not(:has(~ ._1n7Wloe5jZ6fSuvV18NNWI)) {
+	border-bottom-left-radius: calc(var(--button-radius, 8px) - 2px);
+	border-bottom-right-radius: calc(var(--button-radius, 8px) - 2px);
+	padding-bottom: 9px;
+}
+._2EstNjFIIZm_WUSKm5Wt7n > ._1n7Wloe5jZ6fSuvV18NNWI.nk-group-last::before,
+._2EstNjFIIZm_WUSKm5Wt7n > ._1n7Wloe5jZ6fSuvV18NNWI:has(+ :is(._21GPYlKBCLsHQpTsHw_RL_, .WUOrULWKkGLl3ZUQdDXg8, .IjIBR_wDDi2N77Oz4KAT4))::before,
+._2EstNjFIIZm_WUSKm5Wt7n > ._1n7Wloe5jZ6fSuvV18NNWI:not(:has(~ ._1n7Wloe5jZ6fSuvV18NNWI))::before {
+	bottom: 3px;
+}
+
+/* Pressed */
+._2EstNjFIIZm_WUSKm5Wt7n > ._1n7Wloe5jZ6fSuvV18NNWI:not(.ContextMenuAction, .disabled, .d8GPmAyQdRQwoHiPbc8Js):active {
+	border-radius: calc(var(--button-radius, 8px) - 2px) !important;
+}
+
+/* Pressed Neighbors (also across one hidden item) */
+._2EstNjFIIZm_WUSKm5Wt7n > ._1n7Wloe5jZ6fSuvV18NNWI:has(+ ._1n7Wloe5jZ6fSuvV18NNWI:not(.ContextMenuAction, .disabled, .d8GPmAyQdRQwoHiPbc8Js):active),
+._2EstNjFIIZm_WUSKm5Wt7n > ._1n7Wloe5jZ6fSuvV18NNWI:has(+ [style*="display: none"] + ._1n7Wloe5jZ6fSuvV18NNWI:not(.ContextMenuAction, .disabled, .d8GPmAyQdRQwoHiPbc8Js):active) {
+	border-bottom-left-radius: calc(var(--button-radius, 8px) - 2px);
+	border-bottom-right-radius: calc(var(--button-radius, 8px) - 2px);
+}
+._2EstNjFIIZm_WUSKm5Wt7n > ._1n7Wloe5jZ6fSuvV18NNWI:not(.ContextMenuAction, .disabled, .d8GPmAyQdRQwoHiPbc8Js):active + ._1n7Wloe5jZ6fSuvV18NNWI,
+._2EstNjFIIZm_WUSKm5Wt7n > ._1n7Wloe5jZ6fSuvV18NNWI:not(.ContextMenuAction, .disabled, .d8GPmAyQdRQwoHiPbc8Js):active + [style*="display: none"] + ._1n7Wloe5jZ6fSuvV18NNWI {
+	border-top-left-radius: calc(var(--button-radius, 8px) - 2px);
+	border-top-right-radius: calc(var(--button-radius, 8px) - 2px);
+}
+
+/* Separator = Gap */
+._2EstNjFIIZm_WUSKm5Wt7n > :is(._21GPYlKBCLsHQpTsHw_RL_, .WUOrULWKkGLl3ZUQdDXg8, .IjIBR_wDDi2N77Oz4KAT4) {
+	height: 6px;
+	margin: 0;
+	padding: 0;
+	border: none !important;
+	background: transparent;
+}
+._2EstNjFIIZm_WUSKm5Wt7n > :is(._21GPYlKBCLsHQpTsHw_RL_, .WUOrULWKkGLl3ZUQdDXg8, .IjIBR_wDDi2N77Oz4KAT4):is(:first-child, :last-child) {
+	display: none;
+}
+
+/* Friends Status Menu (statuses are in a wrapper, no separators) | Statuses, Do Not Disturb, Edit Profile Name */
+.currentUserContextMenu ._1n7Wloe5jZ6fSuvV18NNWI {
+	border-bottom: none !important;
+}
+/* Width | Long descriptions wrap (some languages make it too wide) */
+._2EstNjFIIZm_WUSKm5Wt7n.currentUserContextMenu {
+	max-width: 230px;
+}
+.currentUserContextMenu ._1n7Wloe5jZ6fSuvV18NNWI,
+.currentUserContextMenu ._1n7Wloe5jZ6fSuvV18NNWI * {
+	white-space: normal !important;
+}
+.currentUserContextMenu .contextMenuSectionContent > ._1n7Wloe5jZ6fSuvV18NNWI:first-child {
+	border-top-left-radius: calc(var(--button-radius, 8px) - 2px);
+	border-top-right-radius: calc(var(--button-radius, 8px) - 2px);
+	padding-top: 9px;
+}
+.currentUserContextMenu .contextMenuSectionContent > ._1n7Wloe5jZ6fSuvV18NNWI:first-child::before {
+	top: 3px;
+}
+.currentUserContextMenu .contextMenuSectionContent > ._1n7Wloe5jZ6fSuvV18NNWI:last-child {
+	border-bottom-left-radius: calc(var(--button-radius, 8px) - 2px);
+	border-bottom-right-radius: calc(var(--button-radius, 8px) - 2px);
+	padding-bottom: 9px;
+}
+.currentUserContextMenu .contextMenuSectionContent > ._1n7Wloe5jZ6fSuvV18NNWI:last-child::before {
+	bottom: 3px;
+}
+/* Do Not Disturb, Edit Profile Name: own plaques */
+._2EstNjFIIZm_WUSKm5Wt7n.currentUserContextMenu > ._1n7Wloe5jZ6fSuvV18NNWI._1n7Wloe5jZ6fSuvV18NNWI {
+	margin-top: 6px !important;
+	border-radius: calc(var(--button-radius, 8px) - 2px);
+	padding-top: 9px;
+	padding-bottom: 9px;
+}
+._2EstNjFIIZm_WUSKm5Wt7n.currentUserContextMenu > ._1n7Wloe5jZ6fSuvV18NNWI._1n7Wloe5jZ6fSuvV18NNWI::before {
+	top: 3px;
+	bottom: 3px;
+}
+
+/* Pressed + Neighbors */
+.currentUserContextMenu .contextMenuSectionContent > ._1n7Wloe5jZ6fSuvV18NNWI:not(.disabled, .d8GPmAyQdRQwoHiPbc8Js):active {
+	border-radius: calc(var(--button-radius, 8px) - 2px) !important;
+}
+.currentUserContextMenu .contextMenuSectionContent > ._1n7Wloe5jZ6fSuvV18NNWI:has(+ ._1n7Wloe5jZ6fSuvV18NNWI:not(.disabled, .d8GPmAyQdRQwoHiPbc8Js):active) {
+	border-bottom-left-radius: calc(var(--button-radius, 8px) - 2px) !important;
+	border-bottom-right-radius: calc(var(--button-radius, 8px) - 2px) !important;
+}
+.currentUserContextMenu .contextMenuSectionContent > ._1n7Wloe5jZ6fSuvV18NNWI:not(.disabled, .d8GPmAyQdRQwoHiPbc8Js):active + ._1n7Wloe5jZ6fSuvV18NNWI {
+	border-top-left-radius: calc(var(--button-radius, 8px) - 2px) !important;
+	border-top-right-radius: calc(var(--button-radius, 8px) - 2px) !important;
+}
+
+/* Header Menus Offset */
+html:not(.ContextMenuPopup) .PP7LM0Ow1K5qkR8WElLpt:has(> ._3pofGqV0buiKAfMPEs3_82) {
+	margin-top: 4px;
+}
+
+/* Open Animation */
+@keyframes nk-menu-in {
+	from {
+		opacity: 0;
+		transform: scale(.95);
+	}
+}
+html.ContextMenuPopup ._2EstNjFIIZm_WUSKm5Wt7n,
+html:not(.ContextMenuPopup) .PP7LM0Ow1K5qkR8WElLpt.visible {
+	transform-origin: 50% 0;
+	animation: nk-menu-in .14s cubic-bezier(.2, .8, .3, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+	html.ContextMenuPopup ._2EstNjFIIZm_WUSKm5Wt7n,
+	html:not(.ContextMenuPopup) .PP7LM0Ow1K5qkR8WElLpt.visible {
+		animation: none;
+	}
+}

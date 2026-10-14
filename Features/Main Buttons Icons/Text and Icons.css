@@ -1,0 +1,60 @@
+/* Main buttons (Store, Library, Community, Profile, Console): icon + text | Icons: Patches/Icons/Steam */
+
+/* Icon before the text: Store, Library, Community, Profile, Console (DOM order of Steam's tabs, any language) */
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(-n + 5) > ._19axKcqYRuaJ8vdYKYmtTQ {
+	display: flex !important;
+	align-items: center;
+	gap: 8px;
+}
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(-n + 5) > ._19axKcqYRuaJ8vdYKYmtTQ::before {
+	content: "";
+	flex-shrink: 0;
+	width: 20px; /* ~14px drawing: the icons have margins inside their grid */
+	height: 20px;
+	margin: -4px 0; /* the text line keeps its own height and place */
+
+	background-color: currentColor;
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: 16px;
+	mask-size: 16px;
+}
+/* Store */
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(1) > ._19axKcqYRuaJ8vdYKYmtTQ::before {
+	-webkit-mask-image: url("../../Patches/Icons/Steam/Store.svg");
+	mask-image: url("../../Patches/Icons/Steam/Store.svg");
+}
+/* Library: the four squares of library.svg drawn on whole pixels (7px + 2px gap), */
+/* scaled down as a mask their edges land between pixels and look uneven */
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(2) > ._19axKcqYRuaJ8vdYKYmtTQ::before {
+	-webkit-mask-image: none;
+	mask-image: none;
+	background:
+		linear-gradient(currentColor, currentColor) 3px 2px / 7px 7px no-repeat,
+		linear-gradient(currentColor, currentColor) 12px 2px / 7px 7px no-repeat,
+		linear-gradient(currentColor, currentColor) 3px 11px / 7px 7px no-repeat,
+		linear-gradient(currentColor, currentColor) 12px 11px / 7px 7px no-repeat; /* 3px from the left like the other drawings */
+}
+/* Community */
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(3) > ._19axKcqYRuaJ8vdYKYmtTQ::before {
+	-webkit-mask-image: url("../../Patches/Icons/Steam/Community.svg");
+	mask-image: url("../../Patches/Icons/Steam/Community.svg");
+}
+/* Profile */
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(4) > ._19axKcqYRuaJ8vdYKYmtTQ::before {
+	-webkit-mask-image: url("../../Patches/Icons/Steam/User.svg");
+	mask-image: url("../../Patches/Icons/Steam/User.svg");
+}
+/* Console */
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(5) > ._19axKcqYRuaJ8vdYKYmtTQ::before {
+	-webkit-mask-image: url("../../Patches/Icons/Steam/Desktop.svg");
+	mask-image: url("../../Patches/Icons/Steam/Desktop.svg");
+}
+
+/* Spacing by the drawing, not by its box (the drawing starts ~3px inside the 20px box): */
+/* 16px from the left edge to the drawing, ~10px from the drawing to the text, 16px after the text */
+._2D64jIEK7wpUR_NlObDW76 > ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(-n + 5) {
+	padding: 0 16px 0 13px !important;
+}

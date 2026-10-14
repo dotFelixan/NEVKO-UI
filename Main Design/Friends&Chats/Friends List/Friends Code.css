@@ -1,0 +1,303 @@
+/* Tob Bar */
+
+/* Profile & Window Buttons */
+/* Remove */
+.statusHeaderGlow {
+	visibility: hidden;
+}
+.titleBarContainer .currentUserContainer ._2Ri005Wg_uXDTa71kdRbcN {
+	display: none;
+}
+.singleWindowFocusBar.chatSingleWindowFocusBar,
+.chatTitleBar .title-area-highlight {
+	-webkit-mask: unset !important;
+}
+.singleWindowFocusBar,
+.title-area-highlight {
+	background: unset !important;
+}
+.friendListHeaderContainer {
+	box-shadow: unset;
+}
+.focused:not(.singlewindow) .title-area-highlight {
+	opacity: 0 !important;
+}
+/* Style */
+/* Height & etc. */
+.currentUserContainer {
+	height: 48px;
+
+	padding-left: 6px;
+
+	border-bottom: unset;
+}
+.AvatarAndUser {
+	height: 16px !important;
+	padding-top: 8px;
+
+	margin-top: -2px;
+	margin-left: 9px;
+	transform: translateY(30%);
+
+	width: fit-content;
+	max-width: 100%;
+}
+.AvatarAndUser .labelHolder .richPresenceContainer,
+.currentUserContainer ._3sxE7F1LV2IcSX68YsH9dI {
+	margin-top: unset;
+	display: none;
+}
+.currentUserContainer .ContextMenuButton .SVGIcon_DownArrowContextMenu {
+	width: 8px;
+	height: 14px;
+	margin-top: 5px;
+}
+.currentUserContainer .labelHolder {
+	margin-inline-start: 8px;
+	margin-inline-end: 8px;
+
+	margin-top: -2px;
+}
+.friendsui-container .title-area .title-bar-actions,
+.DesktopUI .title-area .title-bar-actions {
+	margin-top: 9px;
+	padding-right: unset;
+	margin-right: 15px;
+	gap: 8px;
+}
+.addFriendButton {
+	margin-top: unset !important;
+}
+.addFriendButton .SVGIcon_AddFriend {
+	margin-left: 4px;
+}
+
+._4ZTzGZ5TTgFyfw1DcXLXS._1oYSXGjBe7QctQ1ikLpCMm {
+	margin-top: unset;
+}
+.KxAI_M9gWx3OnKSshHOs6._1iRFj5lJrMqMnRb3GZYPSw {
+	margin-top: 0px;
+}
+/* Avatar */
+.currentUserAvatar {
+	width: 24px !important;
+	height: 24px !important;
+
+	margin-top: -4px;
+	padding-left: 6px;
+}
+.currentUserAvatar .avatarHolder.Medium {
+	width: 24px;
+	height: 24px;
+}
+/* Decoration Fix */
+.currentUserAvatar .avatarFrame {
+	width: 24px;
+	height: 24px;
+}
+
+/* Hover Account Menu Color */
+.AvatarAndUser {
+	transition: background-color .25s ease-out;
+}
+/* Font&Text */
+.currentUserContainer .nOdcT-MoOaXGePXLyPe0H {
+	font-weight: bold;
+	font-size: 13px !important;
+
+	max-width: 98px;
+}
+
+/* Offline Avatars: same brightness as the others (Steam darkens them) */
+.friend.offline .avatar,
+.offline > .avatarHolder .avatar,
+.avatarHolder.offline .avatar {
+	filter: none !important;
+	opacity: 1 !important;
+}
+
+/* Away: no dimming of the name / status mark (Steam makes them half transparent) */
+.friend.awayOrSnooze .labelHolder,
+.labelHolder.awayOrSnooze,
+.awayOrSnooze .avatarStatus,
+.awayOrSnooze .playerNicknameBracket,
+.rcp-row .rcp-copy {
+	opacity: 1 !important;
+}
+
+/* Friends List: status colors of the theme | name = status color, line under it = the same, quieter */
+.friendlistListContainer .friend {
+	--nk-status: var(--status-offline);
+}
+.friendlistListContainer .friend.online {
+	--nk-status: var(--status-online);
+}
+.friendlistListContainer .friend.awayOrSnooze {
+	--nk-status: var(--status-afk);
+}
+.friendlistListContainer .friend.ingame {
+	--nk-status: var(--status-playing);
+}
+.friendlistListContainer .friend.ingame.awayOrSnooze {
+	--nk-status: var(--status-playing-afk);
+}
+.friendlistListContainer .friend .playerName {
+	color: var(--nk-status) !important;
+}
+.friendlistListContainer .friend :is(.richPresenceLabel, .gameName, .richPresenceContainer) {
+	color: color-mix(in srgb, var(--nk-status) 72%, var(--main-background)) !important;
+}
+
+/* Disconnected */
+
+/* Steam's bar above the window -> plaque under the profile button (list width from Friends Tabs.js) */
+.errorDisconnected .ConnectionTrouble {
+	position: absolute;
+	top: 49px;
+	left: 15px;
+	z-index: 200;
+	width: calc(var(--nk-friends-list-width, 100vw) - 30px);
+	height: 48px;
+	box-sizing: border-box;
+
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	-webkit-app-region: no-drag;
+}
+.errorDisconnected .ConnectionTrouble > :not(.ConnectionTroubleContent) {
+	display: none;
+}
+.errorDisconnected .ConnectionTroubleContent {
+	height: 48px;
+	min-width: 0;
+	background: none;
+}
+
+/* Icon | status over the countdown | button */
+.errorDisconnected .ConnectionTroubleContent .ConnectionTroubleMessage {
+	display: grid !important; /* Steam: flex */
+	grid-template-columns: 20px minmax(0, 1fr) auto;
+	grid-template-rows: 1fr 1fr;
+	align-items: center;
+	column-gap: 10px;
+	height: 48px;
+	margin: 0;
+	padding: 0 8px 0 12px;
+	box-sizing: border-box;
+
+	color: var(--text-muted-color);
+	font-size: 12px;
+	line-height: 16px;
+	text-align: start;
+	text-shadow: none;
+	text-transform: none;
+	white-space: nowrap;
+}
+.errorDisconnected .ConnectionTroubleContent .ConnectionTroubleMessage::before {
+	content: "";
+	grid-column: 1;
+	grid-row: 1 / 3;
+	width: 20px;
+	height: 20px;
+
+	background: var(--text-muted-color);
+	-webkit-mask: url("../../../Patches/Icons/Steam/WirelessDisabled.svg") center / contain no-repeat;
+	mask: url("../../../Patches/Icons/Steam/WirelessDisabled.svg") center / contain no-repeat;
+}
+
+/* Status */
+.errorDisconnected .ConnectionTroubleMessage .errorMessageContainer {
+	grid-column: 2;
+	grid-row: 1;
+	align-self: end;
+
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+	height: auto; /* Steam: 32px, centered with auto margins */
+	margin: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+
+	color: var(--text-bright-color);
+	font-size: 13px;
+	font-weight: bold;
+	line-height: 18px;
+}
+/* No countdown: one line in the middle */
+.errorDisconnected .ConnectionTroubleMessage:not(:has(.ReconnectWaitMessage)) .errorMessageContainer {
+	grid-row: 1 / 3;
+	align-self: center;
+}
+.errorDisconnected .ConnectionTroubleMessage .connectionThrobber:not(.showThrobber) {
+	display: none;
+}
+
+/* Countdown */
+.errorDisconnected .ConnectionTroubleMessage .ReconnectWaitMessage {
+	grid-column: 2;
+	grid-row: 2;
+	align-self: start;
+
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Reconnect */
+.errorDisconnected .ConnectionTroubleContent .ConnectionTroubleReconnectMessage {
+	grid-column: 3;
+	grid-row: 1 / 3;
+	margin: 0;
+}
+.errorDisconnected .ConnectionTroubleContent .ReconnectNow {
+	min-width: 0;
+	height: 32px;
+	margin: 0;
+}
+.errorDisconnected .ConnectionTroubleContent .ReconnectNow .DialogButton {
+	width: auto;
+	min-width: 0;
+	height: 32px;
+	padding: 0 12px;
+
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	color: var(--text-muted-color);
+	font-size: 13px;
+	font-weight: bold;
+	line-height: 32px;
+	text-transform: none;
+	transition: background-color .15s, color .15s;
+}
+.errorDisconnected .ConnectionTroubleContent .ReconnectNow .DialogButton:hover {
+	background: var(--button-hover-background);
+	color: var(--text-bright-color);
+}
+
+/* Room for the plaque: 48px + 8px */
+.errorDisconnected .friendListHeaderContainer .currentUserContainer {
+	margin-bottom: 56px;
+}
+
+/* Divider of the docked chats starts from the top again */
+.errorDisconnected .singleWindowDivider {
+	top: 0;
+}
+
+/* Menu Open */
+
+/* Steam's click-catching layer under an open menu stays off the title row (attribute from Friends Scripts.js): */
+/* the plate with the nickname and the buttons beside it keep their cursor and their clicks */
+html[data-nk-menu-open] .ContextMenuMouseOverlay {
+	top: 48px !important;
+}
+/* No tooltip of a badge over an open menu (the badge on the nickname plate stands right above the status menu) */
+html[data-nk-menu-open] #nevko-tooltip {
+	display: none !important;
+}
+/* Device icon after the nickname (gamepad of Big Picture, phone...): 4px after the badge, as the badge after the name */
+.currentUserContainer .statusAndName > .PersonaStatusIcon {
+	margin-left: 4px;
+}

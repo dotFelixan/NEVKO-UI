@@ -1,0 +1,34 @@
+/* Option "My Messages Side: Right" - own bubbles on the right without avatar and name, as in Telegram (base: Chat.css). */
+/* Avatars of the others: the option "Chat Avatars" */
+
+.chatWindow .ChatMessageBlock:has(> .isCurrentUser) {
+	align-items: flex-end;
+	padding: 0;
+}
+.chatWindow .ChatMessageBlock > .ChatSpeaker.isCurrentUser .speakerHoverArea {
+	display: none;
+}
+.chatWindow .ChatMessageBlock > .ChatSpeaker.isCurrentUser .speakerTimeStamp {
+	margin: 0;
+}
+
+/* Time is in the bubbles (Chat.js): nothing is left in the line above own messages */
+html.nk-chat-times .chatWindow .ChatMessageBlock > .ChatSpeaker.isCurrentUser {
+	display: none;
+}
+
+/* Message buttons on the other side of own bubbles */
+.chatWindow .ChatMessageBlock > .msg.isCurrentUser > .Addons {
+	left: auto;
+	right: 100%;
+	padding: 0 6px 0 0;
+}
+
+/* Reactions under the right edge of own bubbles, buttons grow from that side */
+.chatWindow .msg.isCurrentUser > .MessageReactions {
+	left: auto;
+	right: 0;
+}
+.chatWindow .ChatMessageBlock > .msg.isCurrentUser > .Addons {
+	transform-origin: right center;
+}

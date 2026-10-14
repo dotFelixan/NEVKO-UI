@@ -1,0 +1,5 @@
+/* Option "Chat Header Background: no" - no mini profile background behind the chat header (base: Chat.css, script: Chat.js) */
+
+html:root #nk-chat-header-backdrop {
+	display: none !important; /* over the rule that shows it for a docked chat */
+}

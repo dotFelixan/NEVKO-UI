@@ -1,0 +1,39 @@
+/* Accents */
+
+/* All Windows */
+
+.bSKGlAJG2UVWTsntEJY2v:hover > svg > path,
+.bSKGlAJG2UVWTsntEJY2v:hover {
+	color: var(--SystemAccentColor) !important;
+	fill: var(--SystemAccentColor) !important;
+}
+._7AlhCx3XGzBeIrQaCneUD._1gqEjB5QsKT_NftD1dEsdZ:not(._2cO0HdvLEGAdhosLekWsmo) ._19axKcqYRuaJ8vdYKYmtTQ {
+	color: var(--SystemAccentColor);
+	text-shadow: 0px 0px 1px var(--SystemAccentColor);
+}
+._1gqEjB5QsKT_NftD1dEsdZ {
+	background: var(--SystemAccentColor-Transparent) !important;
+	transition: .2s linear;
+}
+._1gqEjB5QsKT_NftD1dEsdZ:hover {
+	background: var(--SystemAccentColor-Transparent-Alt) !important;
+	transition: .2s linear;
+}
+._2bl0iQ9xigbq4Zd1NI6NZl::before {
+	background: var(--SystemAccentColor) !important;
+}
+.nk-fill {
+	background: var(--SystemAccentColor) !important;
+}
+._2_FomluqqgQ2Hx8ON3AVep .wi0pDywRgOCxhG7OqQNaA {
+	--color-progress-bar-foreground: var(--SystemAccentColor);
+}
+
+/* Quick Access */
+:where(.MillenniumWindow_FriendsList, .MillenniumWindow_FriendChatWindow, .friendsui-container, .MillenniumWindow_FriendsList *, .MillenniumWindow_FriendChatWindow *, .friendsui-container *) {
+	/* Arrows While Dragging */
+	&.quickAccessFriends.nk-qa-dragging .nk-qa-nav:not(:disabled) {
+		background: var(--SystemAccentColor-Transparent-Alt2);
+		box-shadow: inset 0 0 0 1px var(--SystemAccentColor-Border);
+	}
+}

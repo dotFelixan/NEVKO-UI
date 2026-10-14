@@ -1,0 +1,411 @@
+/* Emoticon menu of the chat (emoticons, stickers, effects): tabs in a side column, search above the list */
+/* Sizes: options "Emoticon Size" -> --emoticon-size, "Sticker Size" -> --sticker-size (Options/Emoticons *.css, Stickers *.css) */
+
+/* Layout: tabs | search over the list */
+.contextMenu .Picker {
+	display: grid;
+	grid-template-columns: 32px minmax(0, 1fr);
+	grid-template-rows: auto minmax(0, 1fr);
+	gap: 8px;
+	padding: 2px;
+	box-sizing: border-box;
+}
+.contextMenu .Picker > .Tabs {
+	grid-column: 1;
+	grid-row: 1 / 3;
+}
+.contextMenu .Picker > .FilterInputContainer {
+	grid-column: 2;
+	grid-row: 1;
+}
+.contextMenu .Picker > .Content {
+	grid-column: 2;
+	grid-row: 2;
+}
+
+/* Tabs */
+.contextMenu .Picker > .Tabs {
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+	gap: 8px;
+	height: auto;
+	border: none;
+	box-shadow: none;
+}
+.contextMenu .Picker .Tab {
+	flex: none;
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+	border: none;
+	box-shadow: none;
+	cursor: pointer;
+}
+/* Steam's line under the active tab */
+.contextMenu .Picker .Tab::before,
+.contextMenu .Picker .Tab::after {
+	display: none;
+}
+.contextMenu .Picker .TabContent {
+	display: flex;
+	opacity: 1; /* Steam dims the tabs to 80%: the plaque and the icon were darker than the other buttons, also under the cursor */
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	box-sizing: border-box;
+
+	border: none;
+	border-radius: var(--button-radius);
+	box-shadow: none;
+	transition: background-color .15s;
+}
+.contextMenu .Picker .PickerTab {
+	width: 20px;
+	height: 20px;
+	padding: 0;
+}
+.contextMenu .Picker .PickerTab svg {
+	width: 20px;
+	height: 20px;
+}
+
+/* Search */
+.contextMenu .Picker > .FilterInputContainer {
+	padding: 0;
+}
+.contextMenu .Picker .FilterInputContainer input {
+	height: 32px;
+	padding: 0 14px;
+	box-sizing: border-box;
+
+	border: none;
+	border-radius: 16px;
+	box-shadow: none;
+	font-size: 13px;
+	font-style: normal;
+}
+
+/* List */
+.contextMenu .Picker > .Content {
+	padding: 0;
+}
+.contextMenu .Picker .Content > div {
+	margin: 0;
+	padding: 0;
+}
+/* Section name: the tab already says it */
+.contextMenu .Picker .SectionTitle {
+	display: none;
+}
+.contextMenu .Picker .ItemList {
+	gap: 2px;
+}
+.contextMenu .Picker .ItemList > .Item {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+
+	border-radius: var(--button-radius);
+	cursor: pointer;
+	transition: background-color .12s;
+}
+/* Emoticons */
+.contextMenu .Picker .ItemList > .Item:has(> .EmoticonItem) {
+	width: calc(var(--emoticon-size, 20px) + 12px);
+	height: calc(var(--emoticon-size, 20px) + 12px);
+}
+.contextMenu .Picker .Item > .EmoticonItem {
+	width: 100%;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
+}
+/* Stickers (Steam: 40px) and room effects (Steam: 64px, never smaller) */
+.contextMenu .Picker .ItemList > .Item:has(> :is(.StickerButton, .EffectButton)) {
+	flex: none; /* or the row squeezes them */
+	padding: 4px;
+}
+.contextMenu .Picker .Item > :is(.StickerButton, .EffectButton) {
+	flex: none;
+}
+.contextMenu .Picker .Item > .StickerButton {
+	width: var(--sticker-size, 40px);
+	height: var(--sticker-size, 40px);
+}
+.contextMenu .Picker .Item > .EffectButton {
+	width: max(64px, var(--sticker-size, 40px));
+	height: max(64px, var(--sticker-size, 40px));
+}
+.contextMenu .Picker .Item img.emoticon {
+	width: var(--emoticon-size, 20px);
+	height: var(--emoticon-size, 20px);
+}
+
+/* Scrollbar */
+.contextMenu .Picker > .Content::-webkit-scrollbar {
+	width: 6px;
+}
+.contextMenu .Picker > .Content::-webkit-scrollbar-track {
+	background: none;
+}
+.contextMenu .Picker > .Content::-webkit-scrollbar-thumb {
+	border: none;
+	border-radius: 3px;
+}
+
+/* Colors */
+.contextMenu .Picker .TabContent,
+.contextMenu .Picker .FilterInputContainer input,
+.contextMenu .Picker > .Content::-webkit-scrollbar-thumb {
+	background: var(--button-background);
+}
+.contextMenu .Picker .Tab:hover .TabContent,
+.contextMenu .Picker .ItemList > .Item:hover,
+.contextMenu .Picker > .Content::-webkit-scrollbar-thumb:hover {
+	background: var(--button-hover-background);
+}
+.contextMenu .Picker .Tab.Active .TabContent {
+	background: var(--SystemAccentColor-Transparent);
+}
+/* The color is set on the tab's icon box and only that box changes it smoothly; the drawing takes it at once. */
+/* With a transition on the drawing and on each of its parts the change dragged on */
+.contextMenu .Picker .PickerTab {
+	color: var(--text-muted-color);
+	transition: color .15s;
+}
+.contextMenu .Picker .PickerTab svg,
+.contextMenu .Picker .PickerTab svg * {
+	color: inherit !important;
+	fill: currentColor !important;
+	transition: none !important;
+}
+/* Under the cursor the icon lights up, as on the other buttons of the theme */
+.contextMenu .Picker .Tab:not(.Active):hover .PickerTab {
+	color: var(--text-bright-color);
+}
+.contextMenu .Picker .Tab.Active .PickerTab {
+	color: var(--SystemAccentColor);
+}
+.contextMenu .Picker .FilterInputContainer input {
+	color: var(--text-bright-color);
+}
+.contextMenu .Picker .FilterInputContainer input::placeholder {
+	color: var(--text-muted-color);
+}
+
+/* Emoji Pack */
+
+/* Ordinary emoji as a second pack of the emoticons tab (elements from Emoji Pack.js): */
+/* a switch under the list; while "Emoji" is chosen its list stands in place of Steam's list and search */
+#nk-emoji-pane {
+	display: none;
+	grid-column: 2;
+	grid-row: 1 / 3;
+	min-height: 0;
+	overflow: hidden auto;
+}
+#nk-emoji-pane[data-open] {
+	display: block;
+}
+.contextMenu .Picker:has(> #nk-emoji-pane[data-open]) > :is(.Content, .FilterInputContainer) {
+	display: none;
+}
+#nk-emoji-pane .nk-emoji-group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px;
+	padding-bottom: 8px;
+	margin-bottom: 8px;
+	border-bottom: 1px solid var(--button-background);
+}
+#nk-emoji-pane .nk-emoji-group:last-child {
+	margin-bottom: 0;
+	border-bottom: none;
+}
+#nk-emoji-pane .nk-emoji {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: calc(var(--emoticon-size, 20px) + 12px);
+	height: calc(var(--emoticon-size, 20px) + 12px);
+	margin: 0;
+	padding: 0;
+
+	border: none;
+	border-radius: var(--button-radius);
+	background: none;
+	color: var(--text-bright-color);
+	font-family: "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", sans-serif;
+	font-size: var(--emoticon-size, 20px);
+	line-height: 1;
+	cursor: pointer;
+	transition: background-color .12s;
+}
+#nk-emoji-pane .nk-emoji:hover {
+	background: var(--button-hover-background);
+}
+/* Picture of a set (option "Emoji Style") */
+#nk-emoji-pane .nk-emoji > img {
+	display: block;
+	width: calc(var(--emoticon-size, 20px) + 2px);
+	height: calc(var(--emoticon-size, 20px) + 2px);
+	pointer-events: none;
+}
+#nk-emoji-pane::-webkit-scrollbar {
+	width: 6px;
+}
+#nk-emoji-pane::-webkit-scrollbar-track {
+	background: none;
+}
+#nk-emoji-pane::-webkit-scrollbar-thumb {
+	border: none;
+	border-radius: 3px;
+	background: var(--button-background);
+}
+
+/* Switch: two equal buttons in the row under the list, on the emoticons tab only */
+#nk-emoji-packs {
+	display: none;
+	grid-column: 2;
+	grid-row: 3;
+	gap: 8px;
+}
+#nk-emoji-packs[data-shown] {
+	display: flex;
+}
+#nk-emoji-packs > button {
+	flex: 1;
+	height: 32px; /* as the Friends / Chats tabs */
+	margin: 0;
+	padding: 0 10px;
+
+	border: none;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	color: var(--text-muted-color);
+	font-size: 14px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: background-color .15s, color .15s;
+}
+#nk-emoji-packs > button:hover {
+	background: var(--button-hover-background);
+	color: var(--text-bright-color);
+}
+#nk-emoji-packs > button.nk-active {
+	background: var(--SystemAccentColor-Transparent);
+	color: var(--SystemAccentColor);
+}
+
+/* Emoji in messages as pictures of the chosen set (Emoji Pack.js): Steam's text is hidden, the copy is shown */
+.chatHistory .msgText span[data-nk-emoji-shown] {
+	display: none;
+}
+.chatHistory .msgText .nk-emoji-text > img {
+	display: inline-block;
+	width: 1.35em;
+	height: 1.35em;
+	margin: 0 1px;
+	vertical-align: -0.3em;
+}
+
+/* Emoji-Only Messages */
+
+/* A message of nothing but emoji / emoticons (attribute from Emoji Pack.js): no bubble, big emoji in a thin white */
+/* outline, the time in a small plaque under them */
+.chatWindow .ChatMessageBlock > .msg[data-nk-emoji-only] {
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 4px;
+	padding: 2px 0;
+	background: none !important;
+}
+.chatWindow .ChatMessageBlock > .msg[data-nk-emoji-only].isCurrentUser {
+	align-items: flex-end;
+}
+.chatWindow .msg[data-nk-emoji-only="big"] {
+	--nk-emoji-big: 56px;
+}
+.chatWindow .msg[data-nk-emoji-only="mid"] {
+	--nk-emoji-big: 40px;
+}
+.chatWindow .msg[data-nk-emoji-only="small"] {
+	--nk-emoji-big: 30px;
+}
+.chatWindow .msg[data-nk-emoji-only] > .msgText {
+	overflow: visible;
+	font-size: var(--nk-emoji-big); /* emoji drawn by the system font */
+	line-height: 1.15;
+	/* Outline: four 1px white shadows, one to each side */
+	filter: drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff);
+}
+.chatWindow .msg[data-nk-emoji-only] > .msgText :is(.nk-emoji-text > img, img.emoticon) {
+	width: var(--nk-emoji-big);
+	height: var(--nk-emoji-big);
+	margin: 0 2px;
+	vertical-align: middle;
+}
+.chatWindow .msg[data-nk-emoji-only] > .nk-msg-time {
+	margin: 0;
+	padding: 1px 8px;
+	border-radius: 9px;
+	background: var(--button-background);
+}
+/* Reactions stand under the time as usual */
+.chatWindow .msg[data-nk-emoji-only] > .MessageReactions {
+	top: calc(100% + 4px);
+}
+
+/* Pictures in the Message Field (emoji of the chosen set and Steam emoticons) */
+
+/* Layer over the field (Emoji Pack.js): same text, invisible; every emoji is covered by the picture of the set. */
+/* Under the picture: the color of the field, so the system emoji of the field itself does not show around it */
+.chatEntry .nk-field-emoji {
+	position: absolute;
+	z-index: 1;
+	box-sizing: border-box;
+	overflow: hidden;
+
+	color: transparent;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+	pointer-events: none;
+	user-select: none;
+}
+.chatEntry .nk-field-emoji > span {
+	background-color: var(--main-background);
+	background-image: var(--nk-a), var(--nk-b), linear-gradient(var(--button-background), var(--button-background));
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain, contain, cover;
+}
+/* Selected in the field: the color of the selection under the picture instead of the color of the field */
+.chatEntry .nk-field-emoji > span.nk-selected {
+	background-color: var(--nk-selection, Highlight);
+	background-image: var(--nk-a), var(--nk-b);
+	background-size: contain;
+}
+
+/* Still Stickers */
+
+/* Stickers of the menu stand still (copies from Emoji Pack.js); the animated picture is shown only under the cursor */
+.contextMenu .Picker .StickerButton > canvas.nk-sticker-still {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+.contextMenu .Picker .StickerButton > img[data-nk-still],
+.contextMenu .Picker .Item:hover > .StickerButton > canvas.nk-sticker-still {
+	display: none;
+}
+.contextMenu .Picker .Item:hover > .StickerButton > img[data-nk-still] {
+	display: block;
+}
+/* A sticker that has no still copy yet (still loading) is not shown moving for a moment */
+.contextMenu .Picker .StickerButton > img:not([data-nk-still]) {
+	visibility: hidden;
+}
