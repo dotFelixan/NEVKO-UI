@@ -52,6 +52,10 @@
 	align-items: flex-end; /* a hidden alert of Steam may make the row wider than its buttons: they keep to its right end */
 	--steam-control-width: 242px !important;
 	top: 8px;
+	pointer-events: none; /* the row is as wide as a hidden alert: clicks pass to the nav buttons under it */
+}
+._1_yS5UP7el0aN4vntx3dx > * {
+	pointer-events: auto;
 }
 .ip-YZhijAMZcuRoXBGiye ._1KrJ3sFAqPBN9mfpaNTU5F.Icon svg {
 	margin-top: 2px;
