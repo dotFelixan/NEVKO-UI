@@ -52,18 +52,6 @@ All options live in the theme settings and in the **NEVKO** section of the Steam
 
 ---
 
-## Highlights
-
-- **Refreshed header** — compact buttons, icons from the Steam set, account button styles, a Steam Modes button for Big Picture and SteamVR.
-- **Friends list** — party rows with stacked avatars, Quick Access tiles, a *Chats* tab (with the Recent Chats plugin), modern status dots and device icons.
-- **Chats in Telegram style** — chats docked to the friends list, a header with the friend's status and *typing…*, replies to messages, click-to-reveal spoilers, media without bubbles, dates without the current year.
-- **Custom chat backgrounds** — per chat or one global background, with blur, dimming and Windows-like fit modes.
-- **Emoticon side panel** — the emoticon menu docked beside the chat, still stickers that animate on hover, emoji sets.
-- **Context menus** — redesigned, grouped and animated, drawn inside the window (works on Linux too).
-- **Custom accents and colors**, rounding of avatars, buttons and messages, button press animation.
-
----
-
 ## Features
 
 <details>
