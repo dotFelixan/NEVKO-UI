@@ -137,7 +137,6 @@ I check everything before each update, but bugs may still be there. You can repo
 
 - [ShadowMonster99](https://github.com/shdwmtr) - JS & CSS from CompactHeader
 - [kuska1](https://github.com/kuska1) - some CSS from Material Design
-- [SpaceTheme](https://github.com/SpaceTheme) - CSS for the right-side game page
 
 **Helped with the code**
 
