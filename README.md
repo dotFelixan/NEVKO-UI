@@ -48,8 +48,6 @@
 3. Pick the theme in Millennium and restart Steam.
 4. *(Optional)* Install the **Recent Chats** plugin to get the *Chats* tab in the friends list.
 
-All options live in the theme settings and in the **NEVKO** section of the Steam settings.
-
 ---
 
 ## Features
