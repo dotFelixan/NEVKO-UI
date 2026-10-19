@@ -44,7 +44,7 @@
     return ""
   }
 
-  // "ElPipi invited you to play <icon>THE FINALS" -> game "THE FINALS", text "ElPipi invited you to play"
+  // "Friend invited you to play <icon>THE FINALS" -> game "THE FINALS", text "Friend invited you to play"
   function describe(el) {
     const whole = [...el.childNodes].filter(node => node.nodeType === Node.TEXT_NODE).map(node => node.nodeValue).join("")
     const invite = inviteOf(el)
@@ -144,7 +144,7 @@
     }
   }
 
-  // Group chats of the Chats tab: the last message under the name, as the recent chats show it ("Kasha: text").
+  // Group chats of the Chats tab: the last message under the name, as the recent chats show it ("Friend: text").
   // Steam keeps it on each text room of the group (m_strLastMessage, bbcode); the newest of the rooms is taken
   const GROUP_LAST = "nk-group-last"
 
