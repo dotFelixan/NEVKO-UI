@@ -1,0 +1,4 @@
+/* Option "Menu Rendering: Popup Windows" - Context Menu Renderer.js leaves menus in Steam's own popup windows */
+:root {
+	--nk-menus-popup: on;
+}

@@ -132,7 +132,7 @@
     const width = container?.closest(".friendlist")?.clientWidth || window.innerWidth
     const next = width >= WIDE_FROM ? WIDE_COLUMNS : NARROW_COLUMNS
     const value = String(next)
-    document.documentElement.dataset[COLUMNS_ATTR] = value
+    if (document.documentElement.dataset[COLUMNS_ATTR] !== value) document.documentElement.dataset[COLUMNS_ATTR] = value
     const compact = width < COMPACT_BELOW
     if (container && container.hasAttribute(COMPACT_ATTR) !== compact) container.toggleAttribute(COMPACT_ATTR, compact)
     if (!container || (next === columns && container.dataset[COLUMNS_ATTR] === value)) return

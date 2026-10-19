@@ -33,7 +33,7 @@
   // How far the redesign has got. value: percent done; state: "progress" (being made) or "none" (not started)
   const PROGRESS = [
     { name: "Header", value: 80 },
-    { name: "Friends & Chats", value: 60 },
+    { name: "Friends & Chats", value: 80 },
     { name: "Library", state: "progress" },
     { name: text("Остальное", "Everything else"), state: "none" },
   ]

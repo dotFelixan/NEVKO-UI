@@ -20,6 +20,29 @@
   const SYNC_EVERY = 400
   const EXPECT_MS = 800      // a picker menu that appears this soon after our click is ours
 
+  // Timers of this window may stop (seen: setTimeout never fires while frames are still drawn), and the panel was
+  // never opened again. Whatever comes first runs it: the timer, or the first frame drawn after the delay
+  function later(fn, ms = 0) {
+    const start = performance.now()
+    let done = false
+    const run = () => {
+      if (done) return
+      done = true
+      fn()
+    }
+    setTimeout(run, ms)
+    const frame = () => {
+      if (done) return
+      if (performance.now() - start >= ms) run()
+      else requestAnimationFrame(frame)
+    }
+    requestAnimationFrame(frame)
+  }
+  function every(fn, ms) {
+    const step = () => later(() => { fn(); step() }, ms)
+    step()
+  }
+
   let docked = localStorage.getItem(STORAGE_KEY) === "1"
   let ownClick = false     // our click on the button: Steam must get it
   let held = null          // { instance, el, parent, button, scroll, emojiScroll }: menu that is kept open
@@ -34,13 +57,19 @@
   const WIDTH_MAX = 560
   let panelWidth = Number(localStorage.getItem(WIDTH_KEY)) || 340
 
-  // The chat beside the panel keeps this much. The panel gives way down to its least width; in a window too narrow
-  // for both (a chat docked to a narrow friends list) it is not docked at all
-  const CHAT_MIN = 300
+  // The messages beside the panel keep this much. The panel gives way down to its least width; in a window too narrow
+  // for both (a chat docked to a narrow friends list) it is not opened - a notice in the chat says why. An open panel
+  // is never closed for lack of room: the window cannot get narrower than the chat and the panel (Window Script.js)
+  const CHAT_MIN = 480 // a picture or video (420px) with the avatar beside it
   function room() {
     const host = document.querySelector(".multiChatDialog")
     // No width yet (the window is still being made, or it is hidden): not known, so nothing is decided by it
-    return host?.clientWidth ? host.clientWidth - CHAT_MIN : Infinity
+    if (!host?.clientWidth) return Infinity
+    // A group has its channels and members beside the messages, in the same dialog as the panel: they stay
+    const history = [...host.querySelectorAll(".chatHistoryScroll")].find(el => el.offsetParent)
+    const panel = docked ? menu()?.offsetWidth || 0 : 0
+    const columns = history ? Math.max(0, host.clientWidth - panel - history.clientWidth) : 0
+    return host.clientWidth - columns - CHAT_MIN
   }
   const hasRoom = () => room() >= WIDTH_MIN
 
@@ -207,16 +236,10 @@
 
   // Docked Panel
 
-  // remember: the choice of the user, kept for the next start of Steam. The panel closed for lack of room is not
-  // such a choice: it comes back when the room does (it used to be saved as closed - the window is narrow for a
-  // moment while Steam starts - and had to be opened by hand after every start)
-  let waiting = false // docked by the user, closed for now: no room beside the chat
-  function setDocked(value, { remember = true } = {}) {
+  // The choice of the user, kept for the next start of Steam
+  function setDocked(value) {
     docked = value
-    if (remember) {
-      waiting = false
-      localStorage.setItem(STORAGE_KEY, value ? "1" : "0")
-    }
+    localStorage.setItem(STORAGE_KEY, value ? "1" : "0")
     document.documentElement.classList.toggle(DOCKED_CLASS, value)
     hoverOpened = false
     clearTimeout(hoverTimer)
@@ -240,7 +263,7 @@
     swap = { ghost, ...state, since: Date.now(), tabSet: false }
     swap.button = open(true)
     if (!swap.button) return endSwap()
-    setTimeout(stepSwap, SWAP_STEP)
+    later(stepSwap, SWAP_STEP)
   }
 
   // The chat on screen changed: Steam's menu belongs to the chat it was opened from (an emoticon would go there)
@@ -265,7 +288,7 @@
       swap.tabSet = true
       const tab = tabs[swap.tab]
       if (tab && !tab.classList.contains("Active")) tab.click()
-      return setTimeout(stepSwap, SWAP_SETTLE)
+      return later(stepSwap, SWAP_SETTLE)
     }
     if (held && swap.tabSet) {
       for (const [selector, key] of LISTS) {
@@ -275,11 +298,11 @@
       held.scroll = swap.scroll
       held.emojiScroll = swap.emojiScroll
       // Stickers in view are still loading: the copy stays over them, or they would blink in
-      if (!picturesReady(fresh) && Date.now() - swap.since < SWAP_LIMIT) return setTimeout(stepSwap, SWAP_STEP)
+      if (!picturesReady(fresh) && Date.now() - swap.since < SWAP_LIMIT) return later(stepSwap, SWAP_STEP)
       return endSwap()
     }
     if (Date.now() - swap.since > SWAP_LIMIT) return endSwap() // no new menu: the usual pass opens another
-    setTimeout(stepSwap, SWAP_STEP)
+    later(stepSwap, SWAP_STEP)
   }
 
   // Loaded, and (when stickers stand still, Emoji Pack.js) with their still frames drawn: the copy shows still frames,
@@ -299,7 +322,7 @@
     swap.ghost.remove()
     swap = null
     addGrip()
-    setTimeout(sync) // chats were switched again meanwhile: the next swap starts at once
+    later(sync) // chats were switched again meanwhile: the next swap starts at once
   }
 
   // Another menu (of a message, a reaction picker, ...) took the place of the panel: Steam removed it.
@@ -329,23 +352,31 @@
     reopenUnder(ghost, state)
   }
 
+  function dropPanel() {
+    parked = null
+    for (const ghost of document.querySelectorAll(`.contextMenu[${GHOST_ATTR}]`)) ghost.remove()
+    if (held || menu()) close()
+  }
+
   // Keeps the panel alive and tied to the chat on screen
   function sync() {
-    if (swap) return
-    if (!docked) {
-      if (waiting && hasRoom()) {
-        waiting = false
-        setDocked(true, { remember: false })
+    if (swap || !docked) return
+    // A dialog of Steam is open (delete a message...): nothing is opened over it. Steam itself shows the kept panel
+    // again when the menu that hid it closes (the menu of the message): that one is the panel, not a popup - not
+    // marked, it stood over the dialog, and hidden, its layer that takes the clicks stayed over the whole window
+    if (document.querySelector(".ModalOverlayContent.active")) {
+      for (const el of document.querySelectorAll(`.contextMenu:not([${OURS_ATTR}]):not([${GHOST_ATTR}])`)) {
+        if (el.querySelector(".Picker") && isOurs(instanceOf(el))) el.setAttribute(OURS_ATTR, "")
       }
       return
     }
-    if (!hasRoom()) {
-      waiting = true
-      return setDocked(false, { remember: false })
-    }
     applyWidth()
     const button = activeButton()
-    if (!button) return
+    if (!button) {
+      // No chat in this window any more (chats undocked into their own window): the panel goes, the choice stays
+      if (!document.querySelector(".chatWindow")) dropPanel()
+      return
+    }
 
     if (held && !held.el.isConnected) park() // normally done at once by the observer below
     if (held) retain(held.instance) // Steam makes the options anew when it moves a menu
@@ -380,7 +411,7 @@
       }
     }
     // Another menu has closed: back at once
-    if (parked && docked && !swap && !otherMenuOpen()) setTimeout(sync)
+    if (parked && docked && !swap && !otherMenuOpen()) later(sync)
   }
 
 
@@ -390,11 +421,70 @@
     if (ownClick) return
     const button = event.target instanceof Element && event.target.closest(BUTTON)
     if (!button) return
-    if (!docked && !hasRoom()) return // no place to dock: Steam's popup as usual
     // Steam would toggle its popup: the click switches the panel instead
     event.preventDefault()
     event.stopImmediatePropagation()
+    if (!docked && !hasRoom()) return showNoRoom()
     setDocked(!docked)
+  }
+
+  // No room for the panel: a notice in the middle of the chat for a moment, in the language of Steam
+  const NOTICE_ID = "nk-emoticons-no-room"
+  const NOTICE_MS = 2500
+  const NO_ROOM = {
+    en: "The window is too small for the emoticon side panel",
+    ru: "Окно слишком маленькое для боковой панели эмодзи",
+    uk: "Вікно замале для бічної панелі емодзі",
+    bg: "Прозорецът е твърде малък за страничния панел с емотикони",
+    de: "Das Fenster ist zu klein für die seitliche Emoticon-Leiste",
+    fr: "La fenêtre est trop petite pour le panneau latéral des émoticônes",
+    es: "La ventana es demasiado pequeña para el panel lateral de emoticonos",
+    pt: "A janela é demasiado pequena para o painel lateral de emoticons",
+    "pt-br": "A janela é pequena demais para o painel lateral de emoticons",
+    it: "La finestra è troppo piccola per il pannello laterale delle emoticon",
+    nl: "Het venster is te klein voor het zijpaneel met emoticons",
+    pl: "Okno jest za małe na boczny panel emotikonów",
+    cs: "Okno je příliš malé pro boční panel emotikonů",
+    hu: "Az ablak túl kicsi az oldalsó hangulatjel-panelhez",
+    ro: "Fereastra este prea mică pentru panoul lateral de emoticoane",
+    el: "Το παράθυρο είναι πολύ μικρό για το πλαϊνό πάνελ φατσούλων",
+    da: "Vinduet er for lille til sidepanelet med humørikoner",
+    sv: "Fönstret är för litet för sidopanelen med uttryckssymboler",
+    no: "Vinduet er for lite for sidepanelet med uttrykksikoner",
+    fi: "Ikkuna on liian pieni hymiöiden sivupaneelille",
+    tr: "Pencere, yan ifade paneli için çok küçük",
+    ar: "النافذة صغيرة جدًا للوحة الرموز التعبيرية الجانبية",
+    ja: "ウィンドウが小さすぎるため、エモートのサイドパネルを開けません",
+    ko: "창이 너무 작아 이모티콘 사이드 패널을 열 수 없습니다",
+    "zh-cn": "窗口太小，无法打开表情侧边栏",
+    "zh-tw": "視窗太小，無法開啟表情側邊欄",
+    th: "หน้าต่างเล็กเกินไปสำหรับแผงอีโมติคอนด้านข้าง",
+    vi: "Cửa sổ quá nhỏ để mở bảng biểu tượng cảm xúc bên cạnh",
+    id: "Jendela terlalu kecil untuk panel samping emotikon",
+  }
+  // Steam names its language in the page: "ru", "pt-BR", "zh-CN"...
+  function noRoomText() {
+    const lang = (document.documentElement.lang || "en").toLowerCase()
+    const zh = lang.startsWith("zh") && (/tw|hk|hant/.test(lang) ? "zh-tw" : "zh-cn")
+    return NO_ROOM[lang] || NO_ROOM[zh] || NO_ROOM[lang.split("-")[0]] || NO_ROOM[{ nb: "no", nn: "no" }[lang]] || NO_ROOM.en
+  }
+
+  function showNoRoom() {
+    const history = [...document.querySelectorAll(".multiChatDialog .chatHistoryScroll")].find(el => el.offsetParent)
+    if (!history) return
+    document.getElementById(NOTICE_ID)?.remove()
+    const notice = document.createElement("div")
+    notice.id = NOTICE_ID
+    notice.textContent = noRoomText()
+    const at = history.getBoundingClientRect()
+    notice.style.left = `${Math.round(at.left + at.width / 2)}px`
+    notice.style.top = `${Math.round(at.top + at.height / 2)}px`
+    notice.style.maxWidth = `${Math.max(160, Math.round(at.width - 30))}px`
+    document.body.append(notice)
+    later(() => {
+      notice.classList.add("nk-hide")
+      later(() => notice.remove(), 200)
+    }, NOTICE_MS)
   }
 
   function onHover(event) {
@@ -443,7 +533,7 @@
 
   function init() {
     new MutationObserver(onMenus).observe(document.body, { childList: true, subtree: true })
-    setInterval(sync, SYNC_EVERY)
+    every(sync, SYNC_EVERY)
   }
 
   document.documentElement.classList.toggle(DOCKED_CLASS, docked)
@@ -454,7 +544,7 @@
   document.addEventListener("scroll", onScroll, true)
   // A chat tab was clicked: no waiting for the timer
   document.addEventListener("click", event => {
-    if (docked && event.target instanceof Element && event.target.closest(".ChatTabs .ChatTab")) setTimeout(sync, 30)
+    if (docked && event.target instanceof Element && event.target.closest(".ChatTabs .ChatTab")) later(sync, 30)
   }, true)
   document.documentElement.addEventListener("mouseleave", startHoverClose)
   addEventListener("resize", applyWidth)

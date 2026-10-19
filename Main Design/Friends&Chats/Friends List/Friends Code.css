@@ -19,6 +19,171 @@
 .friendListHeaderContainer {
 	box-shadow: unset;
 }
+/* Tabs and search: never a part of the window's drag area. Steam's title bar is 66px tall; with no Quick Access */
+/* (no favorites) the tabs move up under it and took no clicks */
+.friendListHeaderContainer .socialTabSearchContainer {
+	-webkit-app-region: no-drag;
+}
+/* Voice Dock */
+/* Steam's "Voice chat" panel, a dock 15px off the bottom of the list: channel (group under it from Friends List.js) | */
+/* microphone, sound, leave. It does not scroll: the column of the list is its frame (layout containment), and the */
+/* list gets room under its last row to scroll out from under it */
+.friendsListContainer {
+	contain: layout;
+	--nk-voice-dock: 44px;
+}
+.friendListHeaderContainer .activeVoiceControls {
+	position: fixed;
+	inset: auto 15px 15px;
+	z-index: 5;
+	height: auto;
+	min-height: var(--nk-voice-dock);
+	max-height: none !important;
+	margin: 0 !important;
+	padding: 6px 6px 6px 10px;
+	box-sizing: border-box;
+	overflow: visible;
+
+	border: none;
+	border-radius: var(--button-radius);
+	outline: 8px solid var(--main-background); /* rows that scroll under it stop 8px before it */
+	background: linear-gradient(var(--SystemAccentColor-Transparent), var(--SystemAccentColor-Transparent)), var(--main-background);
+	transition: opacity .2s !important;
+}
+.friendListHeaderContainer .activeVoiceControls::before,
+.friendListHeaderContainer .activeVoiceControls .connectionStatusLabels {
+	display: none;
+}
+.friendListHeaderContainer .activeVoiceControls :is(.buttonsContainer, .activeVoiceFlexBox) {
+	display: flex;
+	align-items: center;
+	flex: 1;
+	gap: 4px;
+	height: auto;
+	margin: 0;
+	padding: 0;
+}
+.friendListHeaderContainer .activeVoiceControls .buttonsContainer {
+	height: 32px;
+}
+/* Voice icon of Steam | channel, group */
+.friendListHeaderContainer .activeVoiceControls .activeVoiceFlexBox::before {
+	content: "";
+	flex: none;
+	width: 16px;
+	height: 16px;
+	margin-inline-end: 4px;
+	background: var(--SystemAccentColor);
+	-webkit-mask: url("../../../Patches/Icons/Steam/VoiceRoom.svg") center / contain no-repeat;
+	mask: url("../../../Patches/Icons/Steam/VoiceRoom.svg") center / contain no-repeat;
+}
+.friendListHeaderContainer .activeVoiceLabels {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-width: 0;
+	padding: 0;
+}
+.friendListHeaderContainer .activeVoiceLabels .activeVoiceName {
+	overflow: hidden;
+	color: var(--SystemAccentColor);
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 16px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.friendListHeaderContainer .activeVoiceLabels .activeVoiceName:hover {
+	color: var(--text-bright-color);
+}
+/* "VOICE CHAT:" -> the group; a call with a friend has none */
+.friendListHeaderContainer .activeVoiceLabels .activeVoiceHeader {
+	order: 2;
+	overflow: hidden;
+	font-size: 0;
+	letter-spacing: normal;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.friendListHeaderContainer .activeVoiceLabels .activeVoiceHeader:not([data-nk-group]) {
+	display: none;
+}
+.friendListHeaderContainer .activeVoiceLabels .activeVoiceHeader::before {
+	content: attr(data-nk-group);
+	color: var(--text-muted-color);
+	font-size: 11px;
+	line-height: 14px;
+}
+/* Buttons: 32px, as the theme's; off - red, as in the voice channel (Chat.css) */
+.friendListHeaderContainer .activeVoiceControls .activeVoiceButtons {
+	display: flex;
+	gap: 4px;
+	min-width: 0;
+}
+.friendListHeaderContainer .activeVoiceControls .activeVoiceButtons :is(.activeVoiceButtonsSpacer, .activeVoiceButtonsSpacerAfter) {
+	display: none;
+}
+.friendListHeaderContainer .activeVoiceControls .activeVoiceButtons button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	min-width: 32px;
+	max-width: 32px;
+	height: 32px;
+	min-height: 32px;
+	max-height: 32px;
+	margin: 0;
+	padding: 0;
+
+	border: none;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	box-shadow: none;
+	color: var(--text-bright-color);
+	transition: background-color .15s;
+}
+.friendListHeaderContainer .activeVoiceControls .activeVoiceButtons button:hover {
+	background: var(--button-hover-background);
+}
+.friendListHeaderContainer .activeVoiceControls .activeVoiceButtons button:is(.ToggleMicrophoneButton, .ToggleVoiceOutputButton):is(.disabled, .NoMicrophone),
+.friendListHeaderContainer .activeVoiceControls .activeVoiceButtons button:is(.ToggleMicrophoneButton, .ToggleVoiceOutputButton):is(.disabled, .NoMicrophone):hover {
+	background: color-mix(in srgb, var(--notification-color, #E64A35) 18%, transparent);
+	color: var(--notification-color, #E64A35);
+}
+.friendListHeaderContainer .activeVoiceControls .VoiceIconCtn {
+	display: flex;
+	width: auto;
+	height: auto;
+	margin: 0;
+	color: inherit; /* Steam: light green */
+}
+.friendListHeaderContainer .activeVoiceControls .activeVoiceButtons button svg {
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	padding: 0;
+	color: inherit;
+	fill: currentColor;
+}
+/* Room under the last row: the list scrolls out from under the dock (the friends tab scrolls its own list) */
+/* A spacer, not padding: padding made the column taller than the window. Chats tab (Recent Chats): the whole column */
+/* scrolls; Friends tab: only its list (the list of recent chats has the same class, it is not the end of the column) */
+html[data-recent-chats-open] .friendlist:has(.friendListHeaderContainer .activeVoiceControls)::after,
+html:not([data-recent-chats-open]) .friendlist:has(.friendListHeaderContainer .activeVoiceControls) .friendlistListContainer:not(.rcp-list)::after {
+	content: "";
+	display: block;
+	flex: none;
+	order: 5; /* after the group chats (order 4, Friends Tabs.css) */
+	height: calc(var(--nk-voice-dock) + 15px);
+}
+/* No dock (and no room for it) while the open chat is the group whose channel you are in: its channel column has the */
+/* same buttons (Chat.css). Option "Always Show Voice Dock" keeps it (Options/Voice Dock Always.css) */
+html:has(.chatWindow[data-activechat="true"] .chatRoomGroupNavColumn .ActiveVoiceChannel) .friendListHeaderContainer .activeVoiceControls,
+html:has(.chatWindow[data-activechat="true"] .chatRoomGroupNavColumn .ActiveVoiceChannel) .friendlist::after,
+html:has(.chatWindow[data-activechat="true"] .chatRoomGroupNavColumn .ActiveVoiceChannel) .friendlistListContainer::after {
+	display: none;
+}
 .focused:not(.singlewindow) .title-area-highlight {
 	opacity: 0 !important;
 }
@@ -297,7 +462,8 @@ html[data-nk-menu-open] .ContextMenuMouseOverlay {
 html[data-nk-menu-open] #nevko-tooltip {
 	display: none !important;
 }
-/* Device icon after the nickname (gamepad of Big Picture, phone...): 4px after the badge, as the badge after the name */
-.currentUserContainer .statusAndName > .PersonaStatusIcon {
-	margin-left: 4px;
+/* Device icon after the nickname (gamepad of Big Picture, phone...): the gap of the badges (--nk-badge-gap) after the */
+/* name or its badge - nickname plate, member list, voice channel */
+.statusAndName > .PersonaStatusIcon {
+	margin-inline-start: var(--nk-badge-gap, 5px);
 }

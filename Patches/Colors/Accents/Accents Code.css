@@ -18,4 +18,6 @@ body {
 	--badge-beta-color: #FFA500;
 	--badge-alpha-color: #289CFF;
 	--badge-unfinished-color: #8B929A;
+	--badge-untested-color: var(--badge-unfinished-color);
+	--badge-plugin-color: var(--SystemAccentColor);
 }

@@ -1,0 +1,4 @@
+/* Option "GIFs in Menu: Always Animated" - every GIF of the GIF tab plays, not only the one under the cursor (Gif Picker.js reads it) */
+:root {
+	--nk-gif-motion: always;
+}

@@ -45,7 +45,7 @@
   // Steam prefixes
   const STEAM_PREFIX = new RegExp("^(" + [
     "В сети\\s*:", "Онлайн\\s*:", "Бил\\(а\\) онлайн\\s*:", "Последно онлайн\\s*:",
-    "Last Online\\s*:", "Zuletzt online\\s*:", "Dernière connexion\\s*:",
+    "Last Online\\s*:?", "Zuletzt online\\s*:", "Dernière connexion\\s*:",
     "Última vez\\s*:", "Visto pela última vez\\s*:", "Ostatnio online\\s*:",
     "Son Çevrimiçi\\s*:", "Naposledy online\\s*:", "Utoljára online\\s*:",
     "Ultima dată online\\s*:", "Zadnji put online\\s*:",
@@ -80,7 +80,8 @@
     "時間|时间|시간",
   ].join("|"), "i")
 
-  const looksLikeLastSeen = text => /\d/.test(text) && TIME_WORDS.test(text) && !PLAYTIME_WORDS.test(text)
+  // + Steam's own "Last online ..." (no number: "Last online just now")
+  const looksLikeLastSeen = text => (/\d/.test(text) && TIME_WORDS.test(text) && !PLAYTIME_WORDS.test(text)) || /^Last online\s/i.test(text)
   const isOnline = label => !IS_WEB && label.closest(".friend")?.classList.contains("offline") === false
   const isInGame = label => !IS_WEB && !!label.closest("[class*='ingame'],[class*='inGame']")
   // Skip own status

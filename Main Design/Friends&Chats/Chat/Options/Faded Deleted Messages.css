@@ -1,0 +1,6 @@
+/* Option "Faded Deleted Messages" - a kept deleted message (Message Archive.js) is a little faded: its content, */
+/* not the buttons beside it nor the reactions under it */
+
+.chatWindow .ChatMessageBlock > .msg[data-nk-kept="deleted"] > :not(.Addons, .MessageReactions) {
+	opacity: .6;
+}

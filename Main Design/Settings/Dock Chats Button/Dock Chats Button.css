@@ -1,0 +1,31 @@
+/* Millennium theme settings: button instead of the switch of "Dock chats to the friends list" (Dock Chats Button.js) */
+/* Its look is Steam's dropdown (same classes), without the arrow */
+[data-nk-dock-hidden] {
+	display: none !important;
+}
+.nk-dock-open {
+	width: auto;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+/* Steam Settings: the row of that setting lights up once, no outline */
+[data-nk-spotlight] {
+	position: relative;
+}
+[data-nk-spotlight]::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: var(--SystemAccentColor, #1A9FFF);
+	opacity: 0;
+	pointer-events: none;
+	animation: nk-spotlight 2.5s ease-in-out forwards;
+}
+@keyframes nk-spotlight {
+	0% { opacity: 0; }
+	12% { opacity: .2; }
+	60% { opacity: .2; }
+	100% { opacity: 0; }
+}

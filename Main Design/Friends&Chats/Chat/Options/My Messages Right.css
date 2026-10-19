@@ -12,6 +12,20 @@
 	margin: 0;
 }
 
+/* No name in own bubbles of a group chat (Chat.css puts it there) */
+.chatWindow.MultiUserChat:not([data-nk-chat="friend"]) .ChatMessageBlock:has(> .isCurrentUser) {
+	display: flex;
+	align-items: flex-end;
+}
+.chatWindow.MultiUserChat:not([data-nk-chat="friend"]) .ChatMessageBlock > .ChatSpeaker.isCurrentUser {
+	margin: 0 0 2px;
+}
+.chatWindow.MultiUserChat:not([data-nk-chat="friend"]) .ChatMessageBlock > :is(.ChatSpeaker.isCurrentUser, .ChatSpeaker.isCurrentUser + .msg[data-nk-reply-part]) + .msg:not([data-nk-reply-part]) {
+	width: fit-content;
+	max-width: min(78%, 560px);
+	padding-top: 6px;
+}
+
 /* Time is in the bubbles (Chat.js): nothing is left in the line above own messages */
 html.nk-chat-times .chatWindow .ChatMessageBlock > .ChatSpeaker.isCurrentUser {
 	display: none;
@@ -30,5 +44,10 @@ html.nk-chat-times .chatWindow .ChatMessageBlock > .ChatSpeaker.isCurrentUser {
 	right: 0;
 }
 .chatWindow .ChatMessageBlock > .msg.isCurrentUser > .Addons {
-	transform-origin: right center;
+	transform-origin: right bottom;
+}
+
+/* Own answer with a sticker (Chat.css, Replies): its card before the sticker, on the side of the chat */
+.chatWindow .ChatMessageBlock > .msg.isCurrentUser:has(> .msgText > .nk-reply-card + div:last-child > img[src*="/economy/sticker/"]) > .msgText > .nk-reply-card {
+	order: -1;
 }

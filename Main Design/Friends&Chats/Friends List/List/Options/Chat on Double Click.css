@@ -1,0 +1,8 @@
+/* Option "Chat on Double Click": a double click on a friend opens the chat (Friends List.js reads the marker) */
+:root {
+	--nk-chat-dblclick: on;
+}
+/* The chat button is not needed then | stays while there are unread messages: the count is on it */
+.nk-friend-chat:not([data-nk-unread]) {
+	display: none !important;
+}

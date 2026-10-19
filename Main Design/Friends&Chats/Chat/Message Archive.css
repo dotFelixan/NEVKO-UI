@@ -1,0 +1,155 @@
+/* Deleted and expired messages (Message Archive.js), as in AyuGram: the bubble as it was, a mark before its time */
+/* Deleted ones faded: option "Faded Deleted Messages" (Options/Faded Deleted Messages.css) */
+
+/* Mark: a bin (deleted) or a clock (expired on Steam's servers), in the color of the time */
+.chatWindow .ChatMessageBlock > .msg[data-nk-kept] > .nk-msg-time::before {
+	content: "";
+	display: inline-block;
+	width: 11px;
+	height: 11px;
+	margin-inline-end: 4px;
+	vertical-align: -2px;
+	background: currentColor;
+	-webkit-mask: url("../../../Patches/Icons/Steam/TrashCan.svg") center / contain no-repeat;
+	mask: url("../../../Patches/Icons/Steam/TrashCan.svg") center / contain no-repeat;
+}
+.chatWindow .ChatMessageBlock > .msg[data-nk-kept="expired"] > .nk-msg-time::before {
+	-webkit-mask-image: url("../../../Patches/Icons/Steam/Clock.svg");
+	mask-image: url("../../../Patches/Icons/Steam/Clock.svg");
+}
+
+/* List of the deleted messages of a chat (Chat.js, chat menu): over the chat, as in AyuGram - by days, */
+/* the author over each bubble, its time inside */
+#nk-deleted-list {
+	position: fixed;
+	z-index: 1700;
+	display: flex;
+	flex-direction: column;
+	background: var(--main-background);
+	-webkit-app-region: no-drag;
+}
+#nk-deleted-list .nk-deleted-head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	height: 48px;
+	padding: 0 15px;
+	flex: none;
+}
+#nk-deleted-list .nk-deleted-title {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	color: var(--text-bright-color);
+	font-size: 16px;
+	font-weight: bold;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+#nk-deleted-list .nk-deleted-close {
+	position: relative;
+	flex: none;
+	width: 32px;
+	height: 32px;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	color: var(--text-muted-color);
+	cursor: pointer;
+	transition: background-color .15s, color .15s;
+}
+#nk-deleted-list .nk-deleted-close:hover {
+	background: var(--button-hover-background);
+	color: var(--text-bright-color);
+}
+#nk-deleted-list .nk-deleted-close::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	width: 14px;
+	height: 14px;
+	margin: auto;
+	background: currentColor;
+	-webkit-mask: url("../../../Patches/Icons/Gamescope/close.svg") center / contain no-repeat;
+	mask: url("../../../Patches/Icons/Gamescope/close.svg") center / contain no-repeat;
+}
+#nk-deleted-list .nk-deleted-body {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	flex: 1;
+	min-height: 0;
+	padding: 0 15px 15px;
+	overflow: hidden auto;
+}
+#nk-deleted-list .nk-deleted-day {
+	align-self: center;
+	margin: 10px 0 8px;
+	padding: 2px 10px;
+	border-radius: 10px;
+	background: var(--button-background);
+	color: var(--text-muted-color);
+	font-size: 11px;
+	font-weight: bold;
+}
+#nk-deleted-list .nk-deleted-bubble {
+	max-width: min(78%, 560px);
+	margin-bottom: 4px;
+	padding: 6px 10px;
+	box-sizing: border-box;
+	border-radius: var(--message-radius, 16px);
+	background: var(--button-background);
+	color: var(--text-bright-color);
+	font-size: 14px;
+	line-height: 19px;
+	overflow-wrap: anywhere;
+}
+#nk-deleted-list .nk-deleted-name {
+	color: var(--SystemAccentColor);
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 18px;
+}
+/* The text runs on to the time, as in the chat: the time ends its last line */
+#nk-deleted-list .nk-deleted-text {
+	display: inline;
+}
+#nk-deleted-list .nk-deleted-time {
+	float: right;
+	margin: 4px 0 -4px 10px;
+	color: var(--text-muted-color);
+	font-size: 11px;
+	line-height: 16px;
+}
+#nk-deleted-list .nk-deleted-quote {
+	margin: 2px 0 4px;
+	padding: 3px 8px;
+	border-inline-start: 3px solid var(--SystemAccentColor);
+	border-radius: 4px;
+	background: var(--SystemAccentColor-Transparent);
+	color: var(--text-muted-color);
+	font-size: 12px;
+	line-height: 16px;
+	white-space: pre-wrap;
+}
+#nk-deleted-list .nk-deleted-picture {
+	display: block;
+	max-width: 100%;
+	max-height: 320px;
+	margin: 2px 0;
+	border-radius: calc(var(--message-radius, 16px) - 6px);
+}
+#nk-deleted-list .nk-deleted-emoticon {
+	width: 20px;
+	height: 20px;
+	vertical-align: -4px;
+}
+#nk-deleted-list .nk-deleted-note {
+	color: var(--text-muted-color);
+	font-style: italic;
+}
+#nk-deleted-list .nk-deleted-empty {
+	align-self: center;
+	margin-top: 24px;
+	color: var(--text-muted-color);
+	font-size: 13px;
+}

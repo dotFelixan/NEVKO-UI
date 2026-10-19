@@ -12,8 +12,8 @@ html.ContextMenuPopup.ContextMenuPopup body {
 }
 
 /* Container */
-/* Remove */
-.PP7LM0Ow1K5qkR8WElLpt.PP7LM0Ow1K5qkR8WElLpt {
+/* Remove | only around a menu: dropdowns (library filter) keep their items right in it and need its background */
+.PP7LM0Ow1K5qkR8WElLpt.PP7LM0Ow1K5qkR8WElLpt:has(> ._2EstNjFIIZm_WUSKm5Wt7n) {
 	padding: 0 !important;
 	background: transparent !important;
 	box-shadow: none !important;

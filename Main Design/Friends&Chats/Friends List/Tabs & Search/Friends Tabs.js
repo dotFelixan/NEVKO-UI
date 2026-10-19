@@ -116,8 +116,11 @@
   function accountIdOf(wrapper) {
     if (wrapper.dataset.nkAccountid) return wrapper.dataset.nkAccountid
     const fiberKey = Object.keys(wrapper).find(key => key.startsWith("__reactFiber"))
-    const id = String(wrapper[fiberKey]?.key ?? "").match(/^friend:(\d+)$/)?.[1]
+    const key = String(wrapper[fiberKey]?.key ?? "")
+    const id = key.match(/^friend:(\d+)$/)?.[1]
     if (id) wrapper.dataset.nkAccountid = id
+    // A group chat ("group:<id>"): it has its own list (Group Chats) under this one, so it is hidden here (CSS)
+    else if (key.startsWith("group:") && !wrapper.hasAttribute("data-nk-group")) wrapper.setAttribute("data-nk-group", "")
     return id ?? null
   }
 
@@ -220,35 +223,52 @@
   const groupRows = section => [...section.querySelectorAll(".ChatRoomListGroupItem")]
   const groupsHeight = section => section.querySelector(".chatRoomListContainer")?.offsetHeight || 0
 
-  function slideChatList(fromY) {
+  function slide(elements, fromY) {
     if (!fromY) return
-    document.querySelector(CHAT_LIST)?.animate(
-      [{ transform: `translateY(${fromY}px)` }, { transform: "none" }],
-      { duration: FOLD_MOVE_MS, easing: FOLD_EASING },
-    )
+    for (const el of elements) {
+      el?.animate([{ transform: `translateY(${fromY}px)` }, { transform: "none" }], { duration: FOLD_MOVE_MS, easing: FOLD_EASING })
+    }
+  }
+
+  // Option "Group Chats Position: Bottom": the groups stand under the chat list, nothing below them moves
+  const groupsBelow = section => {
+    const chats = document.querySelector(CHAT_LIST)
+    return !!chats && section.getBoundingClientRect().top > chats.getBoundingClientRect().top
   }
 
   async function fold(section, toggle) {
     folding = true
     const height = groupsHeight(section)
     const rows = groupRows(section)
+    const below = groupsBelow(section)
+    const scroller = section.closest(".friendlist")
     // Timer, not animation.finished: animations don't run (and never finish) while the window is hidden
     for (const row of rows) row.animate([SHOWN_ROW, HIDDEN_ROW], { duration: FOLD_OUT_MS, easing: "ease-in", fill: "forwards" })
     await new Promise(resolve => setTimeout(resolve, FOLD_OUT_MS))
 
+    const scrolled = scroller?.scrollTop || 0
     ownClick = true
     toggle.click() // Steam folds the section
     ownClick = false
     for (const row of rows) row.getAnimations().forEach(animation => animation.cancel())
-    slideChatList(height)
+    // Groups on top: the chat list moves up into their place. Below: the list was scrolled to its end and
+    // got shorter - everything jumped down by that much, it slides there instead
+    if (below) slide([document.querySelector(CHAT_LIST), section], (scroller?.scrollTop || 0) - scrolled)
+    else slide([document.querySelector(CHAT_LIST)], height)
     folding = false
   }
 
   function unfold(section) {
-    slideChatList(-groupsHeight(section))
+    const below = groupsBelow(section)
+    if (!below) slide([document.querySelector(CHAT_LIST)], -groupsHeight(section))
     for (const row of groupRows(section)) {
       row.animate([HIDDEN_ROW, SHOWN_ROW], { duration: FOLD_MOVE_MS, easing: FOLD_EASING })
     }
+    // Below: the opened groups may be under the bottom edge -> the list scrolls to them
+    const scroller = below && section.closest(".friendlist")
+    if (!scroller) return
+    const hidden = section.getBoundingClientRect().bottom - scroller.getBoundingClientRect().bottom
+    if (hidden > 0) scroller.scrollBy({ top: hidden, behavior: "smooth" })
   }
 
   function onGroupToggle(event) {
@@ -294,11 +314,18 @@
     headerObserver.observe(header)
   }
 
+  // Friends' messages + 1 for each group with Steam's unread dot (muted groups have none)
   function unreadTotal() {
     for (const win of [window, window.opener]) {
       try {
-        const count = win?.g_FriendsUIApp?.ChatStore?.FriendChatStore?.GetUnreadFriendMessageCount()
-        if (typeof count === "number") return count
+        const store = win?.g_FriendsUIApp?.ChatStore
+        const count = store?.FriendChatStore?.GetUnreadFriendMessageCount()
+        if (typeof count !== "number") continue
+        let groups = 0
+        for (const group of store.m_mapChatGroups.values()) {
+          if (group.hasUnreadChatMessage && !group.BIsUnreadIndicatorMuted()) groups++
+        }
+        return count + groups
       } catch {}
     }
     return 0
@@ -314,7 +341,7 @@
       "--nk-search-text": search,
       "--nk-recent-chats-text": localize("#FriendGroup_RecentChats", "Recent Chats"),
       "--nk-group-count": counter(groupCount()),
-      "--nk-recent-count": counter(document.querySelectorAll(RECENT_ROW).length),
+      "--nk-recent-count": counter(document.querySelectorAll(`${RECENT_ROW}:not([data-nk-group])`).length),
     }
     for (const [name, text] of Object.entries(cssTexts)) {
       const value = JSON.stringify(text)
@@ -511,13 +538,6 @@
     update()
     setInterval(updateTimes, 30000) // minutes tick without DOM changes
     setInterval(applyTexts, 3000)   // unread total changes without DOM changes
-
-    // Chats tab scrolled -> fade under the search (CSS)
-    document.addEventListener("scroll", event => {
-      const list = event.target
-      if (!(list instanceof Element) || !list.matches(".friendlist")) return
-      document.documentElement.classList.toggle("nk-chats-scrolled", list.scrollTop > 0)
-    }, true)
     addEventListener("resize", hideTip)
   }
 

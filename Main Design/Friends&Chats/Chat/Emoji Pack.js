@@ -199,21 +199,65 @@
   // Steam opens the menu on its first tab every time: the tab chosen last (recent, emoticons, stickers, effects)
   // is remembered and opened again
   const TAB_KEY = "nevko-picker-tab"
-  const tabsOf = picker => [...picker.querySelectorAll(":scope > .Tabs > .Tab")]
+  const tabsOf = picker => [...picker.querySelectorAll(":scope > .Tabs > .Tab:not(.nk-gif-tab)")] // Steam's own: the GIF tab is Gif Picker.js's
 
+  // The recent tab is hidden (its emoticons are at the top of the emoticons tab): never opened on it
   function restoreTab(picker) {
     if (picker.dataset.nkTabRestored) return // once for a menu: later the tabs are the user's
     const tabs = tabsOf(picker)
     if (!tabs.length) return
     picker.dataset.nkTabRestored = "1"
-    const saved = localStorage.getItem(TAB_KEY)
-    const tab = saved === null ? null : tabs[Number(saved)]
+    const saved = Number(localStorage.getItem(TAB_KEY))
+    const tab = tabs[saved > 0 ? saved : EMOTICONS_TAB]
     if (tab && !tab.classList.contains("Active")) tab.click()
+  }
+
+
+  // Recent Steam Emoticons
+
+  // At the top of the emoticons tab, a line under them (as the groups of the emoji pack). A cell is a copy of
+  // Steam's own cell of the list below, and a click on it presses that one: Steam puts the emoticon into the field
+  // and counts its use (when the message is sent). Built anew when that order changes, but not while the cursor
+  // is on them: they do not jump under it
+  const STEAM_RECENT_ID = "nk-steam-recent"
+
+  // Newest first: Steam only changes the time of use in its list
+  function steamRecentNames() {
+    try {
+      const store = emoticonStore()
+      const list = [...(store?.m_rgRecentEmoticons || store?.recent_emoticons || [])]
+      return list.sort((a, b) => (b.last_used || 0) - (a.last_used || 0)).map(item => item.name).slice(0, RECENT_MAX)
+    } catch {
+      return [] // Steam changed it
+    }
+  }
+
+  function fillSteamRecent(picker, names) {
+    const content = picker.querySelector(":scope > .Content")
+    content?.querySelector(`:scope > #${STEAM_RECENT_ID}`)?.remove() // its row is an .ItemList too
+    const list = content?.querySelector(".ItemList")
+    if (!list) return null // not drawn yet
+    const cellOf = name => list.querySelector(`img.emoticon[data-emoticon="${CSS.escape(name)}"]`)?.closest(".Item")
+    const cells = names.map(cellOf).filter(Boolean)
+    if (!cells.length) return false
+    const box = document.createElement("div")
+    box.id = STEAM_RECENT_ID
+    const row = document.createElement("div")
+    row.className = list.className
+    for (const cell of cells) row.append(cell.cloneNode(true))
+    box.append(row)
+    box.addEventListener("mousedown", event => event.preventDefault()) // the message field keeps the cursor
+    box.addEventListener("click", event => {
+      const name = event.target instanceof Element && event.target.closest(".Item")?.querySelector("img.emoticon")?.dataset.emoticon
+      if (name) cellOf(name)?.click()
+    })
+    content.prepend(box)
+    return true
   }
 
   function watchTabs() {
     document.addEventListener("click", event => {
-      const tab = event.target instanceof Element && event.target.closest(".Picker > .Tabs > .Tab")
+      const tab = event.target instanceof Element && event.target.closest(".Picker > .Tabs > .Tab:not(.nk-gif-tab)")
       const picker = tab && tab.closest(PICKER)
       if (!picker || !ofMessageField(picker)) return
       localStorage.setItem(TAB_KEY, String(tabsOf(picker).indexOf(tab)))
@@ -241,6 +285,21 @@
       if (open) fillRecent(pane) // the order changes only when the list is opened: cells do not jump under the cursor
       pane.toggleAttribute("data-open", open)
     }
+
+    // Steam's list: its recent emoticons, again when their order has changed or Steam has drawn the list anew
+    if (here && pack === "steam") {
+      const names = steamRecentNames()
+      const key = names.join(" ")
+      const box = picker.querySelector(`:scope > .Content > #${STEAM_RECENT_ID}`)
+      const stale = picker.dataset.nkRecent !== key || (picker.dataset.nkRecentBox === "1" && !box)
+      if (stale && !box?.matches(":hover")) {
+        const made = fillSteamRecent(picker, names)
+        if (made !== null) {
+          picker.dataset.nkRecent = key
+          picker.dataset.nkRecentBox = made ? "1" : ""
+        }
+      }
+    }
   }
 
 
@@ -249,7 +308,8 @@
   // With a picture set chosen, emoji in the message texts are drawn with it too (only on this side).
   // Steam's own text node stays in place, hidden; a copy with pictures stands right after it
   const EMOJI = /(?:[\u{1F1E6}-\u{1F1FF}]{2}|\p{Extended_Pictographic}(?:\uFE0F|[\u{1F3FB}-\u{1F3FF}])?(?:\u200D\p{Extended_Pictographic}(?:\uFE0F|[\u{1F3FB}-\u{1F3FF}])?)*)/gu
-  const TEXT = ".chatHistory .msgText span[bbcode-text]"
+  // Messages, and the last message under a chat in the Chats tab (Recent Chats plugin; group chats: Chat.js)
+  const TEXT = ".chatHistory .msgText span[bbcode-text], .rcp-list .rcp-snippet-text, .FriendsListChatSection .nk-group-last"
   const COPY_CLASS = "nk-emoji-text"
 
   function withPictures(text, set) {
@@ -665,7 +725,8 @@
     watchTabs()
     watchStickers()
     // class: Steam marks its active tab with it
-    new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] })
+    // characterData: the plugin writes a new last message into the same text node
+    new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["class"] })
   }
 
   document.readyState === "loading"

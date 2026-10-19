@@ -6,6 +6,7 @@
 	--nk-icon-chevron: url("../../../../Patches/Icons/Gamescope/arrow-up.svg");
 	--nk-icon-chat: url("../../../../Patches/Icons/Steam/ChatBubble.svg");
 	--nk-icon-join: url("../../../../Patches/Icons/Gamescope/play.svg");
+	--nk-icon-up: url("../../../../Patches/Icons/Steam/Chevron.svg");
 }
 
 /* No scrollbar (as in the Chats tab): rows keep the same 15px sides as everything above */
@@ -289,6 +290,14 @@
 .friendlistListContainer:not(.rcp-list) .friend .avatarHolder * {
 	cursor: pointer !important;
 }
+/* "Unread Messages" group: Steam wraps each row in a flex .unreadFriend, the row shrank - laid out as everywhere else. */
+/* Steam's yellow count of the row: the count is on the chat button */
+.friendlistListContainer:not(.rcp-list) .unreadFriend {
+	display: block;
+}
+.friendlistListContainer:not(.rcp-list) .FriendMessageCount {
+	display: none;
+}
 /* Unread count on the chat button (the "Hide Unread Count in Friends" option hides it) */
 .nk-friend-chat[data-nk-unread]::after {
 	content: attr(data-nk-unread);
@@ -313,6 +322,40 @@
 	line-height: 1;
 }
 
+/* "N Unread Messages" banner: an accent pill in the middle under the search, Steam's text after an arrow up */
+/* (the "Hide Unread Count in Friends" option hides it) */
+.friendlist .unreadMessageViolator {
+	left: 0 !important;
+	right: 0 !important;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	width: fit-content !important;
+	height: 28px !important;
+	margin: 8px auto 0;
+	padding: 0 12px;
+	border: none;
+	border-radius: 14px !important;
+	background: var(--SystemAccentColor) !important;
+	box-shadow: none !important;
+	color: var(--text-bright-color) !important;
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 28px !important;
+	white-space: nowrap;
+	text-shadow: none;
+}
+.friendlist .unreadMessageViolator::before {
+	content: "";
+	flex-shrink: 0;
+	width: 14px;
+	height: 14px;
+	background: currentColor;
+	-webkit-mask: var(--nk-icon-up) center / contain no-repeat;
+	mask: var(--nk-icon-up) center / contain no-repeat;
+	transform: rotate(180deg); /* Steam's chevron points down */
+}
+
 /* Party: friends playing together = one row (the others are hidden, picked in a menu) */
 .friendlistListContainer:not(.rcp-list) .friend[data-nk-party="member"] {
 	display: none !important;
@@ -326,7 +369,19 @@
 	margin-left: -12px !important;
 	border-radius: var(--avatar-radius, 50%);
 	background: var(--main-background);
-	box-shadow: 0 0 0 2px var(--main-background); /* gap between overlapping avatars */
+	box-shadow: 0 0 0 2px transparent, 0 0 0 2px transparent, 0 0 0 2px var(--main-background); /* gap between overlapping avatars */
+	transition: box-shadow .15s ease-out;
+}
+/* Hovered row: the gap takes the row's status tint, as the status dots (--nk-row-tint: Modern Status Indicator.css) */
+.friendlistListContainer:not(.rcp-list) .friend:hover .nk-party-avatars > .avatarHolder {
+	box-shadow: 0 0 0 2px var(--nk-row-tint, transparent), 0 0 0 2px transparent, 0 0 0 2px var(--main-background);
+}
+/* Game card: the row lies on the card's plaque */
+.friendlistListContainer:not(.rcp-list) .friendGroup.gameGroup:not(.OtherGamesGroup) .friend .nk-party-avatars > .avatarHolder {
+	box-shadow: 0 0 0 2px transparent, 0 0 0 2px var(--button-background), 0 0 0 2px var(--main-background);
+}
+.friendlistListContainer:not(.rcp-list) .friendGroup.gameGroup:not(.OtherGamesGroup) .friend:hover .nk-party-avatars > .avatarHolder {
+	box-shadow: 0 0 0 2px var(--nk-row-tint, transparent), 0 0 0 2px var(--button-background), 0 0 0 2px var(--main-background);
 }
 /* Names of the whole party instead of the first one */
 .friendlistListContainer:not(.rcp-list) .friend[data-nk-party="lead"] .statusAndName > :not(.nk-party-names) {
@@ -340,6 +395,67 @@
 	line-height: 19px;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+/* Hint instead of the first friend's status (statuses of all: #nk-party-tip) */
+.friendlistListContainer:not(.rcp-list) .friend[data-nk-party="lead"] .richPresenceContainer > :not(.nk-party-hint) {
+	display: none !important;
+}
+.nk-party-hint {
+	overflow: hidden;
+	font-size: 12px;
+	line-height: 16px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* Party Statuses Tooltip (from script) | look of the theme's tooltips */
+#nk-party-tip {
+	position: fixed;
+	z-index: 1000;
+	display: grid;
+	gap: 7px;
+	max-width: min(320px, calc(100vw - 16px));
+	padding: 8px 10px;
+	box-sizing: border-box;
+	border-radius: 2px;
+	background-color: var(--tooltip-background);
+	box-shadow: 1px 1px 8px var(--tooltip-shadow), 2px 2px 16px 1px var(--tooltip-shadow);
+	color: var(--tooltip-text);
+	font-size: 12px;
+	line-height: 16px;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity .12s ease-out;
+}
+#nk-party-tip[data-shown] {
+	opacity: 1;
+}
+.nk-party-tip-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+}
+.nk-party-tip-row > img {
+	flex: none;
+	width: 20px;
+	height: 20px;
+	border-radius: var(--avatar-radius, 50%);
+}
+.nk-party-tip-row > div {
+	min-width: 0;
+}
+.nk-party-tip-name,
+.nk-party-tip-status {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.nk-party-tip-status {
+	color: var(--tooltip-subtext);
+}
+.nk-party-tip-status:empty {
+	display: none;
 }
 .nk-friend-button[hidden] {
 	display: none;
@@ -435,7 +551,6 @@
 }
 .friendlistListContainer:not(.rcp-list) .friend .playerName > :is(.nevko-badge, .nevko-badge-mini, .nevko-badge-modern) {
 	flex-shrink: 0;
-	margin: 0 0 0 5px !important;
 }
 
 /* "More players" of a party ("+3 With 3 more players"): Steam's own line is hidden, its number stands in the row */
@@ -472,6 +587,10 @@
 	width: auto !important; /* Steam: 40px */
 	margin: 0 6px 0 0 !important; /* game name starts where the nicknames do */
 }
+/* "Other Games": no icon, its name is inside the container - the count stands as in the other headers */
+.friendlistListContainer:not(.rcp-list) .groupName .gameGroupContainer:not(:has(> .groupIcon)) {
+	margin-right: 0 !important;
+}
 .friendlistListContainer:not(.rcp-list) .groupName .groupIcon {
 	display: block;
 	width: 28px !important;
@@ -501,26 +620,6 @@
 .friendlistListContainer:not(.rcp-list) .listContentContainer,
 .friendlist > .FriendsListContent {
 	background: transparent !important;
-}
-
-/* Fade at the top while the list is scrolled (class from script), as under the search in the Chats tab */
-.friendlistListContainer:not(.rcp-list)::before {
-	content: "";
-	position: sticky;
-	top: 0;
-	z-index: 3;
-
-	display: block;
-	height: 16px;
-	margin-bottom: -16px;
-
-	background: linear-gradient(var(--main-background), transparent);
-	pointer-events: none;
-	opacity: 0;
-	transition: opacity .15s ease-out;
-}
-html.nk-friends-scrolled .friendlistListContainer:not(.rcp-list)::before {
-	opacity: 1;
 }
 
 /* Friend Requests */

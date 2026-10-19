@@ -1,5 +1,6 @@
-// Rounding sliders (avatars, framed avatars, buttons, chat messages) | localStorage -> CSS vars
-// --avatar-radius, --status-radius, --frame-avatar-radius, --game-avatar-radius, --button-radius, --message-radius
+// Rounding sliders (avatars, framed avatars, group avatars, buttons, chat messages) | localStorage -> CSS vars
+// --avatar-radius, --status-radius, --frame-avatar-radius, --game-avatar-radius, --group-avatar-radius,
+// --button-radius, --message-radius
 
 ;(() => {
   "use strict"
@@ -14,7 +15,13 @@
     {
       label: "Rounding Framed Avatars",
       key: "nevko-framed-avatar-rounding",
-      min: 0, max: 50, default: 8,
+      min: 0, max: 50, default: 20,
+      format: value => value === 0 ? "Sharp" : value === 50 ? "Circle" : `${value}%`,
+    },
+    {
+      label: "Rounding Group Avatars",
+      key: "nevko-group-avatar-rounding",
+      min: 0, max: 50, default: 25,
       format: value => value === 0 ? "Sharp" : value === 50 ? "Circle" : `${value}%`,
     },
     {
@@ -26,12 +33,12 @@
     {
       label: "Rounding Messages",
       key: "nevko-message-rounding",
-      min: 0, max: 16, default: 12, // 16px = half of a one-line bubble
+      min: 0, max: 16, default: 16, // 16px = half of a one-line bubble
       format: value => value === 0 ? "Sharp" : value === 16 ? "Round" : `${value}px`,
     },
   ]
 
-  const [AVATARS, FRAMED, BUTTONS, MESSAGES] = SLIDERS
+  const [AVATARS, FRAMED, GROUPS, BUTTONS, MESSAGES] = SLIDERS
 
   const SETTINGS_ROW = ".eKmEXJCm_lgme24Fp_HWt"
   const NATIVE_DROPDOWN = "._2o2fXzn99OddeqZMjbDuxQ"
@@ -50,6 +57,7 @@
   function applyVariables() {
     const avatar = readValue(AVATARS)
     const framed = readValue(FRAMED)
+    const group = readValue(GROUPS)
     const button = readValue(BUTTONS)
     const message = readValue(MESSAGES)
 
@@ -65,6 +73,7 @@
       --frame-avatar-radius: ${framed}% !important;
       --game-avatar-radius: ${framed}% !important;
       --frame-status-radius: ${framedStatusRadius(framed)}% !important;
+      --group-avatar-radius: ${group}% !important;
       --button-radius: ${button}px !important;
       --message-radius: ${message}px !important;
     }`
@@ -167,9 +176,15 @@
   const AVATAR_CSS = `
     ._1xTATKELHR-lRS_s3A4yzd ._36eQg-jp1ebbdaE6PBniHu,
     ._3dncOt2dhpnFYQn-WYQ3Mb ._2JYwpg3-WbCSXH-w5h-zL_,
-    .ChatRoomMultiFriendAvatar,
     ._3h-QRJGxnVOIExtHD1R0f2 {
       border-radius: var(--avatar-radius, 50%) !important;
+    }
+
+    /* Group chats and groups: their own slider */
+    .ChatRoomGroupAvatar,
+    .ChatRoomGroupAvatar img,
+    .ChatRoomMultiFriendAvatar {
+      border-radius: var(--group-avatar-radius, 50%) !important;
     }
 
     /* Framed Avatar */

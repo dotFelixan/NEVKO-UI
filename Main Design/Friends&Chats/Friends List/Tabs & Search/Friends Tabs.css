@@ -261,9 +261,28 @@ html[data-recent-chats-open] .socialTabContainer .friendsTabButtonsContainer {
 	color: var(--text-bright-color);
 }
 
-/* Group Chats section lives in the Chats tab (plugin only, without it stays with friends) */
+/* Group Chats section lives in the Chats tab (plugin only, without it stays with friends). In the Friends tab it is */
+/* not shown but stays laid out (not display: none): Steam draws a group plaque in full only while it is on screen, */
+/* and the Chats tab opened with empty plaques, filled a moment later */
 html:has(#recent-chats-tab-host):not([data-recent-chats-open]) .FriendsListChatSection {
-	display: none !important;
+	position: absolute !important;
+	top: 0;
+	right: 0;
+	left: 0;
+	z-index: -1;
+	max-height: 100%;
+	overflow: hidden;
+	visibility: hidden !important;
+	pointer-events: none !important;
+}
+/* The plaque color of the Chats tab already: opened, the plaques faded into it (the hover transition) */
+html:has(#recent-chats-tab-host):not([data-recent-chats-open]) .FriendsListChatSection .ChatRoomListGroupItem_header {
+	background: var(--button-background) !important;
+}
+/* Steam keeps the list of the section 0px high there: its plaques were off screen all the same */
+html:has(#recent-chats-tab-host):not([data-recent-chats-open]) .FriendsListChatSection .chatRoomListContainer {
+	height: auto !important;
+	max-height: none !important;
 }
 
 /* Chats tab = one list: search, Group Chats, Recent Chats */
@@ -489,7 +508,51 @@ html[data-recent-chats-open] .FriendsListChatSection .ChatRoomListGroupItem_head
 	border: none !important;
 	background: transparent !important;
 }
+/* Recent chats: friends only - group chats have their own list under it (mark from Friends Tabs.js) */
+.rcp-list .rcp-row-wrapper[data-nk-group] {
+	display: none !important;
+}
+/* Voice channels under a group: gone, they live in the group's channel column (Chat.css). Steam lists one here only */
+/* while you are in it (or the group is unfolded by its button, hidden above) - and after you leave it the channel */
+/* stays for a moment as not yours (the server has not told yet), then fades out: so every one of them is hidden */
+.FriendsListChatSection .ChatRoomListGroupItem .chatRoomVoiceChannel {
+	display: none;
+}
+/* Unread in a group: the count badge of a recent chat (.rcp-unread) at the same place, a dot instead of the count */
+.FriendsListChatSection .ChatRoomListGroupItem_header > .ChatUnreadMessageIndicator {
+	position: absolute;
+	top: 26px;
+	inset-inline-end: 10px;
+	left: auto;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 18px;
+	height: 18px;
+	margin: 0;
+	padding: 0;
+	border-radius: 9px;
+	background: var(--SystemAccentColor);
+	pointer-events: none;
+}
+.FriendsListChatSection .ChatRoomListGroupItem_header > .ChatUnreadMessageIndicator > .chatUnreadCircle {
+	position: static;
+	width: 6px;
+	height: 6px;
+	margin: 0;
+	border-radius: 50%;
+	background: var(--text-bright-color);
+	font-size: 0; /* Steam's "@" */
+}
 /* Chat that is open in the docked chat (class from Chat/Chat.js): accent plaque */
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomListGroupItem.nk-chat-open > .ChatRoomListGroupItem_header {
+	background: var(--SystemAccentColor-Transparent) !important;
+}
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomListGroupItem.nk-chat-open > .ChatRoomListGroupItem_header:hover {
+	background: color-mix(in srgb, var(--SystemAccentColor) 28%, transparent) !important;
+}
 .rcp-list .rcp-row-wrapper.nk-chat-open .rcp-row {
 	background: var(--SystemAccentColor-Transparent) !important;
 }
@@ -615,6 +678,90 @@ html[data-recent-chats-open] .FriendsListChatSection .chatRoomName {
 	line-height: 1;
 }
 
+/* Group chats: the same plaque as a recent chat - 36px avatar 8px before the texts, name and the last message (Chat.js) */
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomListGroupItem_header {
+	position: relative; /* the arrow is placed from it */
+	gap: 8px;
+}
+/* Steam draws the plaque in steps when the tab is opened: the avatar first, the name a moment later. Not shown */
+/* half drawn: it keeps its place and appears with the name */
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomListGroupItem_header:not(:has(> .groupNameStatusContainer)) {
+	visibility: hidden;
+}
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomListGroupItem_header > .ChatRoomMultiFriendAvatar {
+	flex-shrink: 0;
+	width: 36px !important;
+	height: 36px !important;
+	min-width: 0;
+	min-height: 0;
+	margin: 0 !important; /* Steam: 6px around it - the plaque was 10px taller */
+	padding: 0;
+	box-sizing: border-box;
+	box-shadow: none; /* Steam: a dark shadow, the other avatars have none */
+}
+/* Its four avatars: 16px each inside Steam's 2px frame */
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomMultiFriendAvatar > .MultiAvatar {
+	width: 16px;
+	height: 16px;
+}
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomMultiFriendAvatar > .Index1,
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomMultiFriendAvatar > .Index3 {
+	left: 16px;
+}
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomMultiFriendAvatar > .Index2,
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomMultiFriendAvatar > .Index3 {
+	top: 16px;
+}
+html[data-recent-chats-open] .FriendsListChatSection .groupNameStatusContainer .displayRow {
+	align-items: center;
+	min-width: 0;
+}
+html[data-recent-chats-open] .FriendsListChatSection .chatRoomName {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.FriendsListChatSection .nk-group-last {
+	overflow: hidden;
+	color: var(--text-soft-color);
+	font-size: 13px;
+	line-height: 17px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+/* Menu of the group: Steam's arrow right after the name, as the chevrons of the theme (shown on hover, as Steam does) */
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomListGroupItem_header .ContextMenuButton {
+	position: relative;
+	flex-shrink: 0;
+	width: 16px;
+	height: 19px; /* = the name line: the arrow in the middle of the text */
+	margin: 0 0 0 4px;
+	background: none !important;
+	color: var(--text-muted-color);
+	transition: color .15s, opacity .15s;
+}
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomListGroupItem_header .ContextMenuButton:hover {
+	color: var(--text-bright-color);
+}
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomListGroupItem_header .ContextMenuButton svg {
+	display: none;
+}
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomListGroupItem_header .ContextMenuButton::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	width: 12px;
+	height: 12px;
+	margin: auto;
+	background: currentColor;
+	-webkit-mask: url("../../../../Patches/Icons/Steam/Chevron.svg") center / contain no-repeat;
+	mask: url("../../../../Patches/Icons/Steam/Chevron.svg") center / contain no-repeat;
+}
+html[data-recent-chats-open] .FriendsListChatSection .ChatRoomListGroupItem_header:has(> .ChatUnreadMessageIndicator) .groupNameStatusContainer {
+	padding-inline-end: 26px; /* the texts end before the unread badge */
+}
+
 /* Remove (show channels button) */
 html[data-recent-chats-open] .FriendsListChatSection .ChatRoomListGroupItem_header > div:has(> .openGroupButton) {
 	display: none !important;
@@ -693,25 +840,6 @@ html[data-recent-chats-open] .FriendsListChatSection .ChatRoomListGroupItem_head
 /* Badge next to the name */
 .rcp-list .rcp-name > :is(.nevko-badge, .nevko-badge-mini, .nevko-badge-modern) {
 	flex-shrink: 0;
-	margin: 0 0 0 5px !important;
-}
-
-/* Fade under the search while the list is scrolled (class from script) */
-html[data-recent-chats-open] .rcp-panel > .rcp-toolbar::after {
-	content: "";
-	position: absolute;
-	top: 100%;
-	left: 0;
-	right: 0;
-	height: 16px;
-
-	background: linear-gradient(var(--main-background), transparent);
-	pointer-events: none;
-	opacity: 0;
-	transition: opacity .15s ease-out;
-}
-html[data-recent-chats-open].nk-chats-scrolled .rcp-panel > .rcp-toolbar::after {
-	opacity: 1;
 }
 
 /* Unread messages in total, on the Chats button (number from script) */

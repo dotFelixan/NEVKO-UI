@@ -1,6 +1,19 @@
 /* Emoticon menu of the chat (emoticons, stickers, effects): tabs in a side column, search above the list */
 /* Sizes: options "Emoticon Size" -> --emoticon-size, "Sticker Size" -> --sticker-size (Options/Emoticons *.css, Stickers *.css) */
 
+/* Menu look of its own (as "Context Menu: Refresh"): with Legacy, Context Menu.css is not loaded | :where - the docked panel (Emoticon Panel.css) wins */
+.contextMenu:where(:has(> .contextMenuContents .Picker)) {
+	--nk-menus: nevko; /* menu colors: Backgrounds Elements.css */
+	padding: 0 !important;
+	background: transparent !important;
+	box-shadow: none !important;
+}
+.contextMenu:where(:has(> .contextMenuContents .Picker)) > .contextMenuContents {
+	padding: 6px !important;
+	border: none;
+	border-radius: var(--button-radius, 8px);
+}
+
 /* Layout: tabs | search over the list */
 .contextMenu .Picker {
 	display: grid;
@@ -302,8 +315,27 @@
 }
 
 /* Emoji in messages as pictures of the chosen set (Emoji Pack.js): Steam's text is hidden, the copy is shown */
-.chatHistory .msgText span[data-nk-emoji-shown] {
-	display: none;
+.chatHistory .msgText span[data-nk-emoji-shown],
+:is(.rcp-list, .FriendsListChatSection) [data-nk-emoji-shown] {
+	display: none !important;
+}
+/* Last message under a chat in the Chats tab: the copy keeps the line of the text it stands for */
+.rcp-list .rcp-snippet > .nk-emoji-text,
+.FriendsListChatSection .groupNameStatusContainer > .nk-emoji-text {
+	display: block;
+	overflow: hidden;
+	color: var(--text-soft-color);
+	font-size: 13px;
+	line-height: 17px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+:is(.rcp-list, .FriendsListChatSection) .nk-emoji-text > img {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	margin: 0 1px;
+	vertical-align: -3px;
 }
 .chatHistory .msgText .nk-emoji-text > img {
 	display: inline-block;
@@ -408,4 +440,19 @@
 /* A sticker that has no still copy yet (still loading) is not shown moving for a moment */
 .contextMenu .Picker .StickerButton > img:not([data-nk-still]) {
 	visibility: hidden;
+}
+
+/* Recent emoticons: at the top of the emoticons tab (Emoji Pack.js), a line under them as under the groups of the */
+/* emoji pack. Their own tab is hidden in the menu of the message field (a reaction picker keeps it) */
+.contextMenu .Picker[data-nk-entry="1"] > .Tabs > .Tab:first-child {
+	display: none;
+}
+#nk-steam-recent {
+	padding-bottom: 8px;
+	margin-bottom: 8px;
+	border-bottom: 1px solid var(--button-background);
+}
+/* Searching: Steam's list shows what is found, the recent ones would only repeat it */
+.contextMenu .Picker:has(> .FilterInputContainer input:not(:placeholder-shown)) #nk-steam-recent {
+	display: none;
 }

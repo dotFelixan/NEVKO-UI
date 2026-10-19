@@ -1,4 +1,4 @@
-// Beta / Alpha badges next to theme settings
+// Beta / Alpha / Untested / Plugin badges next to theme settings
 // Add to BADGES: "Setting Name": { label: "Beta", color: "#FFA500", tooltip: "..." } (tooltip optional)
 
 ;(() => {
@@ -8,14 +8,23 @@
   const BETA = { label: "Beta", color: "var(--badge-beta-color)", tooltip: UNSTABLE }
   const ALPHA = { label: "Alpha", color: "var(--badge-alpha-color)", tooltip: UNSTABLE }
   const UNFINISHED = { label: "Unfinished", color: "var(--badge-unfinished-color)", tooltip: "This feature is not finished yet and may not work." }
+  const UNTESTED = { label: "Untested", color: "var(--badge-untested-color)", tooltip: "This feature has not been fully tested yet and may behave unexpectedly." }
+  const PLUGIN = { label: "Plugin", color: "var(--badge-plugin-color)", tooltip: "Requires the Recent Chats plugin to work correctly." }
 
   const BADGES = {
     "Rounding Avatars": BETA,
     "Rounding Framed Avatars": BETA,
+    "Rounding Group Avatars": BETA,
+    "Avatar Decoration": BETA,
     "Rounding Buttons": BETA,
     "Badges for Contributors": ALPHA,
-    "Relative Last Seen": BETA,
     "Bypass Age Verification": ALPHA,
+    "Default Friends Tab": PLUGIN,
+    "Auto Close Chat Tabs": UNTESTED,
+    "Chat Header Background": BETA,
+    "Faded Deleted Messages": ALPHA,
+    "Save Deleted Messages": ALPHA,
+    "Menu Rendering": UNTESTED,
     "Button Press Animation": BETA,
     "Context Menu": ALPHA,
     "Emoticon Side Panel": ALPHA,

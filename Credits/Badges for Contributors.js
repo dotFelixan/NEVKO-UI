@@ -582,9 +582,11 @@
     @keyframes nevko-badge-in {
       from { opacity: 0; }
     }
-    .nevko-badge      { margin-left: 6px; margin-top: -4px; }
-    .nevko-badge-mini { margin-left: 4px; margin-top: -4px; }
-    .nevko-badge-modern { margin-right: 4px; }
+    /* One gap before the badge everywhere: places of the theme do not set their own */
+    :root { --nk-badge-gap: 5px; }
+    .nevko-badge,
+    .nevko-badge-mini { margin: -4px 0 0 var(--nk-badge-gap); }
+    .nevko-badge-modern { margin: 0 0 0 var(--nk-badge-gap); }
 
     .nevko-badge svg,
     .nevko-badge img { width: 20px; height: 20px; filter: drop-shadow(0 1px 2px var(--shadow-soft, rgba(0,0,0,.3))); }
@@ -598,7 +600,6 @@
     .nevko-badge-current-user {
       position: relative;
       top: -1px;
-      margin: 0 0 0 4px;
       z-index: 10;
     }
 

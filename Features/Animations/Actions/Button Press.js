@@ -31,6 +31,7 @@
     ".Picker .ItemList > .Item", // emoticon menu: emoticons
     ".Picker .StickerButton",    // emoticon menu: stickers
     "#nk-emoji-pane .nk-emoji",  // emoticon menu: emoji
+    "#nk-gif-pane :is(.nk-gif-sections > button, .nk-gif-upload, .nk-gif-key-save, .nk-gif)", // GIF tab: sections, buttons, GIFs
     ".currentUserContainer .AvatarAndUser", // nickname plate
     ".socialTabContainer > .friendTab:not(#recent-chats-tab-host, #nk-chats-tab) > .tabLabel", // Friends tab
     ".socialTabContainer > :is(#recent-chats-tab-host, #nk-chats-tab)", // Chats tab (plugin / placeholder)

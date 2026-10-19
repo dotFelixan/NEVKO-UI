@@ -364,12 +364,88 @@
       }
       if (label.textContent !== names) label.textContent = names
     }
+
+    // In place of the first friend's status: a hint, the statuses of all are in a tooltip (showPartyTip)
+    const presence = lead.querySelector(".richPresenceContainer") || lead.querySelector(".labelHolder")
+    if (presence && !presence.querySelector(":scope > .nk-party-hint")) {
+      const hint = document.createElement("div")
+      hint.className = "nk-party-hint"
+      hint.textContent = PARTY_HINT
+      presence.append(hint)
+    }
+    if (tipLead === lead) showPartyTip(lead) // statuses changed while it is open
   }
 
   // Not a party lead any more: remove our parts
   function cleanRow(row) {
     row.querySelector(".nk-party-avatars")?.remove()
     row.querySelector(".nk-party-names")?.remove()
+    row.querySelector(".nk-party-hint")?.remove()
+    if (tipLead === row) hidePartyTip()
+  }
+
+
+  // Party Statuses Tooltip: the names / hint of a party hovered -> each friend with an avatar and a status
+
+  const RU = /^(ru|russian)/i.test(new URLSearchParams(location.search).get("LANGUAGE") || document.documentElement.lang || navigator.language)
+  const PARTY_HINT = RU ? "Наведите, чтобы увидеть активности" : "Hover to see activities"
+  const PARTY_TEXT = `.friend[data-nk-party="lead"] .labelHolder`
+  let partyTip = null
+  let tipLead = null
+
+  const statusText = row => row.querySelector(".richPresenceLabel")?.textContent.trim()
+    || dataOf(row)?.friend?.current_game_name || ""
+
+  function showPartyTip(lead) {
+    if (!partyTip) {
+      partyTip = document.createElement("div")
+      partyTip.id = "nk-party-tip"
+      document.body.append(partyTip)
+    }
+    tipLead = lead
+    partyTip.replaceChildren(...partyOf(lead).map(row => {
+      const line = document.createElement("div")
+      line.className = "nk-party-tip-row"
+      const avatar = document.createElement("img")
+      avatar.src = row.querySelector(".avatarHolder img.avatar")?.src || ""
+      avatar.draggable = false
+      const text = document.createElement("div")
+      const name = document.createElement("div")
+      name.className = "nk-party-tip-name"
+      name.textContent = nameOf(row, dataOf(row)?.friend)
+      const status = document.createElement("div")
+      status.className = "nk-party-tip-status"
+      status.textContent = statusText(row)
+      text.append(name, status)
+      line.append(avatar, text)
+      return line
+    }))
+
+    // Under the names, above them if there is no room below; inside the window
+    const box = lead.querySelector(".labelHolder")?.getBoundingClientRect() || lead.getBoundingClientRect()
+    const { offsetWidth: width, offsetHeight: height } = partyTip
+    let top = box.bottom + 6
+    if (top + height > innerHeight - 8) top = Math.max(8, box.top - height - 6)
+    partyTip.style.left = `${Math.round(Math.max(8, Math.min(box.left, innerWidth - width - 8)))}px`
+    partyTip.style.top = `${Math.round(top)}px`
+    partyTip.setAttribute("data-shown", "")
+  }
+
+  function hidePartyTip() {
+    tipLead = null
+    partyTip?.removeAttribute("data-shown")
+  }
+
+  function onPartyHover(event) {
+    const target = event.target instanceof Element ? event.target : null
+    const text = target?.closest(PARTY_TEXT)
+    if (event.type === "mouseout") {
+      const next = event.relatedTarget instanceof Element ? event.relatedTarget.closest(PARTY_TEXT) : null
+      if (text && next !== text) hidePartyTip()
+      return
+    }
+    const lead = text?.closest(".friend")
+    if (lead && tipLead !== lead) showPartyTip(lead)
   }
 
   function refresh() {
@@ -489,9 +565,19 @@
   }
 
   // Chat opens by the button now
+  // Option "Chat on Double Click" (Options/Chat on Double Click.css): it opens the chat, a party asks whose
+  const chatOnDoubleClick = () => getComputedStyle(document.documentElement).getPropertyValue("--nk-chat-dblclick").trim() === "on"
+
   function onDoubleClick(event) {
     if (ownEvent) return
-    if (event.target instanceof Element && event.target.closest(ROW)) event.stopPropagation()
+    const row = event.target instanceof Element && event.target.closest(ROW)
+    if (!row) return
+    event.stopPropagation()
+    if (!chatOnDoubleClick() || event.target.closest(".nk-friend-button, .nk-friend-wide")) return
+    event.preventDefault()
+    const rows = row.dataset[PARTY_ATTR] === "lead" ? partyOf(row) : [row]
+    if (rows.length > 1) pickFromParty(rows, row, event.clientX, event.clientY, openChat)
+    else openChat(row)
   }
 
   // Right click on a party: whose menu?
@@ -506,6 +592,25 @@
   }
 
 
+  // Voice Dock
+
+  // Voice chat panel, a dock at the bottom of the list (Friends Code.css): the group of the channel goes under its name
+  function markVoiceDock() {
+    const panel = document.querySelector(".friendListHeaderContainer .activeVoiceControls")
+    const header = panel?.querySelector(".activeVoiceHeader")
+    if (!header) return
+    let group = null
+    const fiberKey = Object.keys(panel).find(key => key.startsWith("__reactFiber"))
+    for (let fiber = fiberKey && panel[fiberKey], depth = 0; fiber && depth < 4; fiber = fiber.return, depth++) {
+      const chat = fiber.memoizedProps?.chat
+      if (!chat) continue
+      try { group = chat.GetGroup?.()?.name || null } catch {}
+      break
+    }
+    setAttr(header, "data-nk-group", group)
+  }
+
+
   // Start
 
   function init() {
@@ -514,12 +619,16 @@
     document.addEventListener("contextmenu", onContextMenu, true)
     document.addEventListener("mouseover", onExtraHover)
     document.addEventListener("mouseout", onExtraHover)
+    document.addEventListener("mouseover", onPartyHover)
+    document.addEventListener("mouseout", onPartyHover)
+    for (const type of ["scroll", "mousedown", "wheel"]) document.addEventListener(type, hidePartyTip, true) // the row moves away
     for (const type of ["mousedown", "pointerdown", "dragstart"]) document.addEventListener(type, swallowOnButtons, true)
 
     let frame = null
     const schedule = () => {
       frame ??= requestAnimationFrame(() => {
         frame = null
+        markVoiceDock()
         refresh()
       })
     }
@@ -543,14 +652,6 @@
         document.querySelector(`${LIST} .confirmInvites:not(.dim)`)?.click()
       }, 0)
     }, true) // capture: the class is set before Steam redraws the buttons
-
-    // List scrolled -> fade at its top (CSS)
-    document.addEventListener("scroll", event => {
-      const list = event.target
-      if (!(list instanceof Element) || !list.matches(LIST)) return
-      document.documentElement.classList.toggle("nk-friends-scrolled", list.scrollTop > 0)
-    }, true)
-
     setInterval(refresh, REFRESH_EVERY)
     refresh()
   }

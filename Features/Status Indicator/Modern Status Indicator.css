@@ -86,14 +86,19 @@
 	border-radius: var(--status-radius);
 }
 
-/* Friends list, Chats list (plugin), chat header: the same dot in the avatar's corner instead of Steam's bar beside it */
+/* Friends list, Chats list (plugin), chat header, members of a group: the same dot in the avatar's corner instead of */
+/* Steam's bar beside it */
 .friendlistListContainer .friend .avatarHolder,
-#nk-chat-header .avatarHolder {
+#nk-chat-header .avatarHolder,
+.chatWindow .groupMemberList .friend .avatarHolder,
+.ChatTabs .ChatTab .avatarHolder {
 	position: relative;
 	overflow: visible;
 }
 .friendlistListContainer .friend .avatarHolder > .avatarStatus,
-#nk-chat-header .avatarHolder > .avatarStatus {
+#nk-chat-header .avatarHolder > .avatarStatus,
+.chatWindow .groupMemberList .friend .avatarHolder > .avatarStatus,
+.ChatTabs .ChatTab .avatarHolder > .avatarStatus {
 	position: absolute !important;
 	inset: auto 0 0 auto !important;
 	z-index: 2;
@@ -106,6 +111,14 @@
 	border-radius: var(--status-radius);
 	outline: solid 2px var(--main-background);
 	opacity: 1;
+}
+
+/* Members of a group, chat tabs: a smaller dot (24px avatars) with a thicker outline */
+.chatWindow .groupMemberList .friend .avatarHolder > .avatarStatus,
+.ChatTabs .ChatTab .avatarHolder > .avatarStatus {
+	width: 8px !important;
+	height: 8px !important;
+	outline-width: 3px;
 }
 
 /* Device (phone, Steam Deck, Big Picture, VR): the device's icon in the status color stands in place of the dot, */

@@ -4,11 +4,10 @@
 ;(() => {
   "use strict"
 
-  // page: tab (PAGE_NAMES key) | index: row on tab, from 0 | turn: "off" / "on" | hide: hide row
+  // page: tab (PAGE_NAMES key) | index: row on tab, from 0 | turn: "off" / "on" (none: left as it is) | hide: hide row
   const FORCED = [
     { page: "friends",       index: 7, turn: "off", hide: true },
     { page: "friends",       index: 8, turn: "off", hide: true },
-    { page: "friends",       index: 9, turn: "on",  hide: true }, // dock chats to the friends list
     { page: "friends",       index: 10, turn: "off", hide: true }, // new chats in a new window
     { page: "library",       index: 3, turn: "on",  hide: true },
     { page: "library",       index: 4, turn: "off", hide: true },
@@ -125,7 +124,7 @@
     for (const { rule, row } of targets) {
       if (rule.hide) hideRow(row)
       const toggle = row.querySelector(TOGGLE)
-      if (toggle && isOn(toggle) !== (rule.turn === "on")) reactClick(toggle)
+      if (toggle && rule.turn && isOn(toggle) !== (rule.turn === "on")) reactClick(toggle) // no turn: only hidden
     }
   }
 

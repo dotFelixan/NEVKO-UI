@@ -28,8 +28,9 @@ html.nk-emoticons-docked .contextMenu[data-nk-emoticons] > .contextMenuContents 
 	width: 100%;
 	height: 100%;
 	max-height: none;
-	/* 7px + 2px of the list above: the tabs start at 9px, as the window buttons; 8px on the side of the chat: nothing stands right at its edge */
-	padding: 7px var(--nk-emoticons-pad-end, 15px) 15px var(--nk-emoticons-pad-start, 8px) !important;
+	/* 7px + 2px of the list above: the tabs start at 9px, as the window buttons; 8px on the side of the chat: nothing stands right at its edge. */
+	/* Nothing at the bottom: the list and the buttons under it go down to the edge of the window */
+	padding: 7px var(--nk-emoticons-pad-end, 15px) 0 var(--nk-emoticons-pad-start, 8px) !important;
 	box-sizing: border-box;
 
 	border: none;
@@ -67,6 +68,7 @@ html.nk-emoticons-docked .contextMenu[data-nk-emoticons] .Picker {
 	max-width: none !important;
 	height: 100% !important;
 	max-height: none !important;
+	padding-bottom: 0; /* down to the edge of the window */
 }
 
 /* Room for the panel: its width on its side, plus the dialogs panel when there is one on that side */
@@ -82,6 +84,13 @@ html.nk-emoticons-docked .multiChatDialog {
 	--nk-chat-header-start: calc(var(--nk-emoticons-room-start, 0px) + var(--nk-left-panel, 0px) + 15px);
 }
 
+/* Member list of a group with no chat background: its right edge is the one of the header buttons above it */
+/* (--nk-invite-end from the edge), as with a background (Chat.css: there both keep 8px) */
+html.nk-emoticons-docked .chatDialogs:not([data-nk-chat-bg]) .chatWindow .MemberListColumn {
+	padding-inline-end: var(--nk-invite-end, 6px);
+	box-sizing: border-box;
+}
+
 /* Header backdrop is as wide as the chat */
 html.nk-emoticons-docked #nk-chat-header-backdrop {
 	--nk-chat-backdrop-start: calc(var(--nk-emoticons-room-start, 0px) + var(--nk-left-panel, 0px));
@@ -89,8 +98,10 @@ html.nk-emoticons-docked #nk-chat-header-backdrop {
 	--nk-chat-backdrop-end: calc(var(--nk-emoticons-room-end, var(--nk-emoticons-width, 340px)) + 126px);
 }
 
-/* Button of the open panel */
-html.nk-emoticons-docked .chatWindow .chatEntry .EmoticonPickerButton {
+/* Button of the open panel: icon and background of the accent */
+html.nk-emoticons-docked .chatWindow .chatEntry .EmoticonPickerButton,
+html.nk-emoticons-docked .chatWindow .chatEntry .EmoticonPickerButton:hover {
+	background: linear-gradient(var(--SystemAccentColor-Transparent), var(--SystemAccentColor-Transparent)), var(--main-background);
 	color: var(--SystemAccentColor);
 }
 
@@ -137,6 +148,10 @@ html.nk-emoticons-docked #nk-emoji-packs {
 	pointer-events: auto;
 	-webkit-app-region: no-drag;
 }
+/* The lists go down to the edge of the window; the buttons under them stand 8px above it */
+html.nk-emoticons-docked :is(#nk-emoji-packs, #nk-gif-pane .nk-gif-sections) {
+	margin-bottom: 8px;
+}
 
 /* Switching chats: Steam removes the old menu and adds a new one, faded out. The new one is shown at once, */
 /* and a still copy of the old panel (Emoticon Panel.js) covers it until it is ready */
@@ -160,4 +175,40 @@ html.nk-emoticons-docked .contextMenu[data-nk-ghost] * {
 /* The panel gave way to another menu (of a message, a reaction picker): its copy waits under that menu */
 html.nk-emoticons-docked .contextMenu[data-nk-ghost="parked"] {
 	z-index: 1599 !important;
+}
+
+/* No room for the panel beside the chat (Emoticon Panel.js): a tooltip in the middle of the chat for a moment */
+#nk-emoticons-no-room {
+	position: fixed;
+	z-index: 1000;
+	padding: 8px 10px;
+	box-sizing: border-box;
+	border-radius: 2px;
+	background-color: var(--tooltip-background);
+	box-shadow: 1px 1px 8px var(--tooltip-shadow), 2px 2px 16px 1px var(--tooltip-shadow);
+	color: var(--tooltip-text);
+	font-size: 12px;
+	line-height: 16px;
+	text-align: center;
+	pointer-events: none;
+	transform: translate(-50%, -50%);
+	animation: nk-no-room-in .12s ease-out;
+	transition: opacity .2s ease-out;
+}
+#nk-emoticons-no-room.nk-hide {
+	opacity: 0;
+}
+@keyframes nk-no-room-in {
+	from { opacity: 0; }
+}
+
+/* A dialog of Steam (delete a message...): its darkening (1500) covers the panel and its copy too */
+html:has(.ModalOverlayContent.active) .contextMenu:is([data-nk-emoticons], [data-nk-ghost]) {
+	z-index: 1400 !important;
+}
+/* Steam shows the kept menu again inside the dialog, over its darkening (a popup for a moment, then the panel): */
+/* not shown there, with its layer that takes the clicks - the still copy of the panel stays under the darkening */
+.ModalOverlayContent .contextMenu:has(.Picker),
+.ModalOverlayContent .ContextMenuMouseOverlay:has(+ .contextMenu .Picker) {
+	display: none !important;
 }

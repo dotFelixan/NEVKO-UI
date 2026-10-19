@@ -1,0 +1,4 @@
+/* Option "Auto Close Chat Tabs: yes" - with the header in a chat window, a chat opened there closes the others (Chat.js reads it) */
+:root {
+	--nk-auto-close-tabs: on;
+}

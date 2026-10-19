@@ -1,0 +1,8 @@
+/* Option "Always Show Voice Dock" - the voice dock stays even in the chat of the group whose channel you are in */
+/* (Friends Code.css hides it there; options are loaded before it) */
+
+html:has(.chatWindow[data-activechat="true"] .chatRoomGroupNavColumn .ActiveVoiceChannel) .friendListHeaderContainer .activeVoiceControls,
+html:has(.chatWindow[data-activechat="true"] .chatRoomGroupNavColumn .ActiveVoiceChannel) .friendlist::after,
+html:has(.chatWindow[data-activechat="true"] .chatRoomGroupNavColumn .ActiveVoiceChannel) .friendlistListContainer::after {
+	display: block !important;
+}

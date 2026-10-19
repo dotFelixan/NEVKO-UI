@@ -1,0 +1,16 @@
+/* Option "Chat Window Title: Header" - a chat shows the chat header (avatar, name, status) in place of Steam's tabs, */
+/* in a window of its own and docked to the friends list alike */
+
+/* Chat.js reads it: the tabs button, or the tabs closed (Auto Close Tabs.css) */
+:root {
+	--nk-chat-title: header;
+}
+:is(html.ChatPopup, .chat_main.singlewindow) .multiChatDialog .chatTabSetContainer {
+	display: none;
+}
+:is(html.ChatPopup, .chat_main.singlewindow) #nk-chat-header {
+	display: flex;
+}
+:is(html.ChatPopup, .chat_main.singlewindow) #nk-chat-header-backdrop {
+	display: block;
+}

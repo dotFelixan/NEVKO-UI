@@ -395,7 +395,8 @@
   const NAMES = "[class*='playerName'],[class*='PlayerName'],[class*='playerNickname']"
 
   // Messages and the message field: "back in 10 min" written by a friend is not a status
-  const CHAT_TEXT = ".chatHistory, .chatEntry"
+  // + statuses of a party in a tooltip (Friends List.js): "Lobby (2 min)" is a game, not a last seen
+  const CHAT_TEXT = ".chatHistory, .chatEntry, #nk-party-tip"
 
   function patchByText(root) {
     // The node itself can be the label: only its text was replaced (chat header status)

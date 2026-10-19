@@ -1,0 +1,5 @@
+/* Option "GIF Source: Klipy" - the GIF tab of the emoticon menu searches Klipy (Gif Picker.js); without it: Giphy */
+
+:root {
+	--nk-gif-source: klipy;
+}

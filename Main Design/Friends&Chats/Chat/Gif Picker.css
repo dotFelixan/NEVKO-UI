@@ -1,0 +1,273 @@
+/* GIF tab of the emoticon menu (Gif Picker.js): search of Giphy / Klipy, Favorites, Sent */
+/* Tab and list stand where Steam's search and list are; in the docked panel (Emoticon Panel.css) - in its one column */
+
+/* Tab: Steam's classes (look of the other tabs), the word instead of an icon */
+.contextMenu .Picker .nk-gif-tab .PickerTab {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 11px;
+	font-weight: bold;
+	line-height: 1;
+	letter-spacing: -.2px;
+}
+/* Open: this tab is the lit one, not Steam's */
+/* Open: lit as an active tab, the same under the cursor (it is not Steam's "Active", the hover rule of the others */
+/* reached it) */
+.contextMenu .Picker[data-nk-gif-open] .nk-gif-tab .TabContent,
+.contextMenu .Picker[data-nk-gif-open] .nk-gif-tab:hover .TabContent {
+	background: var(--SystemAccentColor-Transparent);
+}
+.contextMenu .Picker[data-nk-gif-open] .nk-gif-tab .PickerTab,
+.contextMenu .Picker[data-nk-gif-open] .nk-gif-tab:hover .PickerTab {
+	color: var(--SystemAccentColor);
+}
+.contextMenu .Picker[data-nk-gif-open] > .Tabs > .Tab.Active:not(.nk-gif-tab) .TabContent {
+	background: var(--button-background);
+}
+.contextMenu .Picker[data-nk-gif-open] > .Tabs > .Tab.Active:not(.nk-gif-tab) .PickerTab {
+	color: var(--text-muted-color);
+}
+.contextMenu .Picker[data-nk-gif-open] > .Tabs > .Tab.Active:not(.nk-gif-tab):hover .PickerTab {
+	color: var(--text-bright-color);
+}
+.contextMenu .Picker[data-nk-gif-open] > :is(.FilterInputContainer, .Content, #nk-emoji-pane, #nk-emoji-packs) {
+	display: none !important;
+}
+
+/* Pane: field on top, the list, the sections under it */
+#nk-gif-pane {
+	display: none;
+	grid-column: 2;
+	grid-row: 1 / 4;
+	flex-direction: column;
+	gap: 8px;
+	min-height: 0;
+	height: 100%;
+}
+.contextMenu .Picker[data-nk-gif-open] > #nk-gif-pane {
+	display: flex;
+}
+html.nk-emoticons-docked .contextMenu[data-nk-emoticons] #nk-gif-pane {
+	grid-column: 1;
+	grid-row: 2 / 5;
+	pointer-events: auto;
+	-webkit-app-region: no-drag;
+}
+
+/* Search field: as Steam's one in this menu; the upload button in its place in Sent */
+.nk-gif-top:empty {
+	display: none;
+}
+#nk-gif-pane :is(.nk-gif-search, .nk-gif-key-input) {
+	width: 100%;
+	height: 32px;
+	margin: 0;
+	padding: 0 14px;
+	box-sizing: border-box;
+
+	border: none;
+	border-radius: 16px;
+	outline: none;
+	background: var(--button-background);
+	color: var(--text-bright-color);
+	font-size: 13px;
+}
+#nk-gif-pane :is(.nk-gif-search, .nk-gif-key-input)::placeholder {
+	color: var(--text-muted-color);
+}
+#nk-gif-pane :is(.nk-gif-upload, .nk-gif-key-save, .nk-gif-sections > button) {
+	height: 32px;
+	margin: 0;
+	padding: 0 10px;
+
+	border: none;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	color: var(--text-muted-color);
+	font-size: 14px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: background-color .15s, color .15s;
+}
+#nk-gif-pane .nk-gif-upload {
+	width: 100%;
+}
+#nk-gif-pane :is(.nk-gif-upload, .nk-gif-key-save, .nk-gif-sections > button):hover {
+	background: var(--button-hover-background);
+	color: var(--text-bright-color);
+}
+
+/* List: rows of one height (sizes from the script), scrolled as Steam's list */
+.nk-gif-list {
+	flex: 1;
+	min-height: 0;
+	overflow: hidden auto;
+}
+.nk-gif-list::-webkit-scrollbar {
+	width: 4px;
+}
+.nk-gif-list::-webkit-scrollbar-thumb {
+	border-radius: 2px;
+	background: var(--button-background);
+}
+.nk-gif-row {
+	display: flex;
+	gap: 4px;
+	margin-bottom: 4px;
+}
+.nk-gif {
+	position: relative;
+	flex: none;
+	overflow: hidden;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	cursor: pointer;
+}
+.nk-gif > img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.nk-gif:hover > img {
+	opacity: .85;
+}
+/* Still GIFs (Gif Picker.js, option GIFs in Menu): a still copy, the GIF itself only under the cursor */
+.nk-gif > canvas.nk-gif-still {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.nk-gif > img[data-nk-still],
+.nk-gif:hover > canvas.nk-gif-still {
+	display: none;
+}
+.nk-gif:hover > img[data-nk-still] {
+	display: block;
+}
+/* Not drawn yet (still loading): not shown moving for a moment */
+.nk-gif[data-nk-still-mode] > img:not([data-nk-still]) {
+	visibility: hidden;
+}
+
+/* Star of Favorites: in the corner, shown under the cursor (and always when the GIF is a favorite) */
+.nk-gif-star {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: color-mix(in srgb, var(--main-background) 70%, transparent);
+	opacity: 0;
+	transition: opacity .12s;
+}
+.nk-gif-star::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	width: 14px;
+	height: 14px;
+	margin: auto;
+	background: var(--text-bright-color);
+	-webkit-mask: url("../../../Patches/Icons/Steam/EmptyStar.svg") center / contain no-repeat;
+	mask: url("../../../Patches/Icons/Steam/EmptyStar.svg") center / contain no-repeat;
+}
+.nk-gif-star.nk-on::before {
+	background: var(--SystemAccentColor);
+	-webkit-mask-image: url("../../../Patches/Icons/Steam/Star.svg");
+	mask-image: url("../../../Patches/Icons/Steam/Star.svg");
+}
+.nk-gif:hover > .nk-gif-star,
+.nk-gif-star.nk-on {
+	opacity: 1;
+}
+
+/* Under the list: "nothing here", loading */
+.nk-gif-note {
+	padding: 16px 8px;
+	color: var(--text-muted-color);
+	font-size: 13px;
+	text-align: center;
+}
+.nk-gif-note:empty {
+	display: none;
+}
+#nk-gif-pane[data-nk-loading] .nk-gif-note:empty {
+	display: block;
+	height: 24px;
+	padding: 8px 0;
+	background: radial-gradient(circle, var(--text-muted-color) 3px, transparent 4px) center / 24px 24px no-repeat;
+	animation: nk-gif-loading .8s ease-in-out infinite alternate;
+}
+@keyframes nk-gif-loading {
+	from { opacity: .3; }
+}
+
+/* API key: asked in the place of the list */
+.nk-gif-key {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 8px 4px;
+}
+.nk-gif-key-title {
+	color: var(--text-bright-color);
+	font-size: 13px;
+	text-align: center;
+}
+.nk-gif-key-error {
+	color: var(--status-error, #e05555);
+	font-size: 12px;
+	text-align: center;
+}
+.nk-gif-key-error:empty {
+	display: none;
+}
+.nk-gif-key-link {
+	color: var(--SystemAccentColor);
+	font-size: 12px;
+	text-align: center;
+	text-decoration: none;
+}
+.nk-gif-key-link:hover {
+	text-decoration: underline;
+}
+
+/* Sections: three equal buttons, as the Steam / Emoji switch of the emoticons tab */
+.nk-gif-sections {
+	display: flex;
+	gap: 8px;
+}
+.nk-gif-sections > button {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+#nk-gif-pane .nk-gif-sections > button.nk-active {
+	background: var(--SystemAccentColor-Transparent);
+	color: var(--SystemAccentColor);
+}
+/* No key yet: nothing to search */
+#nk-gif-pane:has(.nk-gif-key) .nk-gif-top {
+	display: none;
+}
+
+/* Star on a picture of a message (Gif Picker.js): in the top left corner (Steam's hide button is in the right one) */
+.chatWindow .chatImageContainer :has(> .nk-chat-star) {
+	position: relative;
+}
+.chatWindow .chatImageContainer .nk-chat-star {
+	z-index: 2;
+	right: auto;
+	left: 8px; /* as the hide button: 8px, 24px */
+	top: 8px;
+	cursor: pointer;
+}
+.chatWindow .chatImageContainer:hover .nk-chat-star {
+	opacity: 1;
+}

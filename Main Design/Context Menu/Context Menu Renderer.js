@@ -52,9 +52,14 @@
   // Another window may ask for one menu of its own in its page (the chat's "more" menu, Chat.js): a window of
   // its own takes Steam about half a second to make. Asked for by shared.__nkInlineNext = that window, while it shows the menu
   const asked = instance => !!(instance.__nkInlineAsked || instance.m_parentInstance?.__nkInlineAsked)
+  // Option "Menu Rendering: Popup Windows" (Popup Menus.css): Steam's own windows. Read on every show: the setting may change
+  const popupsChosen = () => getComputedStyle(document.documentElement).getPropertyValue("--nk-menus-popup").trim() === "on"
   function canInline(instance) {
+    if (popupsChosen()) return false
     const options = instance.m_options
     if (!options?.bForcePopup || options.bStandalone || options.bScreenCoordinates) return false
+    // Header menus ("Steam Root Menu" ...): plugins wait for their windows by title and add items there
+    if (/Root Menu$/.test(options.title || "")) return false
     const win = ownerWindow(instance)
     return !!win && (win === window || asked(instance)) && win.innerWidth >= MIN_WINDOW_WIDTH
   }

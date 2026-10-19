@@ -26,12 +26,15 @@
 ._3vCzSrrXZzZjVJFZNg9SGu {
 	width: fit-content !important;
 	box-shadow: none !important;
-	-webkit-app-region: no-drag;
+	-webkit-app-region: drag; /* the gaps between the buttons move the window, the buttons do not (below) */
 	gap: 8px !important;
 	flex: 0 !important;
 
 	border-radius: var(--button-radius) 0 0 var(--button-radius);
 	padding-bottom: 0.5px !important;
+}
+._3vCzSrrXZzZjVJFZNg9SGu > * {
+	-webkit-app-region: no-drag;
 }
 /* Костыль */
 .ip-YZhijAMZcuRoXBGiye ._1KrJ3sFAqPBN9mfpaNTU5F {

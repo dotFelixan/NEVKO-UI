@@ -16,7 +16,11 @@
 	min-height: 0;
 	background: none;
 }
-.chatWindow :is(.FriendListInsetShadowTop, .FriendListInsetShadowBottom) {
+/* Group chat: Steam's own header (big name, members) hung out of the collapsed .chatHeader over the channels and */
+/* the member list | name and member count are in our header (Chat.js) */
+.multiChatDialog .chatHeader > .chatRoomHeader {
+	display: none;
+}.chatWindow :is(.FriendListInsetShadowTop, .FriendListInsetShadowBottom) {
 	display: none;
 }
 .singleWindowDivider {
@@ -28,7 +32,7 @@
 /* Plaques 32px in the row of the window buttons */
 .multiChatDialog .ChatTabs {
 	height: 32px;
-	padding: 10px 2px 8px 15px !important; /* Steam: 8px top with window buttons */
+	padding: 9px 2px 9px 15px !important; /* level with the window buttons and the buttons of the chat (9px) */
 	border: none;
 }
 .multiChatDialog .chatTabSetContainer,
@@ -39,6 +43,29 @@
 }
 .multiChatDialog .ChatTabTransitionGroup {
 	gap: 8px;
+}
+/* Many tabs: Steam makes the row scroll (and adds a list button). The row ends 8px before the buttons of the title */
+/* bar - invite, call, "more" (and the member list button in a group chat) - not under them; its scrollbar took */
+/* the bottom of the tabs */
+.multiChatDialog .chatTabSetContainer {
+	min-width: 0;
+	padding-inline-end: 0 !important; /* Steam keeps 101px for its own buttons there */
+	margin-inline-end: calc(var(--nk-window-buttons-room) + 120px - 2px); /* .ChatTabs has 2px of its own */
+}
+.multiChatDialog:has(.chatWindow[data-activechat="true"] .MemberListColumn) .chatTabSetContainer {
+	margin-inline-end: calc(var(--nk-window-buttons-room) + 160px - 2px);
+}
+.multiChatDialog .HorizontalMiniSlider {
+	flex: 1;
+	min-width: 0;
+}
+/* A tab cut at the end of the row is cut round, as the tabs under the buttons of the window header */
+.multiChatDialog .chatTabList {
+	border-radius: var(--button-radius);
+}
+.multiChatDialog .chatTabList::-webkit-scrollbar {
+	display: none;
+	height: 0;
 }
 .multiChatDialog .ChatTab {
 	height: 32px;
@@ -81,9 +108,75 @@
 .multiChatDialog .chatTabSelector:hover {
 	background: var(--button-hover-background);
 }
+/* List of all tabs: the List icon of Steam in place of its arrow */
+.multiChatDialog .chatTabSelector {
+	position: relative;
+	color: var(--text-muted-color);
+}
+.multiChatDialog .chatTabSelector:hover {
+	color: var(--text-bright-color);
+}
 .multiChatDialog .chatTabSelector svg {
+	display: none;
+}
+.multiChatDialog .chatTabSelector::before {
+	content: "";
+	position: absolute;
+	inset: 0;
 	width: 14px;
 	height: 14px;
+	margin: auto;
+	background: currentColor;
+	-webkit-mask: url("../../../Patches/Icons/Steam/List.svg") center / contain no-repeat;
+	mask: url("../../../Patches/Icons/Steam/List.svg") center / contain no-repeat;
+}
+/* Arrows at both ends of the row (Chat.js), as the pages of Quick Access: shown only while the tabs do not fit */
+.multiChatDialog .nk-tab-nav {
+	position: relative;
+	z-index: 6; /* above the title bar of the window (its drag area took the clicks) */
+	flex: none;
+	width: 32px;
+	height: 32px;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	color: var(--text-muted-color);
+	cursor: pointer;
+	transition: background-color .15s, color .15s;
+	-webkit-app-region: no-drag;
+}
+.multiChatDialog .nk-tab-nav-prev {
+	margin-inline-end: 8px;
+}
+.multiChatDialog .nk-tab-nav-next {
+	margin-inline-start: 8px;
+}
+.multiChatDialog .nk-tab-nav:hover {
+	background: var(--button-hover-background);
+	color: var(--text-bright-color);
+}
+.multiChatDialog .nk-tab-nav::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	width: 16px;
+	height: 16px;
+	margin: auto;
+	background: currentColor;
+	/* the arrows of the Quick Access pages */
+	-webkit-mask: url("../../../Patches/Icons/Gamescope/arrow-left.svg") center / contain no-repeat;
+	mask: url("../../../Patches/Icons/Gamescope/arrow-left.svg") center / contain no-repeat;
+}
+.multiChatDialog .nk-tab-nav-next::before {
+	-webkit-mask-image: url("../../../Patches/Icons/Gamescope/arrow-right.svg");
+	mask-image: url("../../../Patches/Icons/Gamescope/arrow-right.svg");
+}
+.multiChatDialog .nk-tab-nav[data-nk-off] {
+	opacity: .35;
+	cursor: default;
+	pointer-events: none;
+}
+.multiChatDialog .chatTabSetContainer:not([data-nk-overflow]) > .nk-tab-nav {
+	display: none;
 }
 
 /* Name */
@@ -98,7 +191,6 @@
 /* Badge */
 .multiChatDialog .ChatTab .playerName > :is(.nevko-badge, .nevko-badge-mini, .nevko-badge-modern) {
 	flex-shrink: 0;
-	margin: 0 0 0 5px !important;
 }
 
 /* Close */
@@ -172,19 +264,29 @@
 	font-size: 12px;
 	font-weight: bold;
 	line-height: 18px;
+	cursor: pointer; /* opens the profile (Chat.js) */
 }
 .chatWindow .ChatSpeaker .speakerStatus {
 	display: none;
+}
+/* Only stickers and big emoji in the block (Chat.js): no name line, the avatar beside them is enough */
+.chatWindow .ChatMessageBlock[data-nk-no-name] > .ChatSpeaker {
+	margin: 0;
+}
+.chatWindow .ChatMessageBlock[data-nk-no-name] > .ChatSpeaker .speaker,
+.chatWindow .ChatMessageBlock[data-nk-no-name] > .ChatSpeaker .speakerHoverArea {
+	height: 0;
+}
+.chatWindow .ChatMessageBlock[data-nk-no-name] > .ChatSpeaker .speakerName {
+	display: none !important;
 }
 /* Badge after the name */
 .chatWindow .ChatSpeaker .speakerName:has(> :is(.nevko-badge, .nevko-badge-mini, .nevko-badge-modern)) {
 	display: flex;
 	align-items: center;
-	gap: 5px;
 }
 .chatWindow .ChatSpeaker .speakerName > :is(.nevko-badge, .nevko-badge-mini, .nevko-badge-modern) {
 	flex: none;
-	margin: 0 !important;
 }
 .chatWindow .ChatSpeaker .speakerTimeStamp {
 	height: 18px;
@@ -206,6 +308,39 @@
 	height: 32px;
 	cursor: pointer;
 }
+/* Remove Steam's grey frame */
+.chatWindow .ChatSpeaker .avatar {
+	border: none;
+}
+
+/* Group chat: the name inside the first bubble of the block, as in Telegram. The name and that bubble share one */
+/* grid cell, so the bubble is as wide as the longer of the two; the other bubbles span both columns, own width */
+.chatWindow.MultiUserChat:not([data-nk-chat="friend"]) .ChatMessageBlock:where(:not([data-nk-no-name], [data-nk-effect])) {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: start;
+	justify-items: start;
+	container-type: inline-size; /* 78cqw = 78% of the block, as the other bubbles */
+}
+.chatWindow.MultiUserChat:not([data-nk-chat="friend"]) .ChatMessageBlock:where(:not([data-nk-no-name], [data-nk-effect])) > .msg {
+	grid-column: 1 / -1;
+}
+.chatWindow.MultiUserChat:not([data-nk-chat="friend"]) .ChatMessageBlock:where(:not([data-nk-no-name], [data-nk-effect])) > .ChatSpeaker {
+	grid-area: 1 / 1;
+	z-index: 1;
+	margin: 6px 10px 0;
+}
+.chatWindow.MultiUserChat:not([data-nk-chat="friend"]) .ChatMessageBlock:where(:not([data-nk-no-name], [data-nk-effect])) > :is(.ChatSpeaker, .ChatSpeaker + .msg[data-nk-reply-part]) + .msg:not([data-nk-reply-part]) {
+	grid-area: 1 / 1;
+	justify-self: stretch;
+	width: auto;
+	max-width: min(78cqw, 560px);
+	padding-top: 26px; /* 6px + name 18px + 2px */
+}
+/* On the accent bubble the status color is too dim */
+.chatWindow.MultiUserChat:not([data-nk-chat="friend"]) .ChatMessageBlock > .ChatSpeaker.isCurrentUser .speakerName {
+	color: var(--text-bright-color);
+}
 
 /* Bubble */
 .chatWindow .ChatMessageBlock > .msg {
@@ -215,7 +350,7 @@
 	margin: 0 0 3px;
 	padding: 6px 10px;
 
-	border-radius: var(--message-radius, 12px); /* slider "Rounding Messages" */
+	border-radius: var(--message-radius, 16px); /* slider "Rounding Messages" */
 	font-size: 14px;
 	line-height: 19px;
 }
@@ -506,6 +641,54 @@ html {
 	background: var(--SystemAccentColor-Transparent);
 	color: var(--SystemAccentColor);
 }
+/* Service lines of a group ("... joined the chat", "... has been invited by ..."): a plaque as the date, in the */
+/* middle, with an icon of Steam by its kind (data-nk-server from Chat.js) */
+.chatWindow .msg.serverMsg {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	width: fit-content;
+	max-width: calc(100% - 32px);
+	margin: 8px auto 2px;
+	padding: 3px 10px;
+	box-sizing: border-box;
+
+	border-radius: 11px;
+	background: var(--button-background);
+	color: var(--text-muted-color);
+	font-size: 11px;
+	line-height: 16px;
+	text-align: center;
+}
+.chatWindow .msg.serverMsg > .msgText {
+	color: inherit;
+	font-size: inherit;
+}
+.chatWindow .msg.serverMsg > .msgText > span {
+	font-weight: bold;
+}
+.chatWindow .msg.serverMsg[data-nk-server]:not([data-nk-server="other"])::before {
+	content: "";
+	flex: none;
+	width: 12px;
+	height: 12px;
+	background: currentColor;
+	-webkit-mask: var(--nk-server-icon) center / contain no-repeat;
+	mask: var(--nk-server-icon) center / contain no-repeat;
+}
+.chatWindow .msg.serverMsg[data-nk-server="joined"] {
+	--nk-server-icon: url("../../../Patches/Icons/Steam/AddFriend.svg");
+}
+.chatWindow .msg.serverMsg[data-nk-server="invited"] {
+	--nk-server-icon: url("../../../Patches/Icons/Steam/PendingInvites.svg");
+}
+.chatWindow .msg.serverMsg[data-nk-server="left"] {
+	--nk-server-icon: url("../../../Patches/Icons/Steam/Exit.svg");
+}
+.chatWindow .msg.serverMsg[data-nk-server="kicked"] {
+	--nk-server-icon: url("../../../Patches/Icons/Steam/BlockUser.svg");
+}
+
 /* Long pause between messages (no text): short dash */
 .chatWindow .msg.timeDivision.time_passes {
 	width: 32px;
@@ -517,15 +700,16 @@ html {
 
 /* Message Buttons (reaction, menu) */
 
-/* Beside the bubble, in its middle */
+/* Beside the bubble, at its bottom (by the time; in the middle they stood far from it beside tall media) */
 .chatWindow .ChatMessageBlock > .msg > .Addons {
-	top: 50%;
+	top: auto;
+	bottom: min(6px, calc((100% - 24px) / 2)); /* a little above the bottom edge; centered beside a one-line bubble */
 	right: auto;
 	left: 100%;
 	gap: 4px;
 	margin: 0;
 	padding: 0 0 0 6px; /* no gap for the cursor between the bubble and the buttons */
-	transform: translateY(-50%);
+	transform: none;
 
 	background: none;
 	box-shadow: none;
@@ -628,63 +812,463 @@ html {
 	padding: 6px 8px;
 }
 
-/* Active one: card with the game picture, name and the accept button */
-.chatWindow .ChatMessageBlock > .msg.gameInviteMsg {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-	min-width: 280px;
-	margin: 0 0 3px;
-	padding: 8px;
-	overflow: visible;
+/* Expired one without a cover (no picture for that game): the icon card with a mark under the phrase. Before the */
+/* card version below: the same selectors, that one wins where it has a cover */
+.chatWindow .msg div[data-nk-game]:has(> .nk-invite-expired) {
+	grid-template-columns: 36px minmax(0, auto);
+}
+.chatWindow .msg div[data-nk-game]:has(> .nk-invite-expired) > img {
+	filter: grayscale(1);
+	opacity: .5;
+}
+.chatWindow .msg div[data-nk-game]:has(> .nk-invite-expired)::before {
+	color: var(--text-muted-color);
+}
+.chatWindow .msg div[data-nk-game]:has(> .nk-invite-expired) > .nk-invite-expired {
+	grid-column: 2;
+	grid-row: 3; /* a line of its own under the phrase */
+	justify-self: start;
+	margin-top: 4px;
+	padding: 2px 6px;
+
+	border-radius: 6px;
+	background: var(--button-background);
+	color: var(--text-muted-color);
+	font-size: 11px;
+	font-weight: bold;
+	line-height: 14px;
+	white-space: nowrap;
+}
+
+/* Game invite cards, as the "Featured" block of Steam: the cover inside the bubble with a gap around it, a tab */
+/* over its top ("Invite" / "Expired", of the bubble's color), the name and the line under it in the middle */
+
+/* The bubble is the card: the invite lies in its text, the time under it */
+.chatWindow .ChatMessageBlock > .msg:is(:has(> .msgText > .gameInviteMsg), :has(div[data-nk-game] > .nk-invite-cover)) {
+	flex-direction: column;
+	align-items: stretch;
+	width: 280px;
+	max-width: 100%;
+	padding: 10px 10px 6px;
+	overflow: hidden;
+
+	--nk-invite-tab: linear-gradient(var(--button-background), var(--button-background)), var(--main-background); /* the bubble, solid */
+}
+.chatWindow .ChatMessageBlock > .msg.isCurrentUser:has(div[data-nk-game] > .nk-invite-cover) {
+	--nk-invite-tab: linear-gradient(color-mix(in srgb, var(--SystemAccentColor) 28%, transparent), color-mix(in srgb, var(--SystemAccentColor) 28%, transparent)), var(--main-background);
+}
+.chatWindow .ChatMessageBlock > .msg:is(:has(> .msgText > .gameInviteMsg), :has(div[data-nk-game] > .nk-invite-cover)) > .msgText {
+	min-width: 0;
+}
+.chatWindow .ChatMessageBlock > .msg:is(:has(> .msgText > .gameInviteMsg), :has(div[data-nk-game] > .nk-invite-cover)) > .nk-msg-time {
+	align-self: flex-end;
+	margin: 4px 0 0;
+}
+
+/* Cover with the tab (its text: data-nk-tab from Chat.js) */
+.chatWindow .msg.gameInviteMsg .leftInviteContainer,
+.chatWindow .msg div[data-nk-game] > .nk-invite-cover {
+	position: relative;
+	display: block;
+	aspect-ratio: 460 / 215; /* Steam's header picture */
+	overflow: hidden !important;
+	border-radius: var(--button-radius);
+}
+.chatWindow .msg.gameInviteMsg .leftInviteContainer::after,
+.chatWindow .msg div[data-nk-game] > .nk-invite-cover::after {
+	content: attr(data-nk-tab);
+	position: absolute;
+	top: 0;
+	left: 50%;
+	z-index: 1;
+	transform: translateX(-50%);
+	padding: 2px 12px 3px;
+
+	border-radius: 0 0 var(--button-radius) var(--button-radius);
+	background: var(--nk-invite-tab);
+	color: var(--text-muted-color);
+	font-size: 10px;
+	font-weight: bold;
+	letter-spacing: .08em;
+	line-height: 14px;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+/* Expired one (Steam: old, dismissed or the friend left the game - cannot be accepted; own ones: Chat.js): */
+/* the cover greyed, the name and who invited, no button (cover and its tab: Chat.js) */
+.chatWindow .msg div[data-nk-game]:has(> .nk-invite-cover) {
+	grid-template-columns: minmax(0, 1fr) !important;
+	row-gap: 2px;
+	padding: 0;
+	text-align: center;
+}
+.chatWindow .msg div[data-nk-game]:has(> .nk-invite-cover) > :is(img, .nk-invite-expired) {
+	display: none; /* the small icon and the mark: the cover and its tab stand for them */
+}
+.chatWindow .msg div[data-nk-game] > .nk-invite-cover {
+	grid-row: 1;
+	margin-bottom: 6px;
+}
+.chatWindow .msg div[data-nk-game] > .nk-invite-cover > img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	object-fit: cover;
+	border-radius: 0;
+	filter: grayscale(1) brightness(.45); /* darkened, not see-through: the accent bubble of own ones does not tint it */
+}
+.chatWindow .msg div[data-nk-game]:has(> .nk-invite-cover)::before {
+	grid-column: 1;
+	grid-row: 2;
+	color: var(--text-muted-color);
+	font-size: 15px;
+}
+.chatWindow .msg div[data-nk-game]:has(> .nk-invite-cover)::after {
+	grid-column: 1;
+	grid-row: 3;
+	font-size: 12px;
+}
+/* Steam brightens the whole invite under the cursor */
+.chatWindow .msg :is(.gameInviteDismissed, .gameInviteSelf):has(> div > .nk-invite-cover) {
+	filter: none !important;
+	cursor: default;
+}
+
+/* Active one: the cover, the name and who invites, the button across the card (no accent: a plain button) */
+.chatWindow .msg .msg.gameInviteMsg {
+	display: flex !important;
+	flex-direction: column;
+	align-items: stretch !important;
+	width: 100%;
+	min-width: 0;
+	max-width: none;
+	margin: 0 !important; /* Steam pulls it left by the gutter (inline style) */
+	padding: 0 !important;
+	overflow: visible !important;
+
+	border-radius: 0;
+	background: none !important;
+	box-shadow: none !important;
 }
 .chatWindow .msg.gameInviteMsg .leftInviteContainer {
 	flex: none;
-	width: 96px;
-	border-radius: var(--button-radius);
+	width: 100%;
+	padding: 0 !important;
 }
 .chatWindow .msg.gameInviteMsg .productImage {
-	border-radius: var(--button-radius);
+	display: block;
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: cover;
+	border-radius: 0;
 	box-shadow: none;
 }
 .chatWindow .msg.gameInviteMsg .productImage.productImageBlur {
 	display: none;
 }
 .chatWindow .msg.gameInviteMsg .rightInviteContainer {
-	flex: 1;
+	flex: none;
 	min-width: 0;
+	padding: 8px 0 0 !important;
 }
 .chatWindow .msg.gameInviteMsg .centerBlock {
-	margin-bottom: 0;
+	align-items: center;
+	gap: 2px;
+	margin-bottom: 10px;
+	text-align: center;
+}
+.chatWindow .msg.gameInviteMsg .invitedTimeLabel {
+	display: none; /* the time is under the card already */
+}
+/* The name first, who invites under it */
+.chatWindow .msg.gameInviteMsg .centerBlock > .productName {
+	order: 1;
+	max-width: 100%;
+}
+.chatWindow .msg.gameInviteMsg .centerBlock > .inviteLabel {
+	order: 2;
+	max-width: 100%;
+}
+.chatWindow .msg.gameInviteMsg .centerBlock > .playingWithBlock {
+	order: 3;
+}
+.chatWindow .msg.gameInviteMsg .inviteLabel {
+	color: var(--text-muted-color);
+	font-size: 12px;
+	line-height: 16px;
 }
 .chatWindow .msg.gameInviteMsg .productName {
+	overflow: hidden;
+	color: var(--text-bright-color);
+	font-size: 15px;
+	font-weight: bold;
+	letter-spacing: 0;
+	line-height: 19px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.chatWindow .msg.gameInviteMsg .playingWithBlock {
+	margin-top: 4px;
+	color: var(--text-muted-color);
+	font-size: 12px;
+}
+.chatWindow .msg.gameInviteMsg .acceptButtonsGroup {
+	flex-direction: column;
+	gap: 6px;
+}
+.chatWindow .msg.gameInviteMsg .acceptButtonsGroup .DialogButton {
+	width: 100%;
+	min-width: 0;
+	height: 32px;
+	margin: 0;
+	padding: 0 12px;
+	box-sizing: border-box;
+
+	border: none;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	color: var(--text-bright-color);
+	font-size: 13px;
+	font-weight: bold;
+	line-height: 32px;
+	text-transform: none;
+	transition: background-color .15s;
+}
+.chatWindow .msg.gameInviteMsg .acceptButtonsGroup .DialogButton:hover {
+	background: var(--button-hover-background);
+}
+/* No dismiss button: an invite expires by itself */
+.chatWindow .msg.gameInviteMsg .closeButton {
+	display: none;
+}
+
+/* On the accent bubble (own invites) grey is too dim */
+.chatWindow .msg.isCurrentUser div[data-nk-game]:has(> .nk-invite-expired)::before,
+.chatWindow .msg.isCurrentUser div[data-nk-game] > .nk-invite-expired,
+.chatWindow .msg.isCurrentUser div[data-nk-game] > .nk-invite-cover::after {
+	color: color-mix(in srgb, var(--text-bright-color) 65%, transparent);
+}
+.chatWindow .msg.isCurrentUser div[data-nk-game] > .nk-invite-expired {
+	background: color-mix(in srgb, var(--text-bright-color) 12%, transparent);
+}
+
+/* Group Chat Invites: a compact card in the bubble - group avatar | who invites, the group | button */
+/* The time has a line of its own under the card */
+.chatWindow .ChatMessageBlock > .msg:has(> .msgText > :is(.NoBGSplitInvite, .RequestingInfo)) {
+	flex-direction: column;
+	align-items: stretch;
+	padding: 8px 10px 6px;
+}
+.chatWindow .ChatMessageBlock > .msg:has(> .msgText > :is(.NoBGSplitInvite, .RequestingInfo)) > .nk-msg-time {
+	align-self: flex-end;
+	margin: 2px 0 -2px;
+}
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite {
+	display: grid;
+	grid-template-columns: 44px minmax(0, 1fr) auto;
+	align-items: center;
+	column-gap: 10px;
+	min-width: 0;
+	max-width: 100%;
+	margin: 0;
+	padding: 2px 0;
+
+	background: none;
+	box-shadow: none;
+	border-radius: 0;
+	color: var(--text-bright-color);
+}
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite > .rightInviteContainer {
+	display: contents;
+}
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite > .leftInviteContainer {
+	grid-column: 1;
+	grid-row: 1 / 3;
+	float: none;
+	padding: 0;
+}
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite .ChatRoomMultiFriendAvatar,
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite .ChatRoomGroupAvatar {
+	width: 44px !important;
+	height: 44px !important;
+	margin: 0;
+	border-radius: var(--avatar-radius, 50%);
+	overflow: hidden;
+}
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite .rightInviteContainerContent {
+	grid-column: 2;
+	grid-row: 1;
+	min-width: 0;
+	margin: 0;
+}
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite .inviteLabel {
+	color: var(--text-muted-color);
+	font-size: 12px;
+	line-height: 16px;
+}
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite .rightInviteContainerContent > :not(.inviteLabel),
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite .groupName {
+	overflow: hidden;
 	color: var(--text-bright-color);
 	font-size: 14px;
 	font-weight: bold;
 	letter-spacing: 0;
 	line-height: 18px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
-.chatWindow .msg.gameInviteMsg .acceptGameInviteButton {
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite .groupName {
+	display: block;
+	margin: 0;
+	font-family: inherit;
+}
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite .Invite_ExpireTime {
 	position: static;
-	width: fit-content;
+	grid-column: 2;
+	grid-row: 2;
+	color: var(--text-muted-color);
+	font-size: 11px;
+	line-height: 14px;
+	text-align: start;
+	text-transform: none;
+}
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite .inviteButton {
+	grid-column: 3;
+	grid-row: 1 / 3;
+	align-self: center;
+	width: auto;
+	min-width: 0;
 	height: 32px;
-	margin-top: 8px;
+	margin: 0;
 	padding: 0 12px;
 	box-sizing: border-box;
 
+	border: none;
 	border-radius: var(--button-radius);
-	background: var(--SystemAccentColor-Transparent);
-	color: var(--SystemAccentColor);
+	background: var(--SystemAccentColor);
+	box-shadow: none; /* Steam: a dark shadow */
+	color: #fff;
 	font-size: 13px;
 	font-weight: bold;
 	line-height: 32px;
-	text-transform: none;
-	outline: none;
+	white-space: nowrap;
 	transition: background-color .15s;
 }
-.chatWindow .msg.gameInviteMsg .acceptGameInviteButton:hover {
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite .inviteButton:hover {
+	background: var(--SystemAccentColor-Dark, var(--SystemAccentColor));
+}
+/* Expired group invite: grey avatar, no accent on the button */
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite.InviteExpired .leftInviteContainer {
+	filter: grayscale(1);
+	opacity: .5;
+}
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite.InviteExpired .inviteButton {
+	background: var(--button-background);
+	color: var(--text-muted-color);
+}
+
+/* Voice Channel Invite (variant 10.1): the voice icon of Steam in an accent circle in place of the group's avatar */
+/* (and of Steam's own icon, which hung out under the card), the button in the accent tint */
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite.VoiceChannelInvite {
+	grid-template-columns: 40px minmax(0, 1fr) auto;
+}
+.chatWindow .msg .ChatMessageInvite.VoiceChannelInvite > .leftInviteContainer {
+	position: relative;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: var(--SystemAccentColor-Transparent);
+	color: var(--SystemAccentColor);
+}
+.chatWindow .msg .ChatMessageInvite.VoiceChannelInvite > .leftInviteContainer > * {
+	display: none;
+}
+.chatWindow .msg .ChatMessageInvite.VoiceChannelInvite > .leftInviteContainer::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	width: 20px;
+	height: 20px;
+	margin: auto;
+	background: currentColor;
+	-webkit-mask: url("../../../Patches/Icons/Steam/VoiceRoom.svg") center / contain no-repeat;
+	mask: url("../../../Patches/Icons/Steam/VoiceRoom.svg") center / contain no-repeat;
+}
+.chatWindow .msg .ChatMessageInvite.VoiceChannelInvite > :not(.leftInviteContainer, .rightInviteContainer, .Invite_ExpireTime) {
+	display: none; /* an empty copy of Steam's icon box after the card */
+}
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite.VoiceChannelInvite .inviteButton {
+	background: var(--SystemAccentColor-Transparent);
+	color: var(--SystemAccentColor);
+}
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite.VoiceChannelInvite .inviteButton:hover {
 	background: color-mix(in srgb, var(--SystemAccentColor) 28%, transparent);
-	outline: none;
+}
+.chatWindow .msg .ChatMessageInvite.NoBGSplitInvite.VoiceChannelInvite.InviteExpired > .leftInviteContainer {
+	background: var(--button-background);
+	color: var(--text-muted-color);
+	filter: none;
+	opacity: 1;
+}
+
+/* While Steam asks for the invite ("Requesting Info..."): the card's skeleton in its places - avatar, two lines, */
+/* button - so nothing jumps when it comes. Avatar and button: ::before / ::after, the lines: the background of */
+/* the text block (its text and Steam's spinner hidden) */
+.chatWindow .msg .ChatMessageInvite.RequestingInfo {
+	display: grid !important;
+	grid-template-columns: 44px minmax(0, 1fr) 84px;
+	align-items: center;
+	column-gap: 10px;
+	width: 300px;
+	min-width: 0;
+	max-width: 100%;
+	margin: 0;
+	padding: 4px 0; /* as tall as the card (three lines of text) */
+	box-sizing: border-box;
+
+	border-radius: 0;
+	background: none;
+	box-shadow: none;
+	animation: nk-invite-loading 1.4s ease-in-out infinite;
+}
+.chatWindow .msg .ChatMessageInvite.RequestingInfo > * {
+	display: none;
+}
+.chatWindow .msg .ChatMessageInvite.RequestingInfo::before,
+.chatWindow .msg .ChatMessageInvite.RequestingInfo::after {
+	content: "";
+	background: var(--button-background);
+}
+.chatWindow .msg .ChatMessageInvite.RequestingInfo::before {
+	grid-column: 1;
+	height: 44px;
+	border-radius: var(--avatar-radius, 50%);
+}
+.chatWindow .msg .ChatMessageInvite.RequestingInfo > .postedExpiredInvite {
+	grid-column: 2;
+	display: block;
+	height: 30px;
+	font-size: 0;
+	background:
+		linear-gradient(var(--button-background), var(--button-background)) left top / 70% 10px no-repeat,
+		linear-gradient(var(--button-background), var(--button-background)) left bottom / 92% 14px no-repeat;
+}
+.chatWindow .msg .ChatMessageInvite.RequestingInfo::after {
+	grid-column: 3;
+	height: 32px;
+	border-radius: var(--button-radius);
+}
+@keyframes nk-invite-loading {
+	50% {
+		opacity: .5;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.chatWindow .msg .ChatMessageInvite.RequestingInfo {
+		animation: none;
+	}
 }
 
 /* Scrollbar */
@@ -710,7 +1294,7 @@ html {
 .multiChatDialog .dropTargetBox {
 	margin: 0;
 	border: none !important;
-	border-radius: calc(var(--button-radius, 6px) + 4px);
+	border-radius: 10px; /* as the chat frame */
 	background: var(--SystemAccentColor-Transparent);
 	transform: none;
 	transition: opacity .15s;
@@ -804,13 +1388,13 @@ html {
 }
 /* Buttons fade in, as the context menu does */
 .chatWindow .ChatMessageBlock > .msg > .Addons {
-	transform-origin: left center;
+	transform-origin: left bottom;
 	animation: nk-msg-buttons-in .14s ease-out;
 }
 @keyframes nk-msg-buttons-in {
 	from {
 		opacity: 0;
-		transform: translateY(-50%) scale(.92);
+		transform: scale(.92);
 	}
 }
 @media (prefers-reduced-motion: reduce) {
@@ -870,13 +1454,13 @@ html {
 /* Media Messages */
 
 /* A message of one picture or video and no text (also under a spoiler), as in Telegram: no bubble around it, */
-/* rounded corners. A sticker has no bubble either */
-.chatWindow .ChatMessageBlock > .msg:has(> .msgText :is(.chatImageContainer, .chatVideoContainer)):not(:has(> .msgText > :is(span, a, img))) {
+/* rounded corners. A sticker has no bubble either. An answer (the reply card on top, Chat.js) keeps its bubble */
+.chatWindow .ChatMessageBlock > .msg:has(> .msgText :is(.chatImageContainer, .chatVideoContainer)):not(:has(> .msgText > :is(span, a, img, .nk-reply-card))) {
 	padding: 0;
 	background: none !important;
 }
 .chatWindow .ChatMessageBlock > .msg:has(> .msgText :is(.chatImageContainer, .chatVideoContainer)):not(:has(> .msgText > :is(span, a, img))) :is(.BBCodeImageWrapper, video) {
-	border-radius: var(--message-radius, 12px);
+	border-radius: var(--message-radius, 16px);
 	overflow: hidden;
 }
 /* No line gap under the picture */
@@ -920,6 +1504,9 @@ html {
 }
 .chatWindow .chatVideoContainer video {
 	display: block;
+	/* Steam: as wide as the chat. No wider than the pictures (420px), no taller either - tall videos stay narrow */
+	max-width: min(420px, 100%) !important;
+	max-height: 420px;
 }
 .chatWindow .chatVideoContainer :is(.BBCodeResizeControl, .BBCodeRestoreControl, .chatImageURL) {
 	display: none !important;
@@ -1120,7 +1707,7 @@ html {
 	background: linear-gradient(var(--button-background), var(--button-background)), var(--main-background);
 }
 .chatWindow .msgText .spoilerMsgText:has(.chatImageContainer, .chatVideoContainer) {
-	border-radius: var(--message-radius, 12px);
+	border-radius: var(--message-radius, 16px);
 }
 .chatWindow .msgText .spoilerMsgText:not([data-nk-revealed]) {
 	cursor: pointer;
@@ -1237,8 +1824,46 @@ html {
 	cursor: pointer;
 }
 .chatWindow .msgText > .QuoteMessage::first-line {
-	color: var(--SystemAccentColor);
+	color: var(--nk-quote-name, var(--SystemAccentColor));
 	font-weight: bold;
+}
+/* A link quoted before the links were cut out of quotes (Chat.js): Steam's preview of it in the card - only its */
+/* title, as one line of text */
+.chatWindow .QuoteMessage .ChatMessageOpenGraph,
+.chatWindow .QuoteMessage .ChatMessageOpenGraph * {
+	cursor: pointer; /* the card's: a click shows the answered message */
+}
+.chatWindow .QuoteMessage .ChatMessageOpenGraph {
+	display: block;
+	width: auto;
+	max-width: none;
+	margin: 0;
+	padding: 0;
+	border: none;
+	background: none;
+	box-shadow: none;
+}
+.chatWindow .QuoteMessage .ChatMessageOpenGraph :is(.OpenGraphImgBackground, .OpenGraphImgContainer, .OpenGraphFooter, .ChatMessageOpenGraph_Description) {
+	display: none;
+}
+.chatWindow .QuoteMessage :is(.OpenGraphContent, .ChatMessageOpenGraph_Body) {
+	display: block;
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+	background: none;
+}
+.chatWindow .QuoteMessage .ChatMessageOpenGraph_Title {
+	display: block;
+	overflow: hidden;
+	color: inherit;
+	font-size: inherit;
+	font-weight: normal;
+	line-height: inherit;
+	text-decoration: none;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	pointer-events: none; /* a click on the card shows the answered message */
 }
 /* The quote message whose card was copied into the bubble of its answer (Chat.js) */
 .chatWindow .ChatMessageBlock > .msg[data-nk-reply-part] {
@@ -1282,7 +1907,59 @@ html {
 	color: color-mix(in srgb, var(--text-bright-color) 65%, transparent);
 }
 .chatWindow .msg.isCurrentUser > .msgText > .QuoteMessage:not(:only-child)::first-line {
+	color: var(--nk-quote-name, var(--text-bright-color));
+}
+
+/* An answer with a picture or video (as in Telegram): the card on top inside the bubble, the picture under it to */
+/* the bubble's edges, its lower corners as the bubble's; the time is the pill over the picture (Media Messages) */
+.chatWindow .ChatMessageBlock > .msg:has(> .msgText > .nk-reply-card):has(> .msgText :is(.chatImageContainer, .chatVideoContainer)):not(:has(> .msgText > :is(span, a, img))) {
+	padding: 0;
+}
+.chatWindow .ChatMessageBlock > .msg:has(> .msgText > .nk-reply-card):has(> .msgText :is(.chatImageContainer, .chatVideoContainer)):not(:has(> .msgText > :is(span, a, img))) > .msgText > .nk-reply-card {
+	margin: 6px 6px 6px;
+}
+.chatWindow .ChatMessageBlock > .msg:has(> .msgText > .nk-reply-card):has(> .msgText :is(.chatImageContainer, .chatVideoContainer)):not(:has(> .msgText > :is(span, a, img))) > .msgText::after {
+	display: none;
+}
+.chatWindow .ChatMessageBlock > .msg:has(> .msgText > .nk-reply-card):has(> .msgText :is(.chatImageContainer, .chatVideoContainer)):not(:has(> .msgText > :is(span, a, img))) :is(.BBCodeImageWrapper, video) {
+	border-radius: 0 0 var(--message-radius, 16px) var(--message-radius, 16px);
+}
+
+/* An answer with a sticker (as in Telegram): no bubble, the card is a plaque of its own beside the sticker, at its */
+/* top - after it, before it for own messages on the right (Options/My Messages Right.css); the time as on stickers */
+.chatWindow .ChatMessageBlock > .msg:has(> .msgText > .nk-reply-card + div:last-child > img[src*="/economy/sticker/"]) {
+	padding: 2px 0;
+	background: none !important;
+}
+.chatWindow .ChatMessageBlock > .msg:has(> .msgText > .nk-reply-card + div:last-child > img[src*="/economy/sticker/"]) > .msgText {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+}
+.chatWindow .ChatMessageBlock > .msg:has(> .msgText > .nk-reply-card + div:last-child > img[src*="/economy/sticker/"]) > .msgText::after {
+	display: none;
+}
+.chatWindow .ChatMessageBlock > .msg:has(> .msgText > .nk-reply-card + div:last-child > img[src*="/economy/sticker/"]) > .msgText > .nk-reply-card {
+	order: 1;
+	flex: 0 1 auto;
+	max-width: 160px;
+	margin: 0;
+	border-inline-start-color: var(--SystemAccentColor);
+	background: var(--nk-solid-accent, var(--SystemAccentColor-Transparent)); /* no bubble under it: as a quote alone */
+	color: var(--text-muted-color);
+	--nk-quote-name: var(--SystemAccentColor); /* ::first-line with :has restyles the whole chat on every resize */
+}
+.chatWindow .ChatMessageBlock > .msg:has(> .msgText > .nk-reply-card + div:last-child > img[src*="/economy/sticker/"]) > .nk-msg-time {
+	position: absolute;
+	right: 8px;
+	bottom: 8px;
+	z-index: 2;
+	padding: 1px 8px;
+	border-radius: 9px;
+	background: color-mix(in srgb, var(--main-background) 45%, transparent);
 	color: var(--text-bright-color);
+	opacity: 0;
+	transition: opacity .14s ease-out;
 }
 /* The answered message, shown by a click on the card: as in Telegram, its whole line lights up with the accent */
 /* color and fades away. Drawn as the background of the scrolling list (place, color and fading from Chat.js): */
@@ -1313,6 +1990,10 @@ html {
 }
 .chatWindow .ChatMessageBlock > .msg > .Addons > .nk-reply-button:hover::before {
 	background: var(--text-bright-color);
+}
+/* Invites cannot be answered (Chat.js does not add it; this one: a message that became an invite) */
+.chatWindow .ChatMessageBlock > .msg:has(> .msgText > :is([class*="Invite"], [class*="invite"])) > .Addons > .nk-reply-button {
+	display: none;
 }
 
 /* Bar above the message field: what is being answered, and the cross that cancels it */
@@ -1392,6 +2073,36 @@ html {
 	width: 32px;
 	height: 32px;
 }
+/* Group chat: its initials in place of an avatar, the same size (as in the chat list) */
+#nk-chat-header .nk-chat-header-avatar .ChatRoomGroupAvatar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	box-sizing: border-box;
+
+	border: none;
+	border-radius: var(--avatar-radius, 50%);
+	overflow: hidden;
+	background: var(--button-background);
+}
+/* Group of friends without a name: Steam's 2x2 of avatars (28px) in the middle of the 32px place (Steam: 6px off its */
+/* top left corner - it stood low and hung out of the title bar) */
+#nk-chat-header .nk-chat-header-avatar .ChatRoomMultiFriendAvatar {
+	margin: 2px;
+}
+#nk-chat-header .nk-chat-header-avatar .ChatRoomGroupAvatar_initials {
+	width: auto;
+	height: auto;
+	margin: 0;
+	padding: 0;
+
+	color: var(--text-muted-color);
+	font-size: 13px;
+	line-height: 1;
+}
 #nk-chat-header .nk-chat-header-text {
 	min-width: 0;
 }
@@ -1402,7 +2113,6 @@ html {
 #nk-chat-header .nk-chat-header-name {
 	display: flex;
 	align-items: center;
-	gap: 5px;
 	overflow: hidden;
 
 	color: var(--text-bright-color);
@@ -1413,7 +2123,6 @@ html {
 }
 #nk-chat-header .nk-chat-header-name > :is(.nevko-badge, .nevko-badge-mini, .nevko-badge-modern) {
 	flex: none;
-	margin: 0 !important;
 }
 #nk-chat-header .nk-chat-header-status {
 	overflow: hidden;
@@ -1579,16 +2288,10 @@ html.nk-panel-resizing * {
 
 /* Docked Chat */
 
-/* Chat docked to the friends list (Steam setting, switched on by Apply Forced Settings.js): no tabs - the list beside */
-/* it is the list of chats; who the chat is with is said by the chat header */
-.chat_main.singlewindow .multiChatDialog .chatTabSetContainer {
-	display: none;
-}
-.chat_main.singlewindow #nk-chat-header {
-	display: flex;
-}
-.chat_main.singlewindow #nk-chat-header-backdrop {
-	display: block;
+/* Chat docked to the friends list: header or tabs as in a window of its own - option Chat Window Title */
+/* (Options/Chat Window Header.css). Tabs start 3px off the divider, as the channels and the header there */
+.chat_main.singlewindow .multiChatDialog > .ChatTabs:not(:has(> .chatTabOpenFriendsList)) {
+	padding-inline-start: 3px !important;
 }
 
 /* Divider between the friends list and the chat (drag = width of the list): no lines of its own, */
@@ -1618,8 +2321,18 @@ html.nk-panel-resizing * {
 	opacity: .5;
 	transition: opacity .15s;
 }
-.chat_main.singlewindow .singleWindowDivider:is(:hover, :active)::after {
+.chat_main.singlewindow .singleWindowDivider:is(:hover, :active)::after,
+html.nk-list-dragging .chat_main.singlewindow .singleWindowDivider::after {
 	opacity: 1;
+}
+/* While dragging it (class from Chat.js): ↔ everywhere, no hover on what passes under the cursor */
+html.nk-list-dragging,
+html.nk-list-dragging * {
+	cursor: ew-resize !important;
+	user-select: none;
+}
+html.nk-list-dragging .chat_main > * {
+	pointer-events: none;
 }
 /* Limits of that drag (the same in Chat.js): the list keeps its four Quick Access tiles, the chat keeps 400px. */
 /* A folded list has no width */
@@ -1735,7 +2448,7 @@ html.nk-panel-resizing * {
 	background: var(--text-bright-color);
 }
 .chatWindow .inviteAnotherFriendButton {
-	inset-inline-end: calc(var(--nk-invite-end, var(--nk-window-buttons-room)) + 80px); /* before the call and the "more" buttons */
+	inset-inline-end: calc(var(--nk-invite-end, var(--nk-window-buttons-room)) + 80px + var(--nk-tabs-room, 0px)); /* before the call and the "more" buttons */
 }
 
 /* Call button (Chat.js): voice chat from the title bar, between the invite and the "more" buttons. */
@@ -1743,7 +2456,7 @@ html.nk-panel-resizing * {
 #nk-chat-call {
 	position: absolute;
 	top: -41px;
-	inset-inline-end: calc(var(--nk-invite-end, var(--nk-window-buttons-room)) + 40px);
+	inset-inline-end: calc(var(--nk-invite-end, var(--nk-window-buttons-room)) + 40px + var(--nk-tabs-room, 0px));
 	z-index: 6;
 	display: flex;
 	align-items: center;
@@ -1772,10 +2485,6 @@ html.nk-panel-resizing * {
 	fill: currentColor !important; /* Steam paints the icon itself by the state classes copied here */
 	transition: none; /* the button's color changes smoothly, the icon follows it at once: no second transition on top */
 }
-#nk-chat-call.Active {
-	background: linear-gradient(var(--SystemAccentColor-Transparent), var(--SystemAccentColor-Transparent)), var(--main-background);
-	color: var(--SystemAccentColor);
-}
 /* No call can be started: the whole button is faded and does not answer the cursor */
 #nk-chat-call.Disabled {
 	opacity: .45;
@@ -1785,8 +2494,10 @@ html.nk-panel-resizing * {
 	background: linear-gradient(var(--button-background), var(--button-background)), var(--main-background);
 	color: var(--text-muted-color);
 }
-.chatWindow .chatEntry .ChatMessageEntryVoice:not(:has(.VoiceToggle.Active)) {
-	display: none;
+/* Steam's voice button of the message field: never, the call button of the title bar and the voice channel's own */
+/* buttons do its work */
+.chatWindow .chatEntry .ChatMessageEntryVoice {
+	display: none !important;
 }
 
 
@@ -1802,6 +2513,297 @@ html.nk-panel-resizing * {
 	cursor: pointer;
 }
 
+/* Tabs button (Chat.js): a chat window with the header in place of the tabs lists its chats from here. */
+/* Right before the "more" button; the other buttons step one place aside (--nk-tabs-room) */
+html.nk-tabs-button {
+	--nk-tabs-room: 40px;
+}
+#nk-chat-tabs {
+	position: absolute;
+	top: -41px;
+	inset-inline-end: calc(var(--nk-invite-end, var(--nk-window-buttons-room)) + 40px);
+	z-index: 6;
+	width: 32px;
+	height: 32px;
+
+	border-radius: var(--button-radius);
+	background: linear-gradient(var(--button-background), var(--button-background)), var(--main-background);
+	cursor: pointer;
+	-webkit-app-region: no-drag;
+}
+.chatDialogs[data-nk-chat-bg] > #nk-chat-tabs {
+	inset-inline-end: calc(max(var(--nk-invite-end, var(--nk-window-buttons-room)), 8px) + 40px);
+}
+#nk-chat-tabs:is(:hover, .nk-open) {
+	background: linear-gradient(var(--button-hover-background), var(--button-hover-background)), var(--main-background);
+}
+#nk-chat-tabs::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: var(--text-muted-color);
+	-webkit-mask: url("../../../Patches/Icons/Steam/Rows.svg") center / 16px no-repeat;
+	mask: url("../../../Patches/Icons/Steam/Rows.svg") center / 16px no-repeat;
+	transition: background-color .15s;
+}
+#nk-chat-tabs:is(:hover, .nk-open)::before {
+	background: var(--text-bright-color);
+}
+/* A hidden chat has unread messages */
+#nk-chat-tabs.nk-unread::after {
+	content: "";
+	position: absolute;
+	top: 5px;
+	inset-inline-end: 5px;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--SystemAccentColor);
+}
+/* One more button: the header keeps clear of it */
+html.nk-tabs-button #nk-chat-header {
+	max-width: calc(100% - var(--nk-chat-header-start, 15px) - var(--nk-window-buttons-room) - 175px);
+}
+
+/* Its list (variant B): avatar and name in one row, a dot for unread, a cross to close the chat */
+#nk-chat-tabs-menu {
+	position: fixed;
+	z-index: 1700;
+	width: max-content;
+	min-width: 180px;
+	max-width: 280px;
+	-webkit-app-region: no-drag;
+}
+#nk-chat-tabs-menu .nk-tabs-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	cursor: pointer;
+}
+#nk-chat-tabs-menu .nk-tabs-item.nk-active {
+	background: var(--SystemAccentColor-Transparent) !important; /* menu items of the theme are see-through */
+	color: var(--text-bright-color);
+}
+#nk-chat-tabs-menu .nk-tabs-avatar {
+	position: relative;
+	flex: none;
+	width: 20px;
+	height: 20px;
+}
+#nk-chat-tabs-menu .nk-tabs-avatar > :is(.avatarHolder, .ChatRoomGroupAvatar, .ChatRoomMultiFriendAvatar) {
+	position: relative;
+	width: 20px !important;
+	height: 20px !important;
+	margin: 0 !important;
+}
+#nk-chat-tabs-menu .nk-tabs-avatar img.avatar {
+	width: 20px;
+	height: 20px;
+}
+#nk-chat-tabs-menu .nk-tabs-avatar .avatarStatus {
+	display: none; /* too small for the dot */
+}
+#nk-chat-tabs-menu .nk-tabs-avatar .ChatRoomGroupAvatar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+}
+#nk-chat-tabs-menu .nk-tabs-avatar .ChatRoomGroupAvatar_initials {
+	width: auto;
+	height: auto;
+	margin: 0;
+	padding: 0;
+	font-size: 9px;
+	line-height: 1;
+}
+#nk-chat-tabs-menu .nk-tabs-name {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+#nk-chat-tabs-menu .nk-tabs-unread {
+	flex: none;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--SystemAccentColor);
+}
+#nk-chat-tabs-menu .nk-tabs-close {
+	flex: none;
+	width: 20px;
+	height: 20px;
+	margin-inline-end: -4px;
+	border-radius: var(--button-radius);
+	background: var(--text-muted-color);
+	-webkit-mask: url("../../../Patches/Icons/Steam/X_Line.svg") center / 10px no-repeat;
+	mask: url("../../../Patches/Icons/Steam/X_Line.svg") center / 10px no-repeat;
+	opacity: .7;
+	transition: opacity .15s, background-color .15s;
+}
+#nk-chat-tabs-menu .nk-tabs-close:hover {
+	background: var(--text-bright-color);
+	opacity: 1;
+}
+
+/* Chat Notice */
+
+/* Steam's notice over the messages ("Suspicious Chat"...): a card as a notification (variant 9.3) - icon, title and */
+/* close in the first row, the text under it, "More information" and the action button side by side. 8px from the */
+/* top of the chat, 15px from its sides as the messages */
+.chatWindow .ChatNoticeCtn {
+	flex: none;
+	width: auto; /* Steam: 100% - with the margins it ran past the chat */
+	margin: 8px 15px 0;
+	padding: 0;
+	border: none;
+	border-radius: 10px; /* as the frame of the chat (#nk-chat-bg) */
+	background: var(--nk-solid, var(--button-background));
+	box-shadow: none;
+}
+.chatWindow .ChatNoticeBody {
+	display: grid;
+	grid-template-columns: 32px 1fr 1fr 32px;
+	grid-template-areas:
+		"icon title title close"
+		"text text text text"
+		"more more action action";
+	align-items: center;
+	gap: 8px;
+	min-height: 0;
+	padding: 12px;
+	box-sizing: border-box;
+	background: none;
+}
+.chatWindow .ChatNoticeBody > :is(.Explanation, .Buttons) {
+	display: contents;
+}
+.chatWindow .ChatNoticeBody > .Icon {
+	grid-area: icon;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	color: var(--text-muted-color);
+}
+.chatWindow .ChatNoticeBody > .Icon.DangerIcon {
+	background: color-mix(in srgb, var(--notification-color, #E64A35) 18%, transparent);
+	color: var(--notification-color, #E64A35);
+}
+/* Icon of the theme (ExclamationPoint, Steam) in place of Steam's own */
+.chatWindow .ChatNoticeBody > .Icon svg {
+	display: none;
+}
+.chatWindow .ChatNoticeBody > .Icon::before {
+	content: "";
+	width: 18px;
+	height: 18px;
+	background: currentColor;
+	-webkit-mask: url("../../../Patches/Icons/Steam/ExclamationPoint.svg") center / contain no-repeat;
+	mask: url("../../../Patches/Icons/Steam/ExclamationPoint.svg") center / contain no-repeat;
+}
+.chatWindow .ChatNoticeBody .ExplanationHeader {
+	grid-area: title;
+	margin: 0;
+	color: var(--text-bright-color);
+	font-size: 13px;
+	font-weight: bold;
+	line-height: 17px;
+	text-transform: none;
+}
+.chatWindow .ChatNoticeBody .ExplanationBody {
+	grid-area: text;
+	margin: 0;
+	color: var(--text-muted-color);
+	font-size: 12px;
+	line-height: 16px;
+}
+/* "More information" and the action: 32px buttons of the theme, half the width each */
+.chatWindow .ChatNoticeBody .ExplanationLinkCtn {
+	grid-area: more;
+	margin: 0;
+}
+.chatWindow .ChatNoticeBody .ExplanationLinkCtn > a,
+.chatWindow .ChatNoticeBody .ChatNoticeActionButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	min-width: 0;
+	height: 32px;
+	margin: 0;
+	padding: 0 12px;
+	box-sizing: border-box;
+
+	border: none;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	box-shadow: none;
+	color: var(--text-bright-color);
+	font-size: 12px;
+	font-weight: bold;
+	letter-spacing: normal;
+	text-decoration: none;
+	text-transform: none;
+	cursor: pointer;
+	transition: background-color .15s;
+}
+.chatWindow .ChatNoticeBody .ExplanationLinkCtn > a:hover,
+.chatWindow .ChatNoticeBody .ChatNoticeActionButton:hover {
+	background: var(--button-hover-background);
+}
+.chatWindow .ChatNoticeBody .ChatNoticeActionButton {
+	grid-area: action;
+}
+/* No Steam shadow on any state of the buttons (hover, focus, press) */
+.chatWindow .ChatNoticeBody .ChatNoticeActionButton:is(:hover, :focus, :focus-visible, :active),
+.chatWindow .msg .ChatMessageInvite .inviteButton:is(:hover, :focus, :focus-visible, :active) {
+	box-shadow: none;
+}
+/* Action of a danger notice (report): red, as the muted microphone */
+.chatWindow .ChatNoticeBody:has(> .DangerIcon) .ChatNoticeActionButton,
+.chatWindow .ChatNoticeBody:has(> .DangerIcon) .ChatNoticeActionButton:hover {
+	background: color-mix(in srgb, var(--notification-color, #E64A35) 18%, transparent);
+	color: var(--notification-color, #E64A35);
+}
+.chatWindow .ChatNoticeBody > .DismissButton {
+	grid-area: close;
+	position: relative;
+	justify-self: end;
+	inset: auto;
+	top: -2px; /* level with the letters of the title (its line box sits lower than them) */
+	width: 24px;
+	height: 24px;
+	margin: 0;
+	border-radius: var(--button-radius);
+	color: var(--text-muted-color);
+	transition: background-color .15s, color .15s;
+}
+.chatWindow .ChatNoticeBody > .DismissButton:hover {
+	background: var(--button-hover-background);
+	color: var(--text-bright-color);
+}
+.chatWindow .ChatNoticeBody > .DismissButton svg {
+	display: none;
+}
+.chatWindow .ChatNoticeBody > .DismissButton::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	width: 10px;
+	height: 10px;
+	margin: auto;
+	background: currentColor;
+	-webkit-mask: url("../../../Patches/Icons/Steam/Close.svg") center / contain no-repeat;
+	mask: url("../../../Patches/Icons/Steam/Close.svg") center / contain no-repeat;
+}
+
 /* Custom Chat Background */
 
 /* Picture behind the whole chat, the message field too (layer and its values from Chat.js): blurred, then dimmed with the window color */
@@ -1814,12 +2816,14 @@ html.nk-panel-resizing * {
 	z-index: -1;
 	overflow: hidden;
 	pointer-events: none;
+	contain: strict; /* the picture never makes the chat lay out or paint again */
 }
 #nk-chat-bg > div {
 	position: absolute;
 	inset: calc(var(--nk-chat-bg-blur, 0px) * -2); /* blurred edges are out of view */
 	background: var(--nk-chat-bg) center / cover no-repeat;
 	filter: blur(var(--nk-chat-bg-blur, 0px));
+	will-change: transform; /* a layer of its own: the blur is drawn once, not with every scroll of the messages */
 }
 /* Layout of the picture, as the wallpaper of Windows (attribute from Chat.js; "fill" is the rule above) */
 #nk-chat-bg[data-nk-fit="fit"] > div {
@@ -1858,18 +2862,47 @@ html.nk-panel-resizing * {
 	width: auto;
 	height: auto;
 }
+/* No panel beside the chat (a chat window of its own, or the friends list folded): its edges 15px from the window's, */
+/* as the buttons of the title bar (the first tab / the button that */
+/* opens the folded friends list on the left, the close button on the right) */
+:is(html.ChatPopup .multiChatDialog, .multiChatDialog:has(.chatTabOpenFriendsList)) .chatDialogs[data-nk-chat-bg] .chatWindow {
+	inset-inline-start: 15px;
+}
+:is(html.ChatPopup .multiChatDialog, .multiChatDialog:has(.chatTabOpenFriendsList)) .chatDialogs[data-nk-chat-bg] .chatWindow .chatRoomGroupNavColumn {
+	margin-inline-start: 0;
+}
+:is(html.ChatPopup .multiChatDialog, .multiChatDialog:has(.chatTabOpenFriendsList)) .ChatRoomGroupDialog_contents:has(> .chatRoomGroupNavColumn:not(.defaultChatOnly, .chatRoomGroupNavCollapsed)) > #nk-chat-bg {
+	left: 200px; /* the channel column no longer stands 2px out of the card */
+}
+html:not(.nk-emoticons-docked) .multiChatDialog .chatDialogs[data-nk-chat-bg] .chatWindow {
+	inset-inline-end: 15px;
+}
 #nk-chat-bg {
-	border-radius: calc(var(--button-radius, 6px) + 4px);
+	border-radius: 10px; /* fixed: the chat frame does not follow the rounding of buttons */
+}
+/* Group chat: the picture only between the channel column and the member list (Steam: 200px, folded 46px; the */
+/* channel column stands 2px out of the card, below; members: 220px, folded 46px), its corners rounded there too */
+.ChatRoomGroupDialog_contents:has(> .chatRoomGroupNavColumn:not(.defaultChatOnly)) > #nk-chat-bg {
+	left: 198px;
+}
+.ChatRoomGroupDialog_contents:has(> .chatRoomGroupNavColumn.chatRoomGroupNavCollapsed) > #nk-chat-bg {
+	left: 44px;
+}
+.ChatRoomGroupDialog_contents:has(.MemberListColumn) > #nk-chat-bg {
+	right: 220px;
+}
+.ChatRoomGroupDialog_contents:has(.MemberListColumn.MemberListViewCompact) > #nk-chat-bg {
+	right: 46px;
 }
 /* Messages scrolled under the top corners are cut the same way */
 .chatDialogs[data-nk-chat-bg] .ChatRoomGroupDialog_history {
-	border-radius: calc(var(--button-radius, 6px) + 4px) calc(var(--button-radius, 6px) + 4px) 0 0;
+	border-radius: 10px 10px 0 0;
 }
 /* Beside the friends list the chat header starts 5px after the divider's grip, not 15px: the list has its own 15px */
 /* before the grip, and the two together were an empty strip (with a picture the card starts on that line too). */
 /* Messages and the message field keep their 15px. Not beside the button that opens the folded list: the header */
-/* stands right after it there */
-.ChatTabs:not(:has(> .chatTabOpenFriendsList)) > #nk-chat-header {
+/* stands right after it there. A chat window of its own has no list: 15px as everything else */
+html:not(.ChatPopup) .ChatTabs:not(:has(> .chatTabOpenFriendsList)) > #nk-chat-header {
 	margin-inline-start: -12px;
 }
 /* Header buttons end where the card does (8px off the side), when they stand at the chat's edge and not before */
@@ -1878,11 +2911,15 @@ html.nk-panel-resizing * {
 	inset-inline-end: max(var(--nk-invite-end, var(--nk-window-buttons-room)), 8px);
 }
 .chatDialogs[data-nk-chat-bg] > #nk-chat-call {
-	inset-inline-end: calc(max(var(--nk-invite-end, var(--nk-window-buttons-room)), 8px) + 40px);
+	inset-inline-end: calc(max(var(--nk-invite-end, var(--nk-window-buttons-room)), 8px) + 40px + var(--nk-tabs-room, 0px));
 }
 /* Invite button is placed from the chat window (the card): stays 8px before the call button */
 .chatDialogs[data-nk-chat-bg] .chatWindow .inviteAnotherFriendButton {
-	inset-inline-end: calc(max(var(--nk-invite-end, var(--nk-window-buttons-room)), 8px) + 72px);
+	inset-inline-end: calc(max(var(--nk-invite-end, var(--nk-window-buttons-room)), 8px) + 72px + var(--nk-tabs-room, 0px));
+}
+/* No emoticon panel: the card ends 15px from the window, not 8px (7px less) */
+html:not(.nk-emoticons-docked) .chatDialogs[data-nk-chat-bg] .chatWindow .inviteAnotherFriendButton {
+	inset-inline-end: calc(max(var(--nk-invite-end, var(--nk-window-buttons-room)), 8px) + 65px + var(--nk-tabs-room, 0px));
 }
 /* See-through plaques and buttons are lost on a picture: the same colors laid over the window color */
 .chatDialogs[data-nk-chat-bg] {
@@ -1890,10 +2927,11 @@ html.nk-panel-resizing * {
 	--nk-solid-hover: linear-gradient(var(--button-hover-background), var(--button-hover-background)), var(--nk-solid);
 	--nk-solid-accent: linear-gradient(var(--SystemAccentColor-Transparent), var(--SystemAccentColor-Transparent)), var(--main-background);
 }
-/* Bubbles, date, time under big emoji, message buttons, reactions, field and its buttons */
+/* Bubbles, date, service lines, time under big emoji, message buttons, reactions, field and its buttons */
 html .chatDialogs[data-nk-chat-bg] .chatWindow :is(
 	.ChatMessageBlock > .msg:not([data-nk-emoji-only]),
 	.msg.timeDivision,
+	.msg.serverMsg,
 	.msg[data-nk-emoji-only] > .nk-msg-time,
 	.ChatMessageBlock > .msg > .Addons > *,
 	.msg .MessageReaction,
@@ -2144,4 +3182,948 @@ html .chatDialogs[data-nk-chat-bg] .chatWindow .chatEntryControls .chatSubmitBut
 }
 #nk-chat-bg-dialog .nk-bg-button.nk-bg-save:hover {
 	background: color-mix(in srgb, var(--SystemAccentColor) 28%, transparent);
+}
+
+/* Group Chat: Channel List (left) */
+/* Sections "Text / Voice channels" with a "+" at the end, every channel on a plaque, as the members. A voice channel */
+/* with people in it grows into one plaque with them under its name */
+.chatWindow .chatRoomGroupNavColumn {
+	background: var(--main-background);
+	box-shadow: none;
+	transition: none; /* Steam: all .4s - the column slid into place whenever the chat was moved or docked */
+}
+.chatWindow .chatRoomGroupNavColumn .ChannelTypeTitle {
+	transition: none;
+}
+.chatWindow .chatRoomChannelGroups {
+	padding: 0 8px 8px; /* the top is the chat's, as the member list on the right */
+	box-sizing: border-box;
+}
+/* With a chat background the column is inside the card (5px off the divider): the plaques start under the avatar of */
+/* the title bar, not 10px after it */
+.chatDialogs[data-nk-chat-bg] .chatWindow .chatRoomGroupNavColumn {
+	margin-inline-start: -2px;
+}
+.chatDialogs[data-nk-chat-bg] .chatWindow .chatRoomChannelGroups {
+	padding-inline-start: 0;
+}
+/* No background, beside the friends list: the plaques start under the avatar of the title bar too (3px off the */
+/* divider, as the title bar: the list has its own room before the divider) */
+html:not(.ChatPopup) .multiChatDialog:not(:has(.chatTabOpenFriendsList)) .chatDialogs:not([data-nk-chat-bg]) .chatWindow .chatRoomChannelGroups {
+	padding-inline-start: 3px;
+}
+/* No friends list beside the chat (it stands 15px off the window then): the channel column 15px off the picture too. */
+/* Beside the friends list both keep 8px */
+:is(html.ChatPopup .multiChatDialog, .multiChatDialog:has(.chatTabOpenFriendsList)) .chatDialogs[data-nk-chat-bg] .chatWindow .chatRoomChannelGroups {
+	padding-inline-end: 15px;
+}
+:is(html.ChatPopup .multiChatDialog, .multiChatDialog:has(.chatTabOpenFriendsList)) .chatDialogs[data-nk-chat-bg] .chatWindow .chatRoomGroupNavColumn .chatRoomGroupNavCollapseExpand {
+	inset-inline-end: 43px; /* before the "+" (15px + 24px + 4px) */
+}
+/* Steps as in the friends list: plaques 8px apart, the title takes 28px over the first one (24px + 4px), 8px */
+/* between the sections */
+.chatWindow :is(.chatRoomTextChannelsGroup, .chatRoomVoiceChannelsGroup) {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin: 0 0 8px;
+	padding: 0;
+	color: var(--text-muted-color);
+}
+.chatWindow :is(.chatRoomTextChannelsGroup, .chatRoomVoiceChannelsGroup) > .ChannelTypeTitle {
+	margin-bottom: -4px;
+}
+
+/* Section title: label | "+" (Steam shows the "+" only in the folded column) */
+.chatWindow .ChannelTypeTitle {
+	align-items: center;
+	height: 24px;
+	padding: 0 0 0 4px;
+	color: var(--text-muted-color);
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 16px;
+}
+.chatWindow .ChannelTypeTitle .ChannelTypeLabel {
+	padding: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.chatWindow .ChannelTypeTitle .ChatRoomAddRoomBtn {
+	position: relative;
+	flex: none;
+	width: 24px;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+	opacity: 1;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	color: var(--text-muted-color);
+	transition: background-color .15s, color .15s;
+}
+.chatWindow .ChannelTypeTitle .ChatRoomAddRoomBtn:hover {
+	background: var(--button-hover-background);
+	color: var(--text-bright-color);
+}
+.chatWindow .ChannelTypeTitle .ChatRoomAddRoomBtn svg {
+	display: none;
+}
+.chatWindow .ChannelTypeTitle .ChatRoomAddRoomBtn::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	width: 12px;
+	height: 12px;
+	margin: auto;
+	background: currentColor;
+	-webkit-mask: url("../../../Patches/Icons/Steam/Add.svg") center / contain no-repeat;
+	mask: url("../../../Patches/Icons/Steam/Add.svg") center / contain no-repeat;
+}
+/* "Text / Voice channels" in place of "Add Text / Voice Channel" (Steam's words, from Chat.js); only the "+" makes */
+/* a channel, not the title */
+.chatWindow .ChannelTypeTitle {
+	pointer-events: none;
+}
+.chatWindow .ChannelTypeTitle .ChatRoomAddRoomBtn {
+	pointer-events: auto;
+}
+.chatWindow .ChannelTypeLabel[data-nk-label] {
+	display: flex;
+	align-items: center; /* with no font of its own the words sat on a 0px line, above the middle */
+	font-size: 0;
+}
+.chatWindow .ChannelTypeLabel[data-nk-label]::before {
+	content: attr(data-nk-label);
+	font-size: 12px;
+}
+/* No right to make text channels: no "+" */
+.chatWindow .ChannelTypeLabel.NoPermission + .ChatRoomAddRoomBtn {
+	display: none;
+}
+/* Pin button of the column: in the first title, before its "+" (the "+" of every section stays at the end) */
+.chatWindow .chatRoomChannelGroups > :first-child .ChannelTypeTitle .ChatRoomAddRoomBtn {
+	margin-inline-start: 28px;
+}
+.chatWindow .chatRoomGroupNavColumn .chatRoomGroupNavCollapseExpand {
+	top: 0; /* level with the "+" of the first title */
+	inset-inline-end: 36px;
+	width: 24px;
+	height: 24px;
+	margin: 0;
+	padding: 4px;
+	box-sizing: border-box;
+	border-radius: var(--button-radius);
+	opacity: 1;
+	color: var(--text-muted-color);
+	transition: background-color .15s, color .15s;
+}
+.chatWindow .chatRoomGroupNavColumn .chatRoomGroupNavCollapseExpand:hover {
+	background: var(--button-hover-background);
+	color: var(--text-bright-color);
+}
+.chatWindow .chatRoomGroupNavCollapseExpand svg {
+	width: 100%;
+	height: 100%;
+}
+
+/* Text channels */
+.chatWindow .chatRoomTextChannelsGroup .chatRoomTextChannel {
+	align-items: center;
+	gap: 8px;
+	height: 32px;
+	margin: 0;
+	padding: 0 8px;
+	box-sizing: border-box;
+
+	border: none;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	color: var(--text-muted-color);
+	transition: background-color .15s, color .15s;
+}
+.chatWindow .chatRoomTextChannelsGroup .chatRoomTextChannel:hover {
+	background: var(--button-hover-background);
+	color: var(--text-bright-color);
+}
+/* The open channel: lit with the accent */
+.chatWindow .chatRoomTextChannelsGroup .chatRoomTextChannel.ActiveTextChannel,
+.chatWindow .chatRoomTextChannelsGroup .chatRoomTextChannel.ActiveTextChannel:hover {
+	background: var(--SystemAccentColor-Transparent);
+	color: var(--SystemAccentColor);
+}
+.chatWindow .chatRoomTextChannelsGroup .chatRoomTextChannel.ActiveTextChannel::after {
+	display: none;
+}
+.chatWindow .chatRoomTextChannelsGroup .chatRoomTextChannelIcon {
+	display: flex;
+	flex: none;
+	margin: 0;
+}
+/* The lines take less than half of Steam's icon: drawn bigger, the box stays 16px as the voice icon's */
+.chatWindow .chatRoomTextChannelsGroup .chatRoomTextChannelIcon svg {
+	width: 28px;
+	height: 28px;
+	margin: -6px;
+	color: inherit; /* Steam paints the icon grey: the open channel's one is lit with the accent too */
+}
+.chatWindow .chatRoomTextChannelsGroup .chatRoomTextChannelIcon .TextLines {
+	stroke: currentColor;
+	stroke-width: 18px;
+}
+.chatWindow .chatRoomTextChannelsGroup .chatRoomTextChannelName,
+.chatWindow .chatRoomTextChannelsGroup .chatRoomTextChannelName.IsCommonsChannel {
+	margin: 0;
+	color: inherit;
+	font-size: 12px;
+	font-style: normal;
+	font-weight: bold;
+	line-height: 16px;
+}
+
+/* Voice channels: the plaque holds the name row and the people in the channel */
+.chatWindow .chatRoomVoiceChannelsGroup .chatRoomVoiceChannel,
+.chatWindow .chatRoomVoiceChannelsGroup .chatRoomVoiceChannel.ActiveVoiceChannel {
+	width: auto;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+
+	border: none;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	box-shadow: none;
+	color: var(--text-muted-color);
+	transition: background-color .15s, color .15s;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .chatRoomVoiceChannel:not(.ActiveVoiceChannel):hover {
+	background: var(--button-hover-background);
+	box-shadow: none;
+	color: var(--text-bright-color);
+}
+/* The channel you are in: lit with the accent, as the call button while in a call */
+.chatWindow .chatRoomVoiceChannelsGroup .chatRoomVoiceChannel.ActiveVoiceChannel {
+	background: var(--SystemAccentColor-Transparent);
+	color: var(--SystemAccentColor);
+}
+.chatWindow .chatRoomVoiceChannelIconGlow {
+	display: none;
+}
+/* Buttons of the channel you are in: a row at the bottom of the plaque - microphone | sound | channel chat | leave, */
+/* 28px each, 4px apart. Steam's dark strip under them is gone */
+.chatWindow .chatRoomVoiceChannelsGroup .chatRoomVoiceChannel.ActiveVoiceChannel {
+	padding-bottom: 8px;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel .activeVoiceControls {
+	margin: 0;
+	padding: 0 8px;
+	border: none;
+	background: none;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel :is(.buttonsContainer, .activeVoiceFlexBox) {
+	height: auto;
+	margin: 0;
+	padding: 0;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel .activeVoiceButtons {
+	display: flex;
+	gap: 4px;
+	width: 100%;
+	min-width: 0;
+}
+/* The spacer keeps the place of the chat button (Steam puts it outside the row, see below) */
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel .activeVoiceButtons .activeVoiceButtonsSpacer {
+	display: block;
+	flex: 1 1 0;
+	order: 3;
+	height: 28px;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel .activeVoiceButtons .activeVoiceButtonsSpacerAfter {
+	display: none;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel .activeVoiceButtons button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 1 1 0;
+	order: 1;
+	min-width: 0;
+	max-width: none;
+	height: 28px;
+	min-height: 28px;
+	max-height: 28px;
+	margin: 0;
+	padding: 0;
+
+	border: none;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	box-shadow: none;
+	color: var(--text-bright-color);
+	transition: background-color .15s;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel .activeVoiceButtons button.chatEndVoiceChat {
+	order: 4;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel .activeVoiceButtons button:hover {
+	background: var(--button-hover-background);
+}
+/* Microphone or sound off (Steam: "disabled", no microphone: "NoMicrophone"): red, as in Discord */
+.chatWindow .chatRoomVoiceChannelsGroup {
+	--nk-voice-off: var(--notification-color, #E64A35);
+}
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel .activeVoiceButtons button:is(.ToggleMicrophoneButton, .ToggleVoiceOutputButton):is(.disabled, .NoMicrophone),
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel .activeVoiceButtons button:is(.ToggleMicrophoneButton, .ToggleVoiceOutputButton):is(.disabled, .NoMicrophone):hover {
+	background: color-mix(in srgb, var(--nk-voice-off) 18%, transparent);
+	color: var(--nk-voice-off);
+}
+/* The same crossed icons beside the person in the channel (Steam shows them by the state) */
+.chatWindow .chatRoomVoiceChannelsGroup .VoiceChannelParticipants .voicestatusIcon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--nk-voice-off);
+	transform: translateY(-2px); /* to the middle of the two lines of name and status, not of the 26px row */
+}
+/* Shown at full strength (Steam: .4); the microphone gives way to the sound when both are off, as in Steam */
+.chatWindow .chatRoomVoiceChannelsGroup :is(.mic_muted_self, .mic_muted_remotely, .no_mic_for_session):not(.output_muted_self, .output_muted_remotely) .voicestatusIcon.voiceStatusMic,
+.chatWindow .chatRoomVoiceChannelsGroup :is(.output_muted_self, .output_muted_remotely) .voicestatusIcon.voiceStatusOutput {
+	width: 20px;
+	opacity: 1;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .VoiceChannelParticipants .voicestatusIcon svg {
+	width: 18px;
+	height: 18px;
+	margin: 0;
+	color: inherit;
+	fill: currentColor;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel .activeVoiceButtons .VoiceIconCtn {
+	display: flex;
+	width: auto;
+	height: auto;
+	margin: 0;
+	color: inherit; /* Steam: light green */
+}
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel .activeVoiceButtons button svg {
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	padding: 0;
+	color: inherit;
+}
+/* Chat of the channel: Steam's own button, put in the third place of the row (100% is the plaque's width) */
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel > .chatRoomTextChannel {
+	--nk-voice-slot: calc((100% - 28px) / 4); /* 8px edges, three 4px gaps */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	inset: auto auto 8px calc(8px + 2 * (var(--nk-voice-slot) + 4px));
+	width: var(--nk-voice-slot);
+	min-width: 0;
+	height: 28px;
+	margin: 0;
+	padding: 0;
+	opacity: 1;
+
+	border: none;
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	color: var(--text-bright-color);
+	transition: background-color .15s;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel > .chatRoomTextChannel:hover {
+	background: var(--button-hover-background);
+}
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel > .chatRoomTextChannel.ActiveTextChannel {
+	background: var(--SystemAccentColor-Transparent);
+	color: var(--SystemAccentColor);
+}
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel > .chatRoomTextChannel .chatRoomTextChannelIcon {
+	display: flex;
+	width: auto;
+	height: auto;
+	margin: 0;
+	color: inherit;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .ActiveVoiceChannel > .chatRoomTextChannel .chatRoomTextChannelIcon svg {
+	width: 16px;
+	height: 16px;
+	margin: 0;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .chatRoomVoiceChannelNameContainer {
+	align-items: center;
+	gap: 8px;
+	height: 32px;
+	padding: 0 8px;
+	box-sizing: border-box;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .chatRoomVoiceChannelIcon {
+	display: flex;
+	flex: none;
+	margin: 0;
+	color: inherit;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .chatRoomVoiceChannelIcon svg,
+.chatWindow .ActiveVoiceChannel .chatRoomVoiceChannelIcon .SVGIcon_Button.SVGIcon_VoiceRoom {
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	color: inherit;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .chatRoomVoiceChannelName,
+.chatWindow .chatRoomVoiceChannelsGroup .chatRoomVoiceChannel:hover .chatRoomVoiceChannelName {
+	margin: 0;
+	padding: 0;
+	border: none;
+	color: inherit;
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 16px;
+}
+/* People in the channel: under the name, 20px in from the plaque's edge */
+.chatWindow .chatRoomVoiceChannelsGroup .VoiceChannelParticipants {
+	margin: 0;
+	padding: 0 0 4px;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .VoiceChannelParticipants:empty {
+	display: none;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .VoiceChannelParticipants .friend,
+.chatWindow .chatRoomVoiceChannelsGroup .VoiceChannelParticipants .friend.online:last-of-type {
+	display: flex;
+	align-items: center;
+	height: 26px;
+	margin: 0;
+	padding: 0 8px 0 20px;
+	box-sizing: border-box;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .VoiceChannelParticipants .friend .avatarHolder {
+	width: 20px;
+	height: 20px;
+	padding: 0;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .VoiceChannelParticipants .friend .labelHolder {
+	height: auto;
+	min-width: 0;
+	margin: 0 0 0 8px;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .VoiceChannelParticipants .friend .playerName {
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 15px;
+}
+/* Who is speaking: an accent ring round the avatar in place of Steam's voice level bar (its height is the level) */
+.chatWindow .VoiceChannelParticipants .avatarHolder .avatarStatus {
+	display: none;
+}
+.chatWindow .VoiceChannelParticipants .friend.speaking .avatarHolder img.avatar,
+.chatWindow .VoiceChannelParticipants .avatarHolder:has(> .avatarStatus[style*="height"]:not([style*="height: 0%"])) img.avatar {
+	box-shadow: 0 0 0 2px var(--SystemAccentColor); /* not an outline: the status indicator unsets it */
+	filter: none;
+}
+.chatWindow .chatRoomVoiceChannelsGroup .emptyChannelNotice {
+	margin-inline-start: 32px;
+	color: var(--text-muted-color);
+}
+/* "No one else in this voice channel": the list under the name says it already */
+.chatWindow .chatRoomVoiceChannelsGroup .emptyChannelNotice.Visible {
+	display: none;
+}
+/* Group Chat: Member List (right) */
+/* Search in the style of the theme, sections as in the Chats tab, every member on a plaque. The button that hides */
+/* the list stands in the title bar, between the "more" and the call buttons (40px steps, as the buttons there) */
+.chatWindow .MemberListColumn {
+	border: none;
+	background: var(--main-background);
+	box-shadow: none;
+	overflow: visible;
+	transition: none; /* Steam: the width over .32s - the picture, the field and the rows jumped ahead of it */
+}
+/* Folding / unfolding with no animation at all (until there is a good one): Steam moves, scales and fades the search, */
+/* the section titles, the rows and the avatars inside, and the message field follows the column (all .21s). Only */
+/* the colors of hover stay smooth */
+.chatWindow .MemberListColumn * {
+	transition-property: background-color, color !important;
+}
+.chatWindow .chatEntry {
+	transition: none;
+}
+.chatWindow .MemberListOptionsContainer {
+	position: static; /* the hide button is placed from the column */
+	height: auto;
+	padding: 0 0 4px 8px; /* the right edge is the one of the "more" button of the title bar; the top is the chat's */
+	/* (level with the search of the emoticon panel) */
+	box-sizing: border-box;
+	border: none;
+	background: none;
+}
+.chatWindow .MemberListOptionsContainer .ToggleMemberListView {
+	position: absolute;
+	top: -41px; /* the title bar: 8px from the window's top, the list starts 49px down */
+	right: calc(var(--nk-invite-end, var(--nk-window-buttons-room)) + 40px + var(--nk-tabs-room, 0px));
+	z-index: 6;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	box-sizing: border-box;
+
+	border-radius: var(--button-radius);
+	background: linear-gradient(var(--button-background), var(--button-background)), var(--main-background);
+	color: var(--text-muted-color);
+	opacity: 1; /* Steam: .5 */
+	cursor: pointer;
+	transition: color .15s;
+	-webkit-app-region: no-drag;
+}
+.chatWindow .MemberListOptionsContainer .ToggleMemberListView:hover {
+	background: linear-gradient(var(--button-hover-background), var(--button-hover-background)), var(--main-background);
+	color: var(--text-bright-color);
+}
+/* The list is open: lit with the accent */
+.chatWindow .MemberListColumn:not(.MemberListViewCompact) .ToggleMemberListView,
+.chatWindow .MemberListColumn:not(.MemberListViewCompact) .ToggleMemberListView:hover {
+	background: linear-gradient(var(--SystemAccentColor-Transparent), var(--SystemAccentColor-Transparent)), var(--main-background);
+	color: var(--SystemAccentColor);
+}
+/* Friends icon of Steam in place of the arrows, in the color of the button */
+.chatWindow .MemberListOptionsContainer .ToggleMemberListView svg {
+	display: none;
+}
+.chatWindow .MemberListOptionsContainer .ToggleMemberListView::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	width: 16px;
+	height: 16px;
+	margin: auto;
+	background: currentColor;
+	-webkit-mask: url("../../../Patches/Icons/Steam/Friends.svg") center / contain no-repeat;
+	mask: url("../../../Patches/Icons/Steam/Friends.svg") center / contain no-repeat;
+}
+/* With a chat background (the buttons keep 8px from the edge there). The list is inside the card, which ends 8px */
+/* before the other buttons' edge: 8px less, or it stands 8px to the left of its place */
+.chatDialogs[data-nk-chat-bg] .MemberListOptionsContainer .ToggleMemberListView {
+	right: calc(max(var(--nk-invite-end, var(--nk-window-buttons-room)), 8px) + 32px + var(--nk-tabs-room, 0px));
+}
+/* No emoticon panel: the card ends 15px from the window, not 8px (7px less) */
+html:not(.nk-emoticons-docked) .chatDialogs[data-nk-chat-bg] .MemberListOptionsContainer .ToggleMemberListView {
+	right: calc(max(var(--nk-invite-end, var(--nk-window-buttons-room)), 8px) + 25px + var(--nk-tabs-room, 0px));
+}
+/* The call button steps aside for it in a group chat (only it has a member list: one-on-one chats are "MultiUserChat" too) */
+.chatDialogs:has(> .chatWindow[data-activechat="true"] .MemberListColumn) > #nk-chat-call {
+	inset-inline-end: calc(var(--nk-invite-end, var(--nk-window-buttons-room)) + 80px + var(--nk-tabs-room, 0px));
+}
+.chatDialogs[data-nk-chat-bg]:has(> .chatWindow[data-activechat="true"] .MemberListColumn) > #nk-chat-call {
+	inset-inline-end: calc(max(var(--nk-invite-end, var(--nk-window-buttons-room)), 8px) + 80px + var(--nk-tabs-room, 0px));
+}
+/* The message field ends where the member list starts (Steam: 220px, folded 46px), not under it */
+.chatWindow .displayColumn:has(> .displayRow > .MemberListColumn) > .chatEntry {
+	margin-inline-end: 220px;
+}
+.chatWindow .displayColumn:has(> .displayRow > .MemberListColumn.MemberListViewCompact) > .chatEntry {
+	margin-inline-end: 46px;
+}
+/* The reply bar above it too (+ its own 15px) */
+.chatWindow .displayColumn:has(> .displayRow > .MemberListColumn) > #nk-reply-bar {
+	margin-inline-end: 235px;
+}
+.chatWindow .displayColumn:has(> .displayRow > .MemberListColumn.MemberListViewCompact) > #nk-reply-bar {
+	margin-inline-end: 61px;
+}
+/* Search field: 32px, the search icon of Steam in it */
+.chatWindow .MemberListColumn .MemberListOptionsContainer .socialInputContainer,
+.chatWindow .MemberListColumn .MemberListOptionsContainer .inputContainer { /* Steam: max 24px - the 32px field hung out */
+	height: 32px;
+	max-height: none;
+}
+.chatWindow .MemberListOptionsContainer .socialInputContainer {
+	flex: 1;
+	width: auto;
+	margin: 0;
+}
+.chatWindow .MemberListOptionsContainer .inputContainer {
+	position: relative;
+}
+.chatWindow .MemberListOptionsContainer .inputContainer::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 12px; /* on the right, as in the friends search */
+	width: 14px;
+	margin: auto 0;
+	background: var(--text-muted-color);
+	-webkit-mask: url("../../../Patches/Icons/Steam/Search.svg") center / contain no-repeat;
+	mask: url("../../../Patches/Icons/Steam/Search.svg") center / contain no-repeat;
+	pointer-events: none;
+}
+/* Search active (Steam's SearchActive, the same that shows its clear button) or typed in: the clear button takes that place */
+.chatWindow .MemberListColumn:not(.MemberListViewCompact) .MemberListOptionsContainer :is(.SearchActive .inputContainer, .inputContainer.SearchActive)::before,
+.chatWindow .MemberListColumn:not(.MemberListViewCompact) .MemberListOptionsContainer .inputContainer:has(input:not(:placeholder-shown))::before {
+	display: none;
+}
+.chatWindow .MemberListOptionsContainer input.friendSearchInput {
+	width: 100%;
+	height: 32px;
+	padding: 0 32px 0 14px;
+	box-sizing: border-box;
+
+	border: none;
+	border-radius: 16px; /* a text field: round ends, as the friends search and the message field */
+	background: var(--button-background);
+	box-shadow: none;
+	color: var(--text-bright-color);
+	font-size: 13px;
+	font-style: normal;
+}
+.chatWindow .MemberListOptionsContainer input.friendSearchInput::placeholder {
+	color: var(--text-muted-color);
+	font-style: normal;
+}
+.chatWindow .MemberListOptionsContainer .friendSearchClear {
+	top: 0;
+	inset-inline-end: 5px; /* its 14px cross where the search icon stands (12px from the edge), 28px to click */
+	height: 32px;
+}
+/* Searching: "Found · 3" under the field (number from Chat.js) */
+.chatWindow .MemberListOptionsContainer[data-nk-found] {
+	flex-wrap: wrap;
+}
+.chatWindow .MemberListOptionsContainer[data-nk-found]::after {
+	content: var(--nk-found-text, "Found") " · " attr(data-nk-found);
+	flex: 0 0 100%;
+	margin-top: 8px;
+	padding: 0 4px;
+	box-sizing: border-box;
+	color: var(--text-muted-color);
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 16px;
+}
+
+/* Sections: In Game / Online / Offline (Chat.js regroups Steam's list), the count after the name (from Chat.js), */
+/* the chevron of Steam at the right end */
+.chatWindow .groupMemberList .groupName {
+	left: 8px !important; /* Steam: left 0, width 100% inline (height too: the rows are placed by it) */
+	width: calc(100% - 8px) !important; /* up to the right edge, under the "more" button */
+	margin: 0;
+	padding: 0 4px;
+	box-sizing: border-box;
+}
+.chatWindow .groupMemberList .groupName .groupLabelsContainer {
+	display: flex;
+	align-items: center;
+	height: 100%;
+	margin: 0;
+}
+.chatWindow .groupMemberList .groupName .groupNameLabel {
+	height: auto;
+	color: var(--text-muted-color);
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 16px;
+	text-transform: none;
+}
+.chatWindow .groupMemberList .groupName .groupCount {
+	display: none;
+}
+.chatWindow .groupMemberList .groupName .groupNameLabel[data-nk-count]::after {
+	content: " · " attr(data-nk-count); /* as the sections of the friends list */
+}
+/* Steam's see-through "+/-" took 19px before the name: the name stands 4px in from the plaques' edge, as the titles */
+/* of the channel column */
+.chatWindow .groupMemberList .groupName :is(.groupIcon, .groupCountCollapsed, .ExpandPlusMinus) {
+	display: none;
+}
+.chatWindow .groupMemberList .groupName::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 4px;
+	width: 12px;
+	height: 12px;
+	margin: auto 0;
+	background: var(--text-muted-color);
+	-webkit-mask: url("../../../Patches/Icons/Steam/Chevron.svg") center / contain no-repeat;
+	mask: url("../../../Patches/Icons/Steam/Chevron.svg") center / contain no-repeat;
+	transform: rotate(180deg);
+	transition: transform .15s;
+}
+.chatWindow .groupMemberList .groupName[data-nk-collapsed]::after {
+	transform: none;
+}
+
+/* Members: a plaque each, at the top of its 40px row (step from Chat.js: 32px plaque, 8px gap, as in the friends */
+/* list; the section title right above the first one); 8px off the chat, up to the */
+/* right edge (under the "more" button of the title bar) */
+.chatWindow .groupMemberList .friendGroup [class*="chatroomBucket"] {
+	left: 8px !important;
+	right: 0;
+	width: auto !important;
+}
+/* With a chat picture and no emoticon panel beside the chat (it stands 15px off the window then): 15px off the */
+/* picture too (search, titles, rows). Beside the panel both keep 8px */
+html:not(.nk-emoticons-docked) .chatDialogs[data-nk-chat-bg] .chatWindow .MemberListColumn:not(.MemberListViewCompact) .MemberListOptionsContainer {
+	padding-inline-start: 15px;
+}
+html:not(.nk-emoticons-docked) .chatDialogs[data-nk-chat-bg] .chatWindow .MemberListColumn:not(.MemberListViewCompact) .groupMemberList .groupName {
+	left: 15px !important;
+	width: calc(100% - 15px) !important;
+}
+html:not(.nk-emoticons-docked) .chatDialogs[data-nk-chat-bg] .chatWindow .MemberListColumn:not(.MemberListViewCompact) .groupMemberList .friendGroup [class*="chatroomBucket"] {
+	left: 15px !important;
+}
+.chatWindow .groupMemberList .friend,
+.chatWindow .groupMemberList.CompactFriendsList .friendGroup .friend { /* Steam: 22px for a member in a game */
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	height: 32px;
+	margin: 0;
+	padding: 0 8px 0 6px;
+	box-sizing: border-box;
+
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	transition: background-color .15s;
+}
+/* Hover: the tint of the member's status, as in the friends list (in the folded list too) */
+.chatWindow .groupMemberList .friend.friend:hover {
+	background: var(--status-offline-tint);
+}
+.chatWindow .groupMemberList .friend.friend.online:hover {
+	background: var(--status-online-tint);
+}
+.chatWindow .groupMemberList .friend.friend.awayOrSnooze:hover {
+	background: var(--status-afk-tint);
+}
+.chatWindow .groupMemberList .friend.friend.ingame:hover {
+	background: var(--status-playing-tint);
+}
+.chatWindow .groupMemberList .friend.friend.ingame.awayOrSnooze:hover {
+	background: var(--status-playing-afk-tint);
+}
+/* Avatar: the profile of the member (Chat.js) */
+.chatWindow .groupMemberList .friend .avatarHolder,
+.chatWindow .groupMemberList .friend .avatarHolder * {
+	cursor: pointer;
+}
+.chatWindow .groupMemberList .friend > :is(span:empty, .rankIcon, .chatMemberFriendIcon) {
+	display: none;
+}
+.chatWindow .groupMemberList .friend .avatarHolder {
+	width: 24px;
+	height: 24px;
+}
+/* Name and status: both lines in the middle of the plaque (Steam's box is 24px for 28px of text: the status hung */
+/* low, at the plaque's edge). The badge after the name does not make its line taller */
+.chatWindow .groupMemberList .friend .labelHolder {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	height: auto;
+}
+.chatWindow .groupMemberList .friend .labelHolder .statusAndName {
+	display: flex;
+	align-items: center;
+	height: 15px;
+}
+/* Game or its status in one line (Steam: two lines, the row is too low for them). The game is named by the icon */
+/* before the name; its status often names it again ("Deadlock: Rem"): with a status the game name goes */
+.chatWindow .groupMemberList .friend .richPresenceContainer {
+	display: flex;
+	flex-direction: row; /* Steam: column */
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+}
+.chatWindow .groupMemberList .friend .richPresenceContainer > * {
+	display: block;
+	flex: none;
+	width: auto;
+	margin: 0;
+	padding: 0; /* Steam: 24px after the game name */
+}
+.chatWindow .groupMemberList .friend .richPresenceContainer > :last-child {
+	flex: 0 1 auto;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.chatWindow .groupMemberList .friend .richPresenceContainer > .gameName:not(:last-child) {
+	display: none;
+}
+/* Icon of the game before the name, as in the friends list (Chat.js) */
+.chatWindow .groupMemberList .friend > .nk-member-game {
+	flex: none;
+	width: 16px;
+	height: 16px;
+	margin-inline-end: -2px; /* 6px to the name */
+	border-radius: 3px;
+}
+/* Folded list: the icon of the game in the left corner of the avatar, as in Quick Access (the status dot is in */
+/* the right one) */
+.chatWindow .groupMemberList .friend .nk-member-game-corner {
+	display: none;
+}
+.chatWindow .MemberListViewCompact .groupMemberList .friend .nk-member-game-corner {
+	position: absolute;
+	inset: auto auto 0 -2px; /* the dot stands 2px past the avatar's right edge: the same past the left one */
+	z-index: 3;
+	display: block;
+	width: 8px; /* as the status dot (Modern Status Indicator.css) */
+	height: 8px;
+	border-radius: var(--status-radius, 50%);
+	outline: solid 3px var(--main-background);
+}
+
+/* Folded List */
+/* Avatars only: in the middle of their plaques; sections parted by a short line instead of the chevron */
+.chatWindow .MemberListViewCompact .groupMemberList .friend,
+.chatWindow .MemberListViewCompact .groupMemberList.CompactFriendsList .friendGroup .friend {
+	justify-content: center;
+	padding: 0;
+}
+/* Steam's 2px on the right of the avatar (room for its status bar) took it off the middle */
+.chatWindow .MemberListViewCompact .groupMemberList .friend .avatarHolder {
+	padding: 0;
+}
+/* Everything stands at the right edge, under the "more" button of the title bar (32px wide, as it): no empty strip */
+/* on the right */
+.chatWindow .MemberListViewCompact .groupMemberList .friendGroup [class*="chatroomBucket"],
+.chatWindow .MemberListViewCompact .groupMemberList .groupName {
+	left: auto !important;
+	right: 0;
+	width: 32px !important;
+}
+/* Steam puts the "friend" mark and the owner's crown into the avatar here: not shown */
+.chatWindow .MemberListViewCompact .groupMemberList .friend .avatarHolder > div:not(.avatarStatus) {
+	display: none;
+}
+.chatWindow .MemberListViewCompact .groupMemberList .groupName::after {
+	inset: 0;
+	width: 20px;
+	height: 2px;
+	margin: auto;
+	border-radius: 1px;
+	background: var(--button-background);
+	-webkit-mask: none;
+	mask: none;
+	transform: none;
+}
+/* Search: a 32px button with the search icon; it unfolds the list and puts the cursor in the field (Chat.js) */
+.chatWindow .MemberListViewCompact .MemberListOptionsContainer {
+	justify-content: flex-end; /* under the "more" button, as the avatars */
+	padding-inline: 0;
+}
+.chatWindow .MemberListViewCompact .MemberListOptionsContainer .socialInputContainer {
+	flex: none;
+	width: 32px;
+	cursor: pointer;
+}
+.chatWindow .MemberListViewCompact .MemberListOptionsContainer input.friendSearchInput {
+	padding: 0;
+	border-radius: var(--button-radius); /* folded: a button, not a field */
+	color: transparent;
+	pointer-events: none;
+}
+.chatWindow .MemberListViewCompact .MemberListOptionsContainer input.friendSearchInput::placeholder {
+	color: transparent;
+}
+.chatWindow .MemberListViewCompact .MemberListOptionsContainer .inputContainer::before {
+	right: auto;
+	left: 9px;
+}
+.chatWindow .MemberListViewCompact .MemberListOptionsContainer .socialInputContainer:hover input.friendSearchInput {
+	background: var(--button-hover-background);
+}
+.chatWindow .MemberListViewCompact .MemberListOptionsContainer .friendSearchClear {
+	display: none;
+}
+/* No emoticon panel and no chat picture: the "more" button stands before the window buttons, not at the edge, and */
+/* nothing keeps the chat off the window's edge (with a picture the whole chat stands 15px off it) - the member list */
+/* keeps the window's 15px itself (220px + 15px, folded 46px + 15px). Message field and reply bar step aside with it */
+html:not(.nk-emoticons-docked) .chatDialogs:not([data-nk-chat-bg]) .chatWindow .MemberListColumn {
+	width: 235px !important;
+	min-width: 235px !important;
+	padding-inline-end: 15px;
+	box-sizing: border-box;
+}
+html:not(.nk-emoticons-docked) .chatDialogs:not([data-nk-chat-bg]) .chatWindow .MemberListColumn.MemberListViewCompact {
+	width: 61px !important;
+	min-width: 61px !important;
+}
+html:not(.nk-emoticons-docked) .chatDialogs:not([data-nk-chat-bg]) .chatWindow .displayColumn:has(> .displayRow > .MemberListColumn) > .chatEntry {
+	margin-inline-end: 235px;
+}
+html:not(.nk-emoticons-docked) .chatDialogs:not([data-nk-chat-bg]) .chatWindow .displayColumn:has(> .displayRow > .MemberListColumn.MemberListViewCompact) > .chatEntry {
+	margin-inline-end: 61px;
+}
+html:not(.nk-emoticons-docked) .chatDialogs:not([data-nk-chat-bg]) .chatWindow .displayColumn:has(> .displayRow > .MemberListColumn) > #nk-reply-bar {
+	margin-inline-end: 250px;
+}
+html:not(.nk-emoticons-docked) .chatDialogs:not([data-nk-chat-bg]) .chatWindow .displayColumn:has(> .displayRow > .MemberListColumn.MemberListViewCompact) > #nk-reply-bar {
+	margin-inline-end: 76px;
+}
+/* Steam's 1px line on the left of the member list: none */
+.chatWindow .MemberListColumn .groupMemberList {
+	border-inline-start: none !important;
+}
+/* The scrollbar of the messages right before the member list looked like a divider of it: none there */
+.chatWindow .displayRow:has(> .MemberListColumn) .chatHistoryScroll::-webkit-scrollbar {
+	width: 0;
+}
+
+/* Join: when the game can be joined (Chat.js), at the end of the plaque */
+.chatWindow .groupMemberList .friend:has(> .nk-member-join) {
+	padding-inline-end: 4px;
+}
+.chatWindow .groupMemberList .friend > .nk-member-join {
+	position: relative;
+	flex: none;
+	width: 24px;
+	height: 24px;
+	margin-inline-start: auto;
+
+	border-radius: var(--button-radius);
+	background: var(--button-background);
+	color: var(--text-muted-color);
+	cursor: pointer;
+	transition: background-color .15s, color .15s;
+}
+.chatWindow .groupMemberList .friend > .nk-member-join:hover {
+	background: var(--button-hover-background);
+	color: var(--text-bright-color);
+}
+.chatWindow .groupMemberList .friend > .nk-member-join::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	width: 12px;
+	height: 12px;
+	margin: auto;
+	background: currentColor;
+	-webkit-mask: url("../../../Patches/Icons/Gamescope/play.svg") center / contain no-repeat;
+	mask: url("../../../Patches/Icons/Gamescope/play.svg") center / contain no-repeat;
+}
+.chatWindow .groupMemberList .friend .labelHolder {
+	min-width: 0;
+	margin: 0;
+}
+.chatWindow .groupMemberList .friend .playerName {
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 15px;
+}
+.chatWindow .groupMemberList .friend .richPresenceContainer {
+	margin: 0;
+}
+.chatWindow .groupMemberList .friend .richPresenceLabel {
+	font-size: 11px;
+	line-height: 13px;
+}
+.chatWindow .groupMemberList .friend :is(.ContextMenuButton, .playerNicknameBracket) {
+	display: none;
 }

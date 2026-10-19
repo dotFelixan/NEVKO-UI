@@ -614,3 +614,76 @@ body.in_global_drag .quickAccessFriends.emptyQuickAccess.hintDismissed > :is(.nk
 .quickAccessFriends[data-nk-qa-compact] .playerNameQuickAccessContainer .playerNicknameBracket {
 	margin: 5px 0 0 -31px; /* the same corner of the moved avatar */
 }
+
+/* Group Chat Tile: the avatar and the name where a friend's are */
+.favoriteElement .QuickAccessChat.quickAccessFriend {
+	position: relative !important;
+	width: 100% !important;
+	height: 100% !important;
+	overflow: hidden !important;
+}
+.favoriteElement .QuickAccessChat .ChatRoomGroupAvatar {
+	position: absolute !important;
+	top: 40% !important;
+	left: 50% !important;
+	z-index: 1 !important;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px !important;
+	height: 48px !important;
+	margin: 0 !important;
+	box-sizing: border-box;
+	transform: translate(-50%, -50%) !important;
+
+	border: none !important;
+	border-radius: var(--avatar-radius, 50%) !important;
+	overflow: hidden;
+	background: var(--button-background);
+}
+.favoriteElement .QuickAccessChat .ChatRoomGroupAvatar_initials {
+	width: auto !important;
+	height: auto !important;
+	margin: 0 !important;
+	padding: 0 !important;
+
+	color: var(--text-muted-color);
+	font-size: 18px;
+	line-height: 1;
+}
+/* Name: as .playerName above (bold, centered, long one fades out) */
+.favoriteElement .QuickAccessChat .clanName {
+	position: absolute;
+	top: 66px;
+	left: 0;
+	right: 0;
+
+	width: fit-content !important;
+	max-width: calc(100% - 2 * var(--nk-qa-name-margin)) !important;
+	height: 18px;
+	margin: 0 auto !important;
+	box-sizing: border-box;
+
+	overflow: hidden !important;
+	white-space: normal !important;
+	word-break: break-all;
+	text-overflow: clip !important;
+
+	color: var(--status-offline); /* as the names of friends: a group has no status of its own */
+	font-size: 13px;
+	font-weight: bold;
+	line-height: 18px;
+
+	--nk-qa-name-margin: 10px;
+	--nk-qa-fade: 20px;
+	animation: nk-qa-name-cut linear both;
+	animation-timeline: scroll(self block);
+}
+/* Compact view: no name, the avatar in the middle of the tile as a friend's (40% was for the tile with a name) */
+.quickAccessFriends[data-nk-qa-compact] .favoriteElement .QuickAccessChat .ChatRoomGroupAvatar {
+	top: 50% !important;
+}
+.quickAccessFriends[data-nk-qa-compact] .favoriteElement .QuickAccessChat .clanName {
+	opacity: 0;
+}

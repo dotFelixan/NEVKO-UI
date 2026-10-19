@@ -11,9 +11,6 @@
     bAlwaysNewChatWindow: false, // chats stay in the docked window
   }
 
-  // Friends & Chat: chats open docked to the friends list, not in their own window (kept apart from the settings above)
-  const DOCK_CHATS = true
-
   // Library, Accessibility
   const CLIENT = {
     library_display_icon_in_game_list: true,
@@ -41,12 +38,6 @@
     for (const [name, value] of Object.entries(CLIENT)) {
       const [current, set] = store.GetClientSetting(name)
       if (current !== undefined && current !== value) set(value)
-    }
-
-    // The same message the switch in the Settings window sends: Steam moves the open chats itself
-    const docked = shared.g_FriendsUIApp?.SettingsStore?.BSingleWindowModeEnabled?.()
-    if (docked !== undefined && docked !== DOCK_CHATS) {
-      shared.SteamClient.Messaging.PostMessage("LibraryCommands", "ToggleDockedMode", JSON.stringify({ checked: DOCK_CHATS }))
     }
     return true
   }

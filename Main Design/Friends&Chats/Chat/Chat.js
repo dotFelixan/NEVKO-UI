@@ -19,6 +19,7 @@
   const INVITE = ":is(.gameInviteDismissed, .gameInviteSelf, .gameInviteAccepted) > div"
   const GAME_ATTR = "data-nk-game"
   const TEXT_ATTR = "data-nk-text"
+  const TAB_ATTR = "data-nk-tab" // the tab over an invite's cover (Chat.css)
 
 
   // Game Invites
@@ -68,6 +69,438 @@
     }
   }
 
+  // Service lines of a group ("... joined the chat"): their kind for the icon of the plaque (Chat.css), from Steam's
+  // message: eServerMsgType 2 joined, 3 left, 4 kicked, 5 invited
+  const SERVER_KINDS = { 2: "joined", 3: "left", 4: "kicked", 5: "invited" }
+
+  function markServerMessages() {
+    for (const el of document.querySelectorAll(".chatWindow .msg.serverMsg:not([data-nk-server])")) {
+      const messages = fiberProps(el, 6, props => props.messages)
+      const type = Array.isArray(messages) ? messages[0]?.eServerMsgType : undefined
+      el.setAttribute("data-nk-server", SERVER_KINDS[type] || "other")
+    }
+  }
+
+  // Sections of the member list of a group: "Group members (2)" -> the number alone, shown as " · 2" (Chat.css)
+  function markMemberGroups() {
+    for (const label of document.querySelectorAll(".chatWindow .groupMemberList .groupName .groupNameLabel")) {
+      const count = label.parentElement?.querySelector(".groupCount")?.textContent.replace(/\D/g, "") || ""
+      if ((label.getAttribute("data-nk-count") || "") === count) continue
+      if (count) label.setAttribute("data-nk-count", count)
+      else label.removeAttribute("data-nk-count")
+    }
+  }
+
+  // Member list sections: "In Game", "Online", "Offline" in place of a section per game. Steam builds the sections in
+  // GroupMemberStore.GetGroupMemberList (SharedJSContext): its list is taken apart and made again of its own buckets.
+  // The party beacon section stays first. Game names are in the rows (Steam hides them only in a section of a game)
+  const MEMBER_SECTIONS = [["ingame", -101], ["online", -102], ["offline", -103]]
+
+  function patchMemberSections() {
+    const shared = window.opener
+    const store = shared?.g_FriendsUIApp?.GroupMemberStore
+    if (!store || shared.__nkMemberSections) return
+    const proto = Object.getPrototypeOf(store)
+    const original = proto.GetGroupMemberList
+    if (typeof original !== "function") return
+    shared.__nkMemberSections = true
+
+    const names = {
+      [-101]: steamText("FriendGroup_InGame", "In Game"),
+      [-102]: ownText("Online"),
+      [-103]: steamText("FriendGroup_Offline", "Offline"),
+    }
+    const byName = (a, b) => a.display_name.localeCompare(b.display_name)
+    const kindOf = member => member.persona?.is_ingame ? "ingame" : member.persona?.is_online ? "online" : "offline"
+    let namesPatched = false
+
+    proto.GetGroupMemberList = function (groupId) {
+      const buckets = original.call(this, groupId)
+      try {
+        if (!buckets.length) return buckets
+        const Bucket = buckets[0].constructor
+        // Steam's search makes buckets of the same ids anew: they get the names here
+        if (!namesPatched) {
+          const name = Object.getOwnPropertyDescriptor(Bucket.prototype, "name")?.get
+          if (name) Object.defineProperty(Bucket.prototype, "name", { configurable: true, get() { return names[this.m_id] ?? name.call(this) } })
+          namesPatched = true
+        }
+        const kinds = { ingame: [], online: [], offline: [] }
+        for (const bucket of buckets) {
+          if (bucket.id === -1) continue // party beacon
+          for (const member of bucket.member_list) kinds[kindOf(member)].push(member)
+        }
+        const result = buckets.filter(bucket => bucket.id === -1)
+        for (const [kind, id] of MEMBER_SECTIONS) {
+          if (!kinds[kind].length) continue
+          const bucket = new Bucket(id, byName, () => {})
+          bucket.SetMembers(kinds[kind])
+          result.push(bucket)
+        }
+        return result
+      } catch {
+        return buckets // Steam changed its buckets: its own sections
+      }
+    }
+  }
+
+  // Group chats of the Chats tab: the last message under the name, as the recent chats show it ("Kasha: text").
+  // Steam keeps it on each text room of the group (m_strLastMessage, bbcode); the newest of the rooms is taken
+  const GROUP_LAST = "nk-group-last"
+
+  function groupOf(item) {
+    const key = Object.keys(item).find(name => name.startsWith("__reactFiber"))
+    for (let fiber = key && item[key], depth = 0; fiber && depth < 6; fiber = fiber.return, depth++) {
+      const group = fiber.memoizedProps?.group
+      if (group?.GetDefaultChatRoom) return group
+    }
+    return null
+  }
+
+  // bbcode -> words: a sticker / a picture by its own word, other tags dropped
+  function plainMessage(text) {
+    if (/^\s*\[sticker\b/i.test(text)) return ownText("Sticker")
+    if (/^\s*\[(img|dynamiclink|og)\b/i.test(text)) return ownText("Photo")
+    return text.replace(/\[\/?[a-z]+[^\]]*\]/gi, "").replace(/\s+/g, " ").trim()
+  }
+
+  function lastOfGroup(group) {
+    let rooms = []
+    try { rooms = [...(group.textRoomList || []), group.GetDefaultChatRoom()].filter(Boolean) } catch {}
+    let last = null
+    for (const room of rooms) {
+      if (room.m_strLastMessage && (!last || room.m_rtLastMessageReceived > last.m_rtLastMessageReceived)) last = room
+    }
+    if (!last) return ""
+    const text = plainMessage(last.m_strLastMessage)
+    if (!text) return ""
+    let name = ""
+    try { name = window.opener?.g_FriendsUIApp?.FriendStore?.GetPlayer(last.m_accountIDLastMessage)?.display_name || "" } catch {}
+    return name ? `${name}: ${text}` : text
+  }
+
+  function markGroupLastMessages() {
+    for (const item of document.querySelectorAll(".FriendsListChatSection .ChatRoomListGroupItem")) {
+      const box = item.querySelector(".groupNameStatusContainer")
+      const group = box && groupOf(item)
+      if (!group) continue
+      const text = lastOfGroup(group)
+      let line = box.querySelector(`:scope > .${GROUP_LAST}`)
+      if (!text) { line?.remove(); continue }
+      if (!line) {
+        line = document.createElement("div")
+        line.className = GROUP_LAST
+        box.append(line)
+      }
+      if (line.textContent !== text) line.textContent = text
+    }
+  }
+
+  // Tabs that do not fit: arrows at both ends of the row (Chat.css), a press shows the next / previous tab
+  const TAB_NAV = "nk-tab-nav"
+
+  function tabNavButton(container, side) {
+    let button = container.querySelector(`:scope > .${TAB_NAV}-${side}`)
+    if (button) return button
+    button = document.createElement("div")
+    button.className = `${TAB_NAV} ${TAB_NAV}-${side}`
+    button.setAttribute("role", "button")
+    button.addEventListener("click", () => {
+      const list = container.querySelector(".chatTabList")
+      const tab = list?.querySelector(".ChatTab")
+      if (list) list.scrollBy({ left: (side === "next" ? 1 : -1) * ((tab?.offsetWidth || 160) + 8), behavior: "smooth" })
+    })
+    return button
+  }
+
+  // The row of tabs ends 8px before the leftmost button of the title bar (which ones there are depends on the chat,
+  // the docked emoticon panel moves them): never under them or under the panel
+  const TITLE_BUTTONS = "#nk-chat-tabs, #nk-chat-more, #nk-chat-call, .chatWindow .ToggleMemberListView, .chatWindow .inviteAnotherFriendButton"
+  function fitTabRow(container) {
+    const bar = container.closest(".ChatTabs")
+    if (!bar) return
+    const lefts = [...document.querySelectorAll(TITLE_BUTTONS)]
+      .filter(el => el.offsetParent && (el.id || el.closest(".chatWindow")?.offsetParent))
+      .map(el => el.getBoundingClientRect().left)
+    if (!lefts.length) return container.style.removeProperty("margin-inline-end")
+    const end = bar.getBoundingClientRect().right - parseFloat(getComputedStyle(bar).paddingRight) - (Math.min(...lefts) - 8)
+    const value = `${Math.max(0, Math.round(end))}px`
+    if (container.style.marginInlineEnd !== value) container.style.marginInlineEnd = value
+  }
+
+  function updateTabNav() {
+    for (const container of document.querySelectorAll(".multiChatDialog .chatTabSetContainer")) {
+      const slider = container.querySelector(":scope > .HorizontalMiniSlider")
+      const list = slider?.querySelector(".chatTabList")
+      if (!list) continue
+      const prev = tabNavButton(container, "prev")
+      const next = tabNavButton(container, "next")
+      if (prev.nextElementSibling !== slider) slider.before(prev)
+      if (next.previousElementSibling !== slider) slider.after(next)
+      if (!list.dataset.nkNav) {
+        list.dataset.nkNav = "1"
+        list.addEventListener("scroll", updateTabNav, { passive: true })
+      }
+      fitTabRow(container)
+      const overflow = list.scrollWidth > list.clientWidth + 1
+      if (container.hasAttribute("data-nk-overflow") !== overflow) container.toggleAttribute("data-nk-overflow", overflow)
+      const atStart = list.scrollLeft <= 1
+      const atEnd = list.scrollLeft + list.clientWidth >= list.scrollWidth - 1
+      if (prev.hasAttribute("data-nk-off") !== atStart) prev.toggleAttribute("data-nk-off", atStart)
+      if (next.hasAttribute("data-nk-off") !== atEnd) next.toggleAttribute("data-nk-off", atEnd)
+    }
+  }
+
+  // Member rows 40px apart (32px plaque + 8px, as in the friends list) instead of Steam's 36px. The rows are placed by
+  // Steam's list of buckets from its itemSize (a number in its props): the props of that list are given the new step
+  // as React sets them (an accessor on its class, made once for all windows)
+  const MEMBER_STEP = 40
+  const STEAM_STEP = 36
+
+  function patchMemberStep() {
+    const row = document.querySelector(".chatWindow .groupMemberList .friend")
+    if (!row) return
+    const key = Object.keys(row).find(name => name.startsWith("__reactFiber"))
+    let list = null
+    for (let fiber = key && row[key], depth = 0; fiber && depth < 20; fiber = fiber.return, depth++) {
+      const props = fiber.memoizedProps
+      if (props?.buckets && props.bucketHeaderSize !== undefined && fiber.stateNode?.render) { list = fiber.stateNode; break }
+    }
+    if (!list) return
+    const proto = Object.getPrototypeOf(list)
+    if (!proto.__nkMemberStep) {
+      proto.__nkMemberStep = true
+      const step = props => props?.buckets && props.itemSize === STEAM_STEP
+        ? { ...props, itemSize: MEMBER_STEP, estimatedItemSize: MEMBER_STEP }
+        : props
+      Object.defineProperty(proto, "props", {
+        configurable: true,
+        get() { return this.__nkProps },
+        set(value) { this.__nkProps = step(value) },
+      })
+    }
+    // A list made before the patch: its props now, and its cached row places dropped
+    if (list.__nkProps === undefined && Object.prototype.hasOwnProperty.call(list, "props")) {
+      const props = list.props
+      delete list.props
+      list.props = props
+    }
+    if (list.__nkStepApplied) return
+    list.__nkStepApplied = true
+    try {
+      list.forceUpdate()
+      // The list inside keeps the places of the rows it has measured (Steam keeps it in m_ref)
+      for (const value of Object.values(list)) {
+        const inner = value?.current ?? value
+        if (typeof inner?.resetAfterIndex === "function") inner.resetAfterIndex(0, true)
+      }
+    } catch { /* the list redraws with the next change */ }
+  }
+
+  // Member rows: the icon of the game before the name (as in the friends list), a Join button when the game can be joined
+  const MEMBER_JOIN = "nk-member-join"
+
+  function memberOf(row) {
+    const key = Object.keys(row).find(name => name.startsWith("__reactFiber"))
+    for (let fiber = key && row[key], depth = 0; fiber && depth < 6; fiber = fiber.return, depth++) {
+      const friend = fiber.memoizedProps?.friend
+      if (friend?.persona) return friend
+    }
+    return null
+  }
+
+  // Same rules as the Join button of the friends list (Friends List.js)
+  function joinableGame(friend) {
+    const persona = friend.persona
+    const lobby = persona.m_game_lobby_id
+    return persona.m_unGamePlayedAppID > 0
+      && (!!persona.has_joinable_game_flag || (!!lobby && lobby !== "0") || !!persona.has_server_ip)
+  }
+  function joinUrl(friend) {
+    const persona = friend.persona
+    const app = persona.m_unGamePlayedAppID
+    const lobby = persona.m_game_lobby_id && persona.m_game_lobby_id !== "0" ? persona.m_game_lobby_id : null
+    const connect = persona.connect_string
+    if (lobby) return `steam://joinlobby/${app}/${lobby}/${friend.steamid64}`
+    if (persona.has_joinable_game_flag && !connect?.length) return null
+    return `steam://rungame/${app}/${friend.steamid64}` + (connect !== undefined ? "/" + encodeURIComponent(connect) : "")
+  }
+
+  // The icon of the game, made once per place: before the name, and in the corner of the avatar for the folded list
+  // (it has no name: Steam drops the label there)
+  function placeGameIcon(parent, before, className, src) {
+    let icon = parent?.querySelector(`:scope > .${className}`)
+    if (!src || !parent) return icon?.remove()
+    if (!icon) {
+      icon = document.createElement("img")
+      icon.className = className
+      icon.alt = ""
+      before ? before.before(icon) : parent.append(icon)
+    }
+    if (icon.getAttribute("src") !== src) icon.src = src
+  }
+
+  function decorateMembers() {
+    const apps = window.opener?.g_FriendsUIApp?.AppInfoStore
+    for (const row of document.querySelectorAll(".chatWindow .groupMemberList .friend")) {
+      const friend = memberOf(row)
+      if (!friend) continue
+      const app = friend.persona.is_ingame ? friend.persona.m_unGamePlayedAppID : 0
+      let src = ""
+      try { src = app ? apps?.GetAppInfo(app)?.icon_url || "" : "" } catch {}
+      const label = row.querySelector(":scope > .labelHolder")
+      placeGameIcon(label ? row : null, label, "nk-member-game", src)
+      placeGameIcon(row.querySelector(".avatarHolder"), null, "nk-member-game-corner", src)
+      // Folded list: the name as the hint of the avatar
+      const folded = !!row.closest(".MemberListViewCompact")
+      const name = folded ? friend.display_name || "" : null
+      if (name) { if (row.title !== name) row.title = name }
+      else if (row.hasAttribute("title")) row.removeAttribute("title")
+
+      let join = row.querySelector(`:scope > .${MEMBER_JOIN}`)
+      if (joinableGame(friend)) {
+        if (!join) {
+          join = document.createElement("div")
+          join.className = MEMBER_JOIN
+          join.title = steamText("Friend_Menu_JoinFriendGame", "Join Game")
+          row.append(join)
+        }
+      } else join?.remove()
+    }
+  }
+
+  // Search of the member list: the number found goes to the search box ("Found · 3", Chat.css). Folded list: its
+  // search is a button that unfolds the list and puts the cursor in the field
+  function markMemberSearch() {
+    for (const column of document.querySelectorAll(".chatWindow .MemberListColumn")) {
+      const box = column.querySelector(".MemberListOptionsContainer")
+      if (!box) continue
+      let found = null
+      const key = Object.keys(column).find(name => name.startsWith("__reactFiber"))
+      for (let fiber = key && column[key], depth = 0; fiber && depth < 6; fiber = fiber.return, depth++) {
+        const view = fiber.memoizedProps?.groupView
+        if (!view) continue
+        // Steam counts the search as active already when the empty field gets the cursor: only with words in it
+        try { if (view.IsMemberSearchActive() && view.GetMemberSearch().trim()) found = String(view.search_results.length) } catch {}
+        break
+      }
+      if (found === null) { if (box.hasAttribute("data-nk-found")) box.removeAttribute("data-nk-found") }
+      else if (box.getAttribute("data-nk-found") !== found) box.setAttribute("data-nk-found", found)
+    }
+  }
+
+  function onFoldedSearch(event) {
+    const form = event.target instanceof Element && event.target.closest(".MemberListViewCompact .MemberListOptionsContainer .socialInputContainer")
+    if (!form) return
+    event.preventDefault()
+    event.stopPropagation()
+    if (event.type !== "click") return
+    const column = form.closest(".MemberListColumn")
+    column.querySelector(".ToggleMemberListView")?.click()
+    requestAnimationFrame(() => column.querySelector("input.friendSearchInput")?.focus())
+  }
+
+  // Avatar of a member: the profile (as in the friends list), not the chat that a press on the row opens
+  function onMemberAvatar(event) {
+    if (event.button > 0) return // the right button: Steam's menu of the member
+    const avatar = event.target instanceof Element && event.target.closest(".chatWindow .groupMemberList .friend .avatarHolder")
+    if (!avatar) return
+    event.stopPropagation()
+    event.preventDefault()
+    if (event.type !== "click") return
+    const friend = memberOf(avatar.closest(".friend"))
+    if (friend?.steamid64) location.href = `steam://url/SteamIDPage/${friend.steamid64}`
+  }
+
+  // Name above the messages: the profile, as the avatar
+  function onSpeakerName(event) {
+    if (event.button > 0) return
+    const name = event.target instanceof Element && event.target.closest(".chatWindow .ChatMessageBlock .speakerName")
+    if (!name || event.target.closest(".nevko-badge, .nevko-badge-mini, .nevko-badge-modern")) return
+    event.stopPropagation()
+    event.preventDefault()
+    if (event.type !== "click") return
+    const friend = memberOf(name)
+    if (friend?.steamid64) location.href = `steam://url/SteamIDPage/${friend.steamid64}`
+  }
+
+  // Badge after the name: its own tooltip, not the mini profile Steam shows while the cursor is on the name.
+  // The badge is inside Steam's hover area: on it the profile is hidden (after Steam's handler has run), and back
+  // on the name it is shown again - Steam counts the cursor as never gone out of the area
+  const SPEAKER_BADGE = ".chatWindow .ChatSpeaker .speakerHoverArea :is(.nevko-badge, .nevko-badge-mini, .nevko-badge-modern)"
+
+  function onSpeakerBadge(event) {
+    const target = event.target instanceof Element ? event.target : null
+    const area = target?.closest(".chatWindow .ChatSpeaker .speakerHoverArea")
+    if (!area) return
+    const fake = {
+      currentTarget: area, target, clientX: event.clientX, clientY: event.clientY, nativeEvent: event,
+      persist() {}, preventDefault() {}, stopPropagation() {},
+    }
+    if (target.closest(SPEAKER_BADGE)) {
+      setTimeout(() => { try { propsOf(area)?.onMouseLeave?.(fake) } catch { /* Steam changed it */ } })
+      return
+    }
+    const from = event.relatedTarget instanceof Element ? event.relatedTarget : null
+    if (from?.closest(SPEAKER_BADGE) && area.contains(from)) {
+      try { propsOf(area)?.onMouseEnter?.(fake) } catch { /* Steam changed it */ }
+    }
+  }
+
+  // Before Steam: a press on the button is not a press on the row (that opens the chat with the member)
+  function onMemberJoin(event) {
+    const join = event.target instanceof Element && event.target.closest(`.${MEMBER_JOIN}`)
+    if (!join) return
+    event.stopPropagation()
+    event.preventDefault()
+    if (event.type !== "click") return
+    const row = join.closest(".friend")
+    const friend = row && memberOf(row)
+    const url = friend && joinUrl(friend)
+    if (url) location.href = url
+    else row?.querySelector(".labelHolder")?.dispatchEvent(new MouseEvent("contextmenu", {
+      bubbles: true, cancelable: true, view: window, clientX: event.clientX, clientY: event.clientY, button: 2,
+    })) // Steam's menu of the member has "Join Game" with its own dialog
+  }
+
+  // Titles of the channel sections: "Add Text / Voice Channel" -> "Text / Voice channels" (Steam's words in its
+  // language), drawn by Chat.css from the attribute; the "+" at their end makes the channel
+  const CHANNEL_TITLES = [
+    [".chatRoomTextChannelsGroup", "GroupSettings_Channels_TextChannels", "Text Channels"],
+    [".chatRoomVoiceChannelsGroup", "GroupSettings_Channels_VoiceChannels", "Voice channels"],
+  ]
+
+  function markChannelTitles() {
+    for (const [group, token, fallback] of CHANNEL_TITLES) {
+      const title = steamText(token, fallback)
+      for (const label of document.querySelectorAll(`.chatWindow ${group} .ChannelTypeLabel`)) {
+        if (label.getAttribute("data-nk-label") !== title) label.setAttribute("data-nk-label", title)
+      }
+    }
+  }
+
+  // A block of only stickers and big emoji: no name above it (Chat.css), the picture says who it is with the avatar
+  const NO_NAME_ATTR = "data-nk-no-name"
+  // Steam puts the hover card of the sticker (its name) beside the picture while the cursor is on it: not counted,
+  // or the name above the block would come and go with the cursor
+  const STICKER_HOVER = ".HoverPositionOuter"
+  function isSticker(message) {
+    const text = message.querySelector(":scope > .msgText")
+    const holder = text?.querySelector(":scope > div:only-child")
+    if (!holder) return false
+    const parts = [...holder.children].filter(child => !child.matches(STICKER_HOVER))
+    if (parts.length !== 1 || parts[0].tagName !== "IMG") return false
+    return ![...text.childNodes].some(node => node !== holder && node.textContent.trim())
+  }
+
+  function markStickerBlocks() {
+    for (const block of document.querySelectorAll(".chatWindow .ChatMessageBlock")) {
+      const messages = block.querySelectorAll(":scope > .msg")
+      const only = messages.length > 0 && [...messages].every(message => message.hasAttribute("data-nk-emoji-only") || isSticker(message))
+      if (block.hasAttribute(NO_NAME_ATTR) !== only) block.toggleAttribute(NO_NAME_ATTR, only)
+    }
+  }
+
   // Messages are seen behind the message field (as in Telegram): the list of messages goes down to the bottom of the
   // chat, the field lies over its end, a darkening rises from the bottom edge (Chat.css). How much of the list the
   // field covers is told from here: the height of the field, with the reply bar above it when there is one
@@ -99,12 +532,60 @@
     if (root.style.getPropertyValue("--nk-window-buttons") !== String(count)) root.style.setProperty("--nk-window-buttons", String(count))
   }
 
+  // Where Steam takes the cover of an active invite from (its STORE_ITEM_BASE_URL)
+  const STORE_ITEMS = "https://shared.steamstatic.com/store_item_assets/"
+
+  function ownInviteExpired(invite) {
+    if (!invite) return false
+    try {
+      if (invite.bOld || invite.bDismissed) return true
+    } catch { /* no getter: by the time below */ }
+    if (Date.now() / 1000 - invite.rtTimestamp > 6 * 60 * 60) return true
+    for (const win of [window, window.opener]) {
+      try {
+        const game = win?.g_FriendsUIApp?.FriendStore?.self?.persona?.m_unGamePlayedAppID
+        if (game !== undefined) return game !== invite.appID
+      } catch { /* no store in that window */ }
+    }
+    return false
+  }
+
   function markInvites() {
     for (const el of document.querySelectorAll(INVITE)) {
       const info = describe(el)
       if (!info) continue
       if (el.getAttribute(GAME_ATTR) !== info.game) el.setAttribute(GAME_ATTR, info.game)
       if (el.getAttribute(TEXT_ATTR) !== info.text) el.setAttribute(TEXT_ATTR, info.text)
+      // Steam shows an invite this way once it is old, dismissed, or the friend left that game: it cannot be accepted.
+      // Own ones look the same in any state: old (Steam: 6 hours) or we left that game
+      const expired = !!el.parentElement?.classList.contains("gameInviteDismissed")
+        || (!!el.parentElement?.classList.contains("gameInviteSelf") && ownInviteExpired(inviteOf(el)))
+      let mark = el.querySelector(":scope > .nk-invite-expired")
+      let cover = el.querySelector(":scope > .nk-invite-cover")
+      if (!expired) { mark?.remove(); cover?.remove(); continue }
+      // Drawn as the card of an active invite (Chat.css): the game's cover with a tab "Expired" on top
+      const appID = inviteOf(el)?.appID
+      if (!cover && appID) {
+        cover = document.createElement("span")
+        cover.className = "nk-invite-cover"
+        const picture = document.createElement("img")
+        picture.src = `${STORE_ITEMS}steam/apps/${appID}/header.jpg`
+        picture.draggable = false
+        picture.addEventListener("error", () => cover.remove(), { once: true }) // no cover: the icon card stays
+        cover.append(picture)
+        el.prepend(cover)
+      }
+      if (cover && cover.getAttribute(TAB_ATTR) !== ownText("Expired")) cover.setAttribute(TAB_ATTR, ownText("Expired"))
+      if (!mark) {
+        mark = document.createElement("span")
+        mark.className = "nk-invite-expired"
+        el.append(mark)
+      }
+      if (mark.textContent !== ownText("Invite expired")) mark.textContent = ownText("Invite expired")
+    }
+    // Active one: the tab "Invite" over its cover
+    for (const box of document.querySelectorAll(".chatWindow .gameInviteMsg .leftInviteContainer")) {
+      if (box.getAttribute(TAB_ATTR) !== ownText("Invite")) box.setAttribute(TAB_ATTR, ownText("Invite"))
     }
   }
 
@@ -220,6 +701,10 @@
     return null
   }
 
+  // View of the chat a .chatWindow shows: a one-on-one chat has it as a prop, a group chat has only the view of the
+  // group, with the chat of its open channel in it
+  const chatViewOf = chat => fiberProps(chat, 14, props => props.chatView || props.groupView?.GetActiveChatView?.())
+
   function activeChat() {
     const tab = document.querySelector(".ChatTabs .ChatTab.Active")
     if (!tab) return null
@@ -249,6 +734,22 @@
       try { text = exact(seen * 1000) || text } catch { /* that script changed */ }
     }
     return { kind, text: game || text }
+  }
+
+  // Group chat: "8 members · 1 in game" in place of a status (Steam's words)
+  function groupStatusOf(view) {
+    let total = 0
+    let inGame = 0
+    try {
+      total = view?.GetMemberCountTotal?.() || 0
+      inGame = view?.GetMemberCountInGame?.() || 0
+    } catch { return "" }
+    if (!total) return ""
+    const members = total === 1
+      ? steamText("Chat_Members", "1 member")
+      : steamText("Chat_Members_Plural", "%1$s members").replace("%1$s", total)
+    const playing = inGame ? ` · ${inGame} ${steamText("FriendGroup_InGame", "In Game").toLowerCase()}` : ""
+    return members + playing
   }
 
   // "... is typing a message": Steam shows it in a strip above the field (hidden in Chat.css), here it stands in the
@@ -311,7 +812,7 @@
       nameBox.innerHTML = nameHtml
     }
 
-    const status = friend ? statusOf(friend) : { kind: "", text: "" }
+    const status = friend ? statusOf(friend) : { kind: "group", text: groupStatusOf(view) }
     const typing = friend ? typingText() : ""
     if (typing) {
       if (statusBox.dataset.nkSource !== `typing:${typing}`) {
@@ -512,13 +1013,20 @@
   }
 
   function markOpenChat() {
-    const rows = document.querySelectorAll(".rcp-row-wrapper")
-    if (!rows.length) return
-    const id = document.querySelector(DOCKED_CHAT) && activeChat()?.friend?.steamid64
+    const docked = !!document.querySelector(DOCKED_CHAT)
+    const chat = docked ? activeChat() : null
+    const id = chat?.friend?.steamid64
     const account = id ? String(BigInt(id) - STEAMID_BASE) : ""
-    for (const row of rows) {
+    for (const row of document.querySelectorAll(".rcp-row-wrapper")) {
       const open = !!account && rowAccountId(row) === account
       if (row.classList.contains(OPEN_ROW) !== open) row.classList.toggle(OPEN_ROW, open)
+    }
+    // Group chats (Steam's list in the Chats tab): the group of the open tab
+    let group = null
+    try { group = chat?.view?.GetGroup?.() || null } catch { /* tab is closing */ }
+    for (const item of document.querySelectorAll(".FriendsListChatSection .ChatRoomListGroupItem")) {
+      const open = !!group && fiberProps(item, 6, props => props.group) === group
+      if (item.classList.contains(OPEN_ROW) !== open) item.classList.toggle(OPEN_ROW, open)
     }
   }
 
@@ -549,40 +1057,28 @@
     return null
   }
 
-  // A new width makes the browser lay out the whole friends list and the chat again (tens of ms): done on every
-  // move of the mouse, the window stuttered. The divider itself follows the cursor at once (a transform, no layout);
-  // the width is given to Steam at most once in LIST_STEP_MS, and when the button is let go
-  const LIST_STEP_MS = 100
+  // A new width lays out the friends list and the chat again: given to Steam once per frame at most (several mouse
+  // moves in one frame are one layout), and when the button is let go
   let listWidthWaiting = null // px: the width asked for last, not given to Steam yet
-  let listWidthTimer = null
-  let listWidthAt = 0
+  let listFrame = 0
   let listMouseUp = false
-
-  function moveDivider(dx) {
-    const divider = document.querySelector(".chat_main.singlewindow .singleWindowDivider")
-    if (!divider) return
-    const rtl = getComputedStyle(divider).direction === "rtl"
-    const value = dx ? `translateX(${rtl ? -dx : dx}px)` : ""
-    if (divider.style.transform !== value) divider.style.transform = value
-  }
+  const LIST_DRAG_CLASS = "nk-list-dragging"
 
   function giveListWidth(desktop) {
-    clearTimeout(listWidthTimer)
-    listWidthTimer = null
+    cancelAnimationFrame(listFrame)
+    listFrame = 0
     if (listWidthWaiting === null) return
     const width = listWidthWaiting
     listWidthWaiting = null
-    listWidthAt = performance.now()
-    moveDivider(0)
-    desktop.SetUIDisplayPref(LIST_PREF, width)
+    if (desktop.UIDisplayPrefs[LIST_PREF] !== width) desktop.SetUIDisplayPref(LIST_PREF, width)
   }
 
   function askListWidth(desktop, width) {
     listWidthWaiting = width
-    moveDivider(width - desktop.UIDisplayPrefs[LIST_PREF])
-    const wait = LIST_STEP_MS - (performance.now() - listWidthAt)
-    if (wait <= 0) giveListWidth(desktop)
-    else listWidthTimer ??= setTimeout(() => giveListWidth(desktop), wait)
+    listFrame ||= requestAnimationFrame(() => {
+      listFrame = 0
+      giveListWidth(desktop)
+    })
   }
 
   function patchListWidth() {
@@ -606,7 +1102,6 @@
         const folded = !!document.querySelector(".singleWindowDivider.friendsListCollapsed")
         if (width < LIST_FOLD_BELOW) {
           listWidthWaiting = null
-          moveDivider(0)
           if (!folded) document.querySelector(".friendListCollapse .friendCollapseButton")?.click()
           return
         }
@@ -615,10 +1110,20 @@
         askListWidth(desktop, Math.round(Math.max(LIST_MIN, Math.min(width, most))))
       },
     })
-    // The button is let go: the last width at once
+    // The button is let go: the last width at once. While dragging the cursor stays ↔ over the whole window and
+    // rows under it get no hover (Chat.css)
     if (!listMouseUp) {
       listMouseUp = true
-      addEventListener("mouseup", () => giveListWidth(desktop), true)
+      addEventListener("mousedown", event => {
+        if (event.button === 0 && event.target instanceof Element && event.target.closest(".chat_main.singlewindow .singleWindowDivider")) {
+          document.documentElement.classList.add(LIST_DRAG_CLASS)
+        }
+      }, true)
+      addEventListener("mouseup", () => {
+        document.documentElement.classList.remove(LIST_DRAG_CLASS)
+        giveListWidth(desktop)
+      }, true)
+      addEventListener("blur", () => document.documentElement.classList.remove(LIST_DRAG_CLASS))
     }
     if (!localStorage.getItem(LIST_SET_KEY)) {
       localStorage.setItem(LIST_SET_KEY, "1")
@@ -668,7 +1173,7 @@
   // Steam gives personal and group chats the same classes: mark the window, CSS hides avatars in personal ones
   function markChatKinds() {
     for (const chat of document.querySelectorAll(".chatWindow:not([data-nk-chat])")) {
-      const view = fiberProps(chat, 12, props => props.chatView)
+      const view = chatViewOf(chat)
       if (!view) continue
       let friend = false
       try { friend = !!view.IsFriendChat?.() } catch { /* view is closing */ }
@@ -729,37 +1234,38 @@
     "Chat Background", "Custom Chat Background", "Add a picture", "No background", "Delete the picture",
     "Position", "Fill", "Fit", "Stretch", "Tile", "Center", "Blur", "Dimming", "Save", "Cancel",
     "Reply", "Reply to %s", "Spoiler", "Photo", "Video", "Sticker",
-    "Global Custom Chat Background",
+    "Global Custom Chat Background", "Expired", "Invite expired", "Invite", "Online", "Found",
+    "View Deleted Messages", "Deleted Messages", "No deleted messages yet",
   ]
   const TEXTS = {
-    ru: ["Фон чата", "Пользовательский фон чата", "Добавить картинку", "Без фона", "Удалить картинку", "Положение", "Заполнение", "По размеру", "Растянуть", "Замостить", "По центру", "Размытие", "Затемнение", "Сохранить", "Отмена", "Ответить", "Ответ %s", "Спойлер", "Фото", "Видео", "Стикер", "Глобальный пользовательский фон чата"],
-    uk: ["Фон чату", "Власний фон чату", "Додати зображення", "Без фону", "Видалити зображення", "Положення", "Заповнення", "За розміром", "Розтягнути", "Плиткою", "По центру", "Розмиття", "Затемнення", "Зберегти", "Скасувати", "Відповісти", "Відповідь %s", "Спойлер", "Фото", "Відео", "Стікер", "Глобальний власний фон чату"],
-    bg: ["Фон на чата", "Собствен фон на чата", "Добавяне на изображение", "Без фон", "Изтриване на изображението", "Позиция", "Запълване", "Побиране", "Разтягане", "Плочки", "Центриране", "Размазване", "Затъмняване", "Запазване", "Отказ", "Отговор", "Отговор на %s", "Спойлер", "Снимка", "Видео", "Стикер", "Общ собствен фон на чата"],
-    de: ["Chat-Hintergrund", "Eigener Chat-Hintergrund", "Bild hinzufügen", "Kein Hintergrund", "Bild löschen", "Position", "Füllen", "Anpassen", "Strecken", "Kacheln", "Zentrieren", "Unschärfe", "Abdunkeln", "Speichern", "Abbrechen", "Antworten", "Antwort an %s", "Spoiler", "Foto", "Video", "Sticker", "Globaler eigener Chat-Hintergrund"],
-    fr: ["Fond du chat", "Fond de chat personnalisé", "Ajouter une image", "Aucun fond", "Supprimer l'image", "Position", "Remplir", "Ajuster", "Étirer", "Mosaïque", "Centrer", "Flou", "Assombrissement", "Enregistrer", "Annuler", "Répondre", "Réponse à %s", "Spoiler", "Photo", "Vidéo", "Sticker", "Fond de chat personnalisé global"],
-    es: ["Fondo del chat", "Fondo de chat personalizado", "Añadir imagen", "Sin fondo", "Eliminar imagen", "Posición", "Rellenar", "Ajustar", "Estirar", "Mosaico", "Centrar", "Desenfoque", "Oscurecer", "Guardar", "Cancelar", "Responder", "Respuesta a %s", "Spoiler", "Foto", "Vídeo", "Sticker", "Fondo de chat personalizado global"],
-    pt: ["Fundo do chat", "Fundo de chat personalizado", "Adicionar imagem", "Sem fundo", "Eliminar imagem", "Posição", "Preencher", "Ajustar", "Esticar", "Mosaico", "Centrar", "Desfoque", "Escurecer", "Guardar", "Cancelar", "Responder", "Resposta a %s", "Spoiler", "Foto", "Vídeo", "Sticker", "Fundo de chat personalizado global"],
-    "pt-br": ["Fundo do chat", "Fundo de chat personalizado", "Adicionar imagem", "Sem fundo", "Excluir imagem", "Posição", "Preencher", "Ajustar", "Esticar", "Lado a lado", "Centralizar", "Desfoque", "Escurecer", "Salvar", "Cancelar", "Responder", "Resposta a %s", "Spoiler", "Foto", "Vídeo", "Figurinha", "Fundo de chat personalizado global"],
-    it: ["Sfondo della chat", "Sfondo chat personalizzato", "Aggiungi immagine", "Nessuno sfondo", "Elimina immagine", "Posizione", "Riempi", "Adatta", "Estendi", "Affianca", "Centra", "Sfocatura", "Oscuramento", "Salva", "Annulla", "Rispondi", "Risposta a %s", "Spoiler", "Foto", "Video", "Sticker", "Sfondo chat personalizzato globale"],
-    nl: ["Chatachtergrond", "Aangepaste chatachtergrond", "Afbeelding toevoegen", "Geen achtergrond", "Afbeelding verwijderen", "Positie", "Vullen", "Passend", "Uitrekken", "Naast elkaar", "Centreren", "Vervaging", "Verduistering", "Opslaan", "Annuleren", "Beantwoorden", "Antwoord aan %s", "Spoiler", "Foto", "Video", "Sticker", "Algemene aangepaste chatachtergrond"],
-    pl: ["Tło czatu", "Własne tło czatu", "Dodaj obraz", "Bez tła", "Usuń obraz", "Położenie", "Wypełnienie", "Dopasowanie", "Rozciągnięcie", "Sąsiadująco", "Wyśrodkowanie", "Rozmycie", "Przyciemnienie", "Zapisz", "Anuluj", "Odpowiedz", "Odpowiedź dla %s", "Spoiler", "Zdjęcie", "Wideo", "Naklejka", "Globalne własne tło czatu"],
-    cs: ["Pozadí chatu", "Vlastní pozadí chatu", "Přidat obrázek", "Bez pozadí", "Smazat obrázek", "Umístění", "Vyplnit", "Přizpůsobit", "Roztáhnout", "Dlaždice", "Na střed", "Rozostření", "Ztmavení", "Uložit", "Zrušit", "Odpovědět", "Odpověď pro %s", "Spoiler", "Fotka", "Video", "Nálepka", "Globální vlastní pozadí chatu"],
-    hu: ["Csevegés háttere", "Egyéni csevegőháttér", "Kép hozzáadása", "Nincs háttér", "Kép törlése", "Elhelyezés", "Kitöltés", "Igazítás", "Nyújtás", "Mozaik", "Középre", "Elmosás", "Sötétítés", "Mentés", "Mégse", "Válasz", "Válasz neki: %s", "Spoiler", "Fotó", "Videó", "Matrica", "Globális egyéni csevegőháttér"],
-    ro: ["Fundalul chatului", "Fundal de chat personalizat", "Adaugă o imagine", "Fără fundal", "Șterge imaginea", "Poziție", "Umplere", "Potrivire", "Întindere", "Mozaic", "Centrare", "Estompare", "Întunecare", "Salvează", "Anulează", "Răspunde", "Răspuns pentru %s", "Spoiler", "Fotografie", "Video", "Sticker", "Fundal de chat personalizat global"],
-    el: ["Φόντο συνομιλίας", "Προσαρμοσμένο φόντο συνομιλίας", "Προσθήκη εικόνας", "Χωρίς φόντο", "Διαγραφή εικόνας", "Θέση", "Γέμισμα", "Προσαρμογή", "Τέντωμα", "Παράθεση", "Στο κέντρο", "Θόλωση", "Σκίαση", "Αποθήκευση", "Ακύρωση", "Απάντηση", "Απάντηση σε %s", "Spoiler", "Φωτογραφία", "Βίντεο", "Αυτοκόλλητο", "Καθολικό προσαρμοσμένο φόντο συνομιλίας"],
-    da: ["Chatbaggrund", "Brugerdefineret chatbaggrund", "Tilføj billede", "Ingen baggrund", "Slet billedet", "Placering", "Udfyld", "Tilpas", "Stræk", "Side om side", "Centrer", "Sløring", "Dæmpning", "Gem", "Annuller", "Svar", "Svar til %s", "Spoiler", "Foto", "Video", "Klistermærke", "Global brugerdefineret chatbaggrund"],
-    sv: ["Chattbakgrund", "Anpassad chattbakgrund", "Lägg till bild", "Ingen bakgrund", "Ta bort bilden", "Placering", "Fyll", "Anpassa", "Sträck ut", "Sida vid sida", "Centrera", "Oskärpa", "Nedtoning", "Spara", "Avbryt", "Svara", "Svar till %s", "Spoiler", "Foto", "Video", "Klistermärke", "Global anpassad chattbakgrund"],
-    no: ["Chatbakgrunn", "Egendefinert chatbakgrunn", "Legg til bilde", "Ingen bakgrunn", "Slett bildet", "Plassering", "Fyll", "Tilpass", "Strekk", "Side ved side", "Midtstill", "Uskarphet", "Nedtoning", "Lagre", "Avbryt", "Svar", "Svar til %s", "Spoiler", "Bilde", "Video", "Klistremerke", "Global egendefinert chatbakgrunn"],
-    fi: ["Keskustelun tausta", "Oma keskustelun tausta", "Lisää kuva", "Ei taustaa", "Poista kuva", "Sijainti", "Täytä", "Sovita", "Venytä", "Vierekkäin", "Keskitä", "Sumennus", "Himmennys", "Tallenna", "Peruuta", "Vastaa", "Vastaus käyttäjälle %s", "Spoileri", "Kuva", "Video", "Tarra", "Yleinen oma keskustelun tausta"],
-    tr: ["Sohbet arka planı", "Özel sohbet arka planı", "Resim ekle", "Arka plan yok", "Resmi sil", "Konum", "Doldur", "Sığdır", "Uzat", "Döşe", "Ortala", "Bulanıklık", "Karartma", "Kaydet", "İptal", "Yanıtla", "%s için yanıt", "Spoiler", "Fotoğraf", "Video", "Çıkartma", "Genel özel sohbet arka planı"],
-    ar: ["خلفية المحادثة", "خلفية محادثة مخصصة", "إضافة صورة", "بدون خلفية", "حذف الصورة", "الموضع", "تعبئة", "ملاءمة", "تمديد", "تجانب", "توسيط", "تمويه", "تعتيم", "حفظ", "إلغاء", "رد", "رد على %s", "حرق", "صورة", "فيديو", "ملصق", "خلفية محادثة مخصصة عامة"],
-    ja: ["チャットの背景", "カスタムチャット背景", "画像を追加", "背景なし", "画像を削除", "配置", "ページ幅に合わせる", "画面に合わせる", "拡大して表示", "並べて表示", "中央に表示", "ぼかし", "暗さ", "保存", "キャンセル", "返信", "%s への返信", "ネタバレ", "写真", "動画", "ステッカー", "全体のカスタムチャット背景"],
-    ko: ["채팅 배경", "사용자 지정 채팅 배경", "이미지 추가", "배경 없음", "이미지 삭제", "위치", "채우기", "맞춤", "늘이기", "바둑판식", "가운데", "흐림", "어둡게", "저장", "취소", "답장", "%s에게 답장", "스포일러", "사진", "동영상", "스티커", "전체 사용자 지정 채팅 배경"],
-    "zh-cn": ["聊天背景", "自定义聊天背景", "添加图片", "无背景", "删除图片", "位置", "填充", "适应", "拉伸", "平铺", "居中", "模糊", "变暗", "保存", "取消", "回复", "回复 %s", "剧透", "图片", "视频", "贴纸", "全局自定义聊天背景"],
-    "zh-tw": ["聊天背景", "自訂聊天背景", "新增圖片", "無背景", "刪除圖片", "位置", "填滿", "符合", "延展", "並排", "置中", "模糊", "變暗", "儲存", "取消", "回覆", "回覆 %s", "劇透", "圖片", "影片", "貼圖", "全域自訂聊天背景"],
-    th: ["พื้นหลังแชต", "พื้นหลังแชตแบบกำหนดเอง", "เพิ่มรูปภาพ", "ไม่มีพื้นหลัง", "ลบรูปภาพ", "ตำแหน่ง", "เติมเต็ม", "พอดี", "ยืด", "เรียงต่อกัน", "กึ่งกลาง", "เบลอ", "ความมืด", "บันทึก", "ยกเลิก", "ตอบกลับ", "ตอบกลับ %s", "สปอยล์", "รูปภาพ", "วิดีโอ", "สติกเกอร์", "พื้นหลังแชตแบบกำหนดเองทั้งหมด"],
-    vi: ["Nền trò chuyện", "Nền trò chuyện tùy chỉnh", "Thêm ảnh", "Không có nền", "Xóa ảnh", "Vị trí", "Lấp đầy", "Vừa khít", "Kéo giãn", "Xếp lát", "Căn giữa", "Làm mờ", "Làm tối", "Lưu", "Hủy", "Trả lời", "Trả lời %s", "Spoiler", "Ảnh", "Video", "Nhãn dán", "Nền trò chuyện tùy chỉnh chung"],
-    id: ["Latar obrolan", "Latar obrolan kustom", "Tambah gambar", "Tanpa latar", "Hapus gambar", "Posisi", "Isi", "Sesuaikan", "Regangkan", "Ubin", "Tengah", "Buram", "Peredupan", "Simpan", "Batal", "Balas", "Balasan untuk %s", "Spoiler", "Foto", "Video", "Stiker", "Latar obrolan kustom global"],
+    ru: ["Фон чата", "Пользовательский фон чата", "Добавить картинку", "Без фона", "Удалить картинку", "Положение", "Заполнение", "По размеру", "Растянуть", "Замостить", "По центру", "Размытие", "Затемнение", "Сохранить", "Отмена", "Ответить", "Ответ %s", "Спойлер", "Фото", "Видео", "Стикер", "Глобальный пользовательский фон чата", "Истекло", "Приглашение истекло", "Приглашение", "В сети", "Найдено", "Посмотреть удалённые сообщения", "Удалённые сообщения", "Удалённых сообщений пока нет"],
+    uk: ["Фон чату", "Власний фон чату", "Додати зображення", "Без фону", "Видалити зображення", "Положення", "Заповнення", "За розміром", "Розтягнути", "Плиткою", "По центру", "Розмиття", "Затемнення", "Зберегти", "Скасувати", "Відповісти", "Відповідь %s", "Спойлер", "Фото", "Відео", "Стікер", "Глобальний власний фон чату", "Минуло", "Запрошення минуло", "Запрошення", "В мережі", "Знайдено", "Переглянути видалені повідомлення", "Видалені повідомлення", "Видалених повідомлень поки немає"],
+    bg: ["Фон на чата", "Собствен фон на чата", "Добавяне на изображение", "Без фон", "Изтриване на изображението", "Позиция", "Запълване", "Побиране", "Разтягане", "Плочки", "Центриране", "Размазване", "Затъмняване", "Запазване", "Отказ", "Отговор", "Отговор на %s", "Спойлер", "Снимка", "Видео", "Стикер", "Общ собствен фон на чата", "Изтекла", "Поканата изтече", "Покана", "На линия", "Намерени", "Преглед на изтритите съобщения", "Изтрити съобщения", "Още няма изтрити съобщения"],
+    de: ["Chat-Hintergrund", "Eigener Chat-Hintergrund", "Bild hinzufügen", "Kein Hintergrund", "Bild löschen", "Position", "Füllen", "Anpassen", "Strecken", "Kacheln", "Zentrieren", "Unschärfe", "Abdunkeln", "Speichern", "Abbrechen", "Antworten", "Antwort an %s", "Spoiler", "Foto", "Video", "Sticker", "Globaler eigener Chat-Hintergrund", "Abgelaufen", "Einladung abgelaufen", "Einladung", "Online", "Gefunden", "Gelöschte Nachrichten ansehen", "Gelöschte Nachrichten", "Noch keine gelöschten Nachrichten"],
+    fr: ["Fond du chat", "Fond de chat personnalisé", "Ajouter une image", "Aucun fond", "Supprimer l'image", "Position", "Remplir", "Ajuster", "Étirer", "Mosaïque", "Centrer", "Flou", "Assombrissement", "Enregistrer", "Annuler", "Répondre", "Réponse à %s", "Spoiler", "Photo", "Vidéo", "Sticker", "Fond de chat personnalisé global", "Expirée", "Invitation expirée", "Invitation", "En ligne", "Trouvés", "Voir les messages supprimés", "Messages supprimés", "Aucun message supprimé pour l'instant"],
+    es: ["Fondo del chat", "Fondo de chat personalizado", "Añadir imagen", "Sin fondo", "Eliminar imagen", "Posición", "Rellenar", "Ajustar", "Estirar", "Mosaico", "Centrar", "Desenfoque", "Oscurecer", "Guardar", "Cancelar", "Responder", "Respuesta a %s", "Spoiler", "Foto", "Vídeo", "Sticker", "Fondo de chat personalizado global", "Caducada", "Invitación caducada", "Invitación", "En línea", "Encontrados", "Ver mensajes eliminados", "Mensajes eliminados", "Aún no hay mensajes eliminados"],
+    pt: ["Fundo do chat", "Fundo de chat personalizado", "Adicionar imagem", "Sem fundo", "Eliminar imagem", "Posição", "Preencher", "Ajustar", "Esticar", "Mosaico", "Centrar", "Desfoque", "Escurecer", "Guardar", "Cancelar", "Responder", "Resposta a %s", "Spoiler", "Foto", "Vídeo", "Sticker", "Fundo de chat personalizado global", "Expirado", "Convite expirado", "Convite", "Online", "Encontrados", "Ver mensagens eliminadas", "Mensagens eliminadas", "Ainda não há mensagens eliminadas"],
+    "pt-br": ["Fundo do chat", "Fundo de chat personalizado", "Adicionar imagem", "Sem fundo", "Excluir imagem", "Posição", "Preencher", "Ajustar", "Esticar", "Lado a lado", "Centralizar", "Desfoque", "Escurecer", "Salvar", "Cancelar", "Responder", "Resposta a %s", "Spoiler", "Foto", "Vídeo", "Figurinha", "Fundo de chat personalizado global", "Expirado", "Convite expirado", "Convite", "Online", "Encontrados", "Ver mensagens excluídas", "Mensagens excluídas", "Ainda não há mensagens excluídas"],
+    it: ["Sfondo della chat", "Sfondo chat personalizzato", "Aggiungi immagine", "Nessuno sfondo", "Elimina immagine", "Posizione", "Riempi", "Adatta", "Estendi", "Affianca", "Centra", "Sfocatura", "Oscuramento", "Salva", "Annulla", "Rispondi", "Risposta a %s", "Spoiler", "Foto", "Video", "Sticker", "Sfondo chat personalizzato globale", "Scaduto", "Invito scaduto", "Invito", "Online", "Trovati", "Visualizza messaggi eliminati", "Messaggi eliminati", "Ancora nessun messaggio eliminato"],
+    nl: ["Chatachtergrond", "Aangepaste chatachtergrond", "Afbeelding toevoegen", "Geen achtergrond", "Afbeelding verwijderen", "Positie", "Vullen", "Passend", "Uitrekken", "Naast elkaar", "Centreren", "Vervaging", "Verduistering", "Opslaan", "Annuleren", "Beantwoorden", "Antwoord aan %s", "Spoiler", "Foto", "Video", "Sticker", "Algemene aangepaste chatachtergrond", "Verlopen", "Uitnodiging verlopen", "Uitnodiging", "Online", "Gevonden", "Verwijderde berichten bekijken", "Verwijderde berichten", "Nog geen verwijderde berichten"],
+    pl: ["Tło czatu", "Własne tło czatu", "Dodaj obraz", "Bez tła", "Usuń obraz", "Położenie", "Wypełnienie", "Dopasowanie", "Rozciągnięcie", "Sąsiadująco", "Wyśrodkowanie", "Rozmycie", "Przyciemnienie", "Zapisz", "Anuluj", "Odpowiedz", "Odpowiedź dla %s", "Spoiler", "Zdjęcie", "Wideo", "Naklejka", "Globalne własne tło czatu", "Wygasło", "Zaproszenie wygasło", "Zaproszenie", "Dostępni", "Znaleziono", "Zobacz usunięte wiadomości", "Usunięte wiadomości", "Brak usuniętych wiadomości"],
+    cs: ["Pozadí chatu", "Vlastní pozadí chatu", "Přidat obrázek", "Bez pozadí", "Smazat obrázek", "Umístění", "Vyplnit", "Přizpůsobit", "Roztáhnout", "Dlaždice", "Na střed", "Rozostření", "Ztmavení", "Uložit", "Zrušit", "Odpovědět", "Odpověď pro %s", "Spoiler", "Fotka", "Video", "Nálepka", "Globální vlastní pozadí chatu", "Vypršelo", "Pozvánka vypršela", "Pozvánka", "Online", "Nalezeno", "Zobrazit smazané zprávy", "Smazané zprávy", "Zatím žádné smazané zprávy"],
+    hu: ["Csevegés háttere", "Egyéni csevegőháttér", "Kép hozzáadása", "Nincs háttér", "Kép törlése", "Elhelyezés", "Kitöltés", "Igazítás", "Nyújtás", "Mozaik", "Középre", "Elmosás", "Sötétítés", "Mentés", "Mégse", "Válasz", "Válasz neki: %s", "Spoiler", "Fotó", "Videó", "Matrica", "Globális egyéni csevegőháttér", "Lejárt", "A meghívó lejárt", "Meghívó", "Elérhető", "Találat", "Törölt üzenetek megtekintése", "Törölt üzenetek", "Még nincsenek törölt üzenetek"],
+    ro: ["Fundalul chatului", "Fundal de chat personalizat", "Adaugă o imagine", "Fără fundal", "Șterge imaginea", "Poziție", "Umplere", "Potrivire", "Întindere", "Mozaic", "Centrare", "Estompare", "Întunecare", "Salvează", "Anulează", "Răspunde", "Răspuns pentru %s", "Spoiler", "Fotografie", "Video", "Sticker", "Fundal de chat personalizat global", "Expirat", "Invitație expirată", "Invitație", "Online", "Găsite", "Vezi mesajele șterse", "Mesaje șterse", "Încă nu există mesaje șterse"],
+    el: ["Φόντο συνομιλίας", "Προσαρμοσμένο φόντο συνομιλίας", "Προσθήκη εικόνας", "Χωρίς φόντο", "Διαγραφή εικόνας", "Θέση", "Γέμισμα", "Προσαρμογή", "Τέντωμα", "Παράθεση", "Στο κέντρο", "Θόλωση", "Σκίαση", "Αποθήκευση", "Ακύρωση", "Απάντηση", "Απάντηση σε %s", "Spoiler", "Φωτογραφία", "Βίντεο", "Αυτοκόλλητο", "Καθολικό προσαρμοσμένο φόντο συνομιλίας", "Έληξε", "Η πρόσκληση έληξε", "Πρόσκληση", "Συνδεδεμένοι", "Βρέθηκαν", "Προβολή διαγραμμένων μηνυμάτων", "Διαγραμμένα μηνύματα", "Δεν υπάρχουν ακόμη διαγραμμένα μηνύματα"],
+    da: ["Chatbaggrund", "Brugerdefineret chatbaggrund", "Tilføj billede", "Ingen baggrund", "Slet billedet", "Placering", "Udfyld", "Tilpas", "Stræk", "Side om side", "Centrer", "Sløring", "Dæmpning", "Gem", "Annuller", "Svar", "Svar til %s", "Spoiler", "Foto", "Video", "Klistermærke", "Global brugerdefineret chatbaggrund", "Udløbet", "Invitationen er udløbet", "Invitation", "Online", "Fundet", "Se slettede beskeder", "Slettede beskeder", "Ingen slettede beskeder endnu"],
+    sv: ["Chattbakgrund", "Anpassad chattbakgrund", "Lägg till bild", "Ingen bakgrund", "Ta bort bilden", "Placering", "Fyll", "Anpassa", "Sträck ut", "Sida vid sida", "Centrera", "Oskärpa", "Nedtoning", "Spara", "Avbryt", "Svara", "Svar till %s", "Spoiler", "Foto", "Video", "Klistermärke", "Global anpassad chattbakgrund", "Utgånget", "Inbjudan har gått ut", "Inbjudan", "Online", "Hittade", "Visa raderade meddelanden", "Raderade meddelanden", "Inga raderade meddelanden än"],
+    no: ["Chatbakgrunn", "Egendefinert chatbakgrunn", "Legg til bilde", "Ingen bakgrunn", "Slett bildet", "Plassering", "Fyll", "Tilpass", "Strekk", "Side ved side", "Midtstill", "Uskarphet", "Nedtoning", "Lagre", "Avbryt", "Svar", "Svar til %s", "Spoiler", "Bilde", "Video", "Klistremerke", "Global egendefinert chatbakgrunn", "Utløpt", "Invitasjonen er utløpt", "Invitasjon", "Pålogget", "Funnet", "Se slettede meldinger", "Slettede meldinger", "Ingen slettede meldinger ennå"],
+    fi: ["Keskustelun tausta", "Oma keskustelun tausta", "Lisää kuva", "Ei taustaa", "Poista kuva", "Sijainti", "Täytä", "Sovita", "Venytä", "Vierekkäin", "Keskitä", "Sumennus", "Himmennys", "Tallenna", "Peruuta", "Vastaa", "Vastaus käyttäjälle %s", "Spoileri", "Kuva", "Video", "Tarra", "Yleinen oma keskustelun tausta", "Vanhentunut", "Kutsu vanhentui", "Kutsu", "Paikalla", "Löytyi", "Näytä poistetut viestit", "Poistetut viestit", "Ei vielä poistettuja viestejä"],
+    tr: ["Sohbet arka planı", "Özel sohbet arka planı", "Resim ekle", "Arka plan yok", "Resmi sil", "Konum", "Doldur", "Sığdır", "Uzat", "Döşe", "Ortala", "Bulanıklık", "Karartma", "Kaydet", "İptal", "Yanıtla", "%s için yanıt", "Spoiler", "Fotoğraf", "Video", "Çıkartma", "Genel özel sohbet arka planı", "Süresi doldu", "Davetin süresi doldu", "Davet", "Çevrimiçi", "Bulunan", "Silinen mesajları gör", "Silinen mesajlar", "Henüz silinen mesaj yok"],
+    ar: ["خلفية المحادثة", "خلفية محادثة مخصصة", "إضافة صورة", "بدون خلفية", "حذف الصورة", "الموضع", "تعبئة", "ملاءمة", "تمديد", "تجانب", "توسيط", "تمويه", "تعتيم", "حفظ", "إلغاء", "رد", "رد على %s", "حرق", "صورة", "فيديو", "ملصق", "خلفية محادثة مخصصة عامة", "منتهية", "انتهت صلاحية الدعوة", "دعوة", "متصل", "النتائج", "عرض الرسائل المحذوفة", "الرسائل المحذوفة", "لا توجد رسائل محذوفة بعد"],
+    ja: ["チャットの背景", "カスタムチャット背景", "画像を追加", "背景なし", "画像を削除", "配置", "ページ幅に合わせる", "画面に合わせる", "拡大して表示", "並べて表示", "中央に表示", "ぼかし", "暗さ", "保存", "キャンセル", "返信", "%s への返信", "ネタバレ", "写真", "動画", "ステッカー", "全体のカスタムチャット背景", "期限切れ", "招待の期限切れ", "招待", "オンライン", "見つかった数", "削除されたメッセージを見る", "削除されたメッセージ", "削除されたメッセージはまだありません"],
+    ko: ["채팅 배경", "사용자 지정 채팅 배경", "이미지 추가", "배경 없음", "이미지 삭제", "위치", "채우기", "맞춤", "늘이기", "바둑판식", "가운데", "흐림", "어둡게", "저장", "취소", "답장", "%s에게 답장", "스포일러", "사진", "동영상", "스티커", "전체 사용자 지정 채팅 배경", "만료됨", "초대 만료됨", "초대", "온라인", "찾음", "삭제된 메시지 보기", "삭제된 메시지", "아직 삭제된 메시지가 없습니다"],
+    "zh-cn": ["聊天背景", "自定义聊天背景", "添加图片", "无背景", "删除图片", "位置", "填充", "适应", "拉伸", "平铺", "居中", "模糊", "变暗", "保存", "取消", "回复", "回复 %s", "剧透", "图片", "视频", "贴纸", "全局自定义聊天背景", "已过期", "邀请已过期", "邀请", "在线", "找到", "查看已删除的消息", "已删除的消息", "还没有已删除的消息"],
+    "zh-tw": ["聊天背景", "自訂聊天背景", "新增圖片", "無背景", "刪除圖片", "位置", "填滿", "符合", "延展", "並排", "置中", "模糊", "變暗", "儲存", "取消", "回覆", "回覆 %s", "劇透", "圖片", "影片", "貼圖", "全域自訂聊天背景", "已過期", "邀請已過期", "邀請", "線上", "找到", "查看已刪除的訊息", "已刪除的訊息", "還沒有已刪除的訊息"],
+    th: ["พื้นหลังแชต", "พื้นหลังแชตแบบกำหนดเอง", "เพิ่มรูปภาพ", "ไม่มีพื้นหลัง", "ลบรูปภาพ", "ตำแหน่ง", "เติมเต็ม", "พอดี", "ยืด", "เรียงต่อกัน", "กึ่งกลาง", "เบลอ", "ความมืด", "บันทึก", "ยกเลิก", "ตอบกลับ", "ตอบกลับ %s", "สปอยล์", "รูปภาพ", "วิดีโอ", "สติกเกอร์", "พื้นหลังแชตแบบกำหนดเองทั้งหมด", "หมดอายุ", "คำเชิญหมดอายุ", "คำเชิญ", "ออนไลน์", "พบ", "ดูข้อความที่ถูกลบ", "ข้อความที่ถูกลบ", "ยังไม่มีข้อความที่ถูกลบ"],
+    vi: ["Nền trò chuyện", "Nền trò chuyện tùy chỉnh", "Thêm ảnh", "Không có nền", "Xóa ảnh", "Vị trí", "Lấp đầy", "Vừa khít", "Kéo giãn", "Xếp lát", "Căn giữa", "Làm mờ", "Làm tối", "Lưu", "Hủy", "Trả lời", "Trả lời %s", "Spoiler", "Ảnh", "Video", "Nhãn dán", "Nền trò chuyện tùy chỉnh chung", "Đã hết hạn", "Lời mời đã hết hạn", "Lời mời", "Trực tuyến", "Đã tìm thấy", "Xem tin nhắn đã xóa", "Tin nhắn đã xóa", "Chưa có tin nhắn nào bị xóa"],
+    id: ["Latar obrolan", "Latar obrolan kustom", "Tambah gambar", "Tanpa latar", "Hapus gambar", "Posisi", "Isi", "Sesuaikan", "Regangkan", "Ubin", "Tengah", "Buram", "Peredupan", "Simpan", "Batal", "Balas", "Balasan untuk %s", "Spoiler", "Foto", "Video", "Stiker", "Latar obrolan kustom global", "Kedaluwarsa", "Undangan kedaluwarsa", "Undangan", "Online", "Ditemukan", "Lihat pesan yang dihapus", "Pesan yang dihapus", "Belum ada pesan yang dihapus"],
   }
   // Steam names its language in the page: "ru", "pt-BR", "zh-CN"...
   function ownTexts() {
@@ -787,8 +1293,9 @@
     const id = chat.friend?.steamid64
     return [
       id && { text: steamText("Friend_Menu_ViewProfile", "View Profile"), run: () => { location.href = `steam://url/SteamIDPage/${id}` } },
-      { text: steamText("Chat_CloseTabAction", "Close Tab"), run: () => chat.tab.querySelector(".CloseButton")?.click() },
+      ...(key.startsWith("room:") ? groupMenuItems() : []),
       key && "separator",
+      key && { text: ownText("View Deleted Messages"), run: openDeletedList },
       key && { text: ownText("Custom Chat Background"), run: () => openBackgroundDialog(key) },
     ].filter(Boolean)
   }
@@ -856,6 +1363,21 @@
     return null
   }
 
+  // Buttons of Steam's group header (hidden with it, Chat.css): notifications, invite a friend, group settings.
+  // In the menu of a group chat they are items with Steam's own words (their tooltips) that press those buttons
+  const GROUP_BUTTONS = [".chatRoomButton.ManageNotifications", ".chatRoomButton.InviteToGroupChat", ".chatRoomButton.GroupChatSettings"]
+  // Of the chat on screen: every open chat has its own header
+  const shownGroupButton = selector => [...document.querySelectorAll(selector)].find(el => el.closest(".chatWindow")?.offsetParent)
+
+  // For the spare menu (menuItems)
+  function groupMenuItems() {
+    const items = GROUP_BUTTONS.map(selector => {
+      const button = shownGroupButton(selector)
+      return button?.title && { text: button.title, run: () => shownGroupButton(selector)?.click() }
+    }).filter(Boolean)
+    return items.length ? ["separator", ...items] : []
+  }
+
   // key: whose background the item opens (a chat's, or BG_GLOBAL)
   function addOwnItems(menu, key) {
     const list = menu.querySelector(".contextMenuContents")
@@ -864,22 +1386,35 @@
     const sample = [...list.querySelectorAll(".contextMenuItem")].filter(item => !item.querySelector("svg")).pop()
     if (!sample) return
     const doc = menu.ownerDocument // the menu may live in a window of its own
-    const separator = doc.createElement("div")
-    separator.className = list.querySelector(".ContextMenuSeparator")?.className || "ContextMenuSeparator"
-    const item = doc.createElement("div")
-    item.className = sample.className
-    item.setAttribute("role", "menuitem")
-    item.setAttribute("data-nk-own", "")
-    item.textContent = ownText(key === BG_GLOBAL ? "Global Custom Chat Background" : "Custom Chat Background")
-    item.addEventListener("click", () => {
-      try { menuInstance(menu)?.Hide() } catch { /* Steam closes it on the lost focus */ }
-      openBackgroundDialog(key)
-    })
-    // As Steam's items do: a submenu opened from another item closes (or that item stays lit, its submenu open)
-    item.addEventListener("mouseenter", () => {
-      try { menuInstance(menu)?.HideSubMenu?.() } catch { /* Steam changed its menus */ }
-    })
-    list.append(separator, item)
+    const separator = () => {
+      const el = doc.createElement("div")
+      el.className = list.querySelector(".ContextMenuSeparator")?.className || "ContextMenuSeparator"
+      return el
+    }
+    const item = (text, run) => {
+      const el = doc.createElement("div")
+      el.className = sample.className
+      el.setAttribute("role", "menuitem")
+      el.setAttribute("data-nk-own", "")
+      el.textContent = text
+      el.addEventListener("click", () => {
+        try { menuInstance(menu)?.Hide() } catch { /* Steam closes it on the lost focus */ }
+        run()
+      })
+      // As Steam's items do: a submenu opened from another item closes (or that item stays lit, its submenu open)
+      el.addEventListener("mouseenter", () => {
+        try { menuInstance(menu)?.HideSubMenu?.() } catch { /* Steam changed its menus */ }
+      })
+      return el
+    }
+
+    if (key.startsWith("room:")) {
+      for (const entry of groupMenuItems()) list.append(entry === "separator" ? separator() : item(entry.text, entry.run))
+    }
+    list.append(separator())
+    // The chat's own deleted messages (not in the menu of the own status, that one is for every chat)
+    if (key !== BG_GLOBAL) list.append(item(ownText("View Deleted Messages"), openDeletedList))
+    list.append(item(ownText(key === BG_GLOBAL ? "Global Custom Chat Background" : "Custom Chat Background"), () => openBackgroundDialog(key)))
   }
 
   // A second press on the button closes the menu. Steam closes it itself on the press (a click outside the menu),
@@ -951,6 +1486,8 @@
       await new Promise(resolve => setTimeout(resolve, 30))
       const menu = shownMenus().find(el => [...el.querySelectorAll(".contextMenuItem")].some(item => item.textContent === closeText))
       if (menu) {
+        // Chats are closed by their crosses (tabs button, recent chats): no "Close Tab" here
+        for (const item of menu.querySelectorAll(".contextMenuItem")) if (item.textContent === closeText) item.style.display = "none"
         addOwnItems(menu, key)
         watchClosing(menu)
         return true
@@ -1031,26 +1568,164 @@
     }
   }
 
+  // Tabs Button
+
+  // A chat (own window or docked) with the header in place of Steam's tabs (option Chat Window Title: Header). The tabs
+  // are hidden, so a button right before the "more" one lists them: avatar and name, a dot for unread
+  // messages, a cross that closes the chat. Option Auto Close Chat Tabs: no button, a chat opened in the window closes
+  // the others (a chat with a call going on is left open)
+  const TABS_ID = "nk-chat-tabs"
+  const TABS_MENU_ID = "nk-chat-tabs-menu"
+  const TABS_ROOM_CLASS = "nk-tabs-button" // on <html>: the button stands before "more", the others step aside (Chat.css)
+
+  const rootFlag = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+  // Header in place of the tabs, in a window of its own or docked to the friends list alike
+  const headerInWindow = () => rootFlag("--nk-chat-title") === "header" && !!document.querySelector(".multiChatDialog .ChatTabs")
+  const chatTabs = () => [...document.querySelectorAll(".ChatTabs .ChatTab")]
+
+  function tabViewOf(tab) {
+    for (const el of [tab, ...tab.querySelectorAll("*")]) {
+      const view = fiberProps(el, 6, props => props.tab)
+      if (view) return view
+    }
+    return null
+  }
+
+  // Steam switches tabs on the press of the mouse; works on a hidden tab too
+  function pressTab(tab) {
+    const options = { bubbles: true, cancelable: true, button: 0, buttons: 1, view: window }
+    tab.dispatchEvent(new MouseEvent("mousedown", options))
+    tab.dispatchEvent(new MouseEvent("mouseup", options))
+  }
+  const closeTab = tab => tab.querySelector(".CloseButton")?.click()
+
+  function closeOtherTabs() {
+    const active = document.querySelector(".ChatTabs .ChatTab.Active")
+    if (!active) return
+    for (const tab of chatTabs()) {
+      if (tab === active) continue
+      try { if (tabViewOf(tab)?.IsVoiceActive?.()) continue } catch { /* no view: closed */ }
+      closeTab(tab)
+    }
+  }
+
+  function closeTabsMenu() {
+    document.getElementById(TABS_MENU_ID)?.remove()
+    document.getElementById(TABS_ID)?.classList.remove("nk-open")
+  }
+
+  function tabsMenuRow(tab) {
+    const view = tabViewOf(tab)
+    const row = document.createElement("div")
+    row.className = "_1n7Wloe5jZ6fSuvV18NNWI contextMenuItem nk-tabs-item"
+    row.setAttribute("role", "menuitem")
+    if (tab.classList.contains("Active")) row.classList.add("nk-active")
+    const avatar = document.createElement("div")
+    avatar.className = "nk-tabs-avatar"
+    const picture = tab.querySelector(".avatarHolder, .ChatRoomGroupAvatar, .ChatRoomMultiFriendAvatar")
+    if (picture) avatar.append(picture.cloneNode(true))
+    const name = document.createElement("span")
+    name.className = "nk-tabs-name"
+    try { name.textContent = view?.GetTabName?.() || "" } catch { /* tab is closing */ }
+    row.append(avatar, name)
+    let unread = 0
+    try { unread = view?.GetUnreadMessageCount?.() || 0 } catch { /* not known */ }
+    if (unread && !tab.classList.contains("Active")) row.append(Object.assign(document.createElement("span"), { className: "nk-tabs-unread" }))
+    const close = document.createElement("div")
+    close.className = "nk-tabs-close"
+    close.setAttribute("role", "button")
+    close.title = steamText("Chat_CloseTabAction", "Close Tab")
+    close.addEventListener("click", event => {
+      event.stopPropagation()
+      closeTab(tab)
+      // Steam takes the tab out a moment later: the list is made again without it
+      setTimeout(() => {
+        if (!document.getElementById(TABS_MENU_ID)) return
+        closeTabsMenu()
+        const button = document.getElementById(TABS_ID)
+        if (button && chatTabs().length) openTabsMenu(button)
+      }, 100)
+    })
+    row.append(close)
+    row.addEventListener("click", () => {
+      closeTabsMenu()
+      pressTab(tab)
+    })
+    return row
+  }
+
+  function openTabsMenu(button) {
+    const menu = document.createElement("div")
+    menu.id = TABS_MENU_ID
+    menu.className = "PP7LM0Ow1K5qkR8WElLpt visible ready"
+    const list = document.createElement("div")
+    list.className = "_2EstNjFIIZm_WUSKm5Wt7n contextMenuContents"
+    for (const tab of chatTabs()) list.append(tabsMenuRow(tab))
+    menu.append(list)
+    document.body.append(menu)
+    button.classList.add("nk-open")
+    // Under the button, left edges in line; kept inside the window
+    const at = button.getBoundingClientRect()
+    const left = Math.max(MENU_EDGE, Math.min(at.left, innerWidth - MENU_EDGE - menu.offsetWidth))
+    menu.style.left = `${left}px`
+    menu.style.top = `${Math.min(at.bottom + MENU_GAP, innerHeight - MENU_EDGE - menu.offsetHeight)}px`
+  }
+
+  function ensureTabsButton() {
+    const host = document.querySelector(".multiChatDialog .chatDialogs")
+    let button = document.getElementById(TABS_ID)
+    const header = !!host && headerInWindow()
+    const auto = header && rootFlag("--nk-auto-close-tabs") === "on"
+    if (auto) closeOtherTabs()
+    const wanted = header && !auto && chatTabs().length > 0 // shown with one chat too: the place stays the same
+    document.documentElement.classList.toggle(TABS_ROOM_CLASS, wanted)
+    if (!wanted) {
+      closeTabsMenu()
+      return button?.remove()
+    }
+    if (button?.parentElement !== host) {
+      button?.remove()
+      button = document.createElement("div")
+      button.id = TABS_ID
+      button.setAttribute("role", "button")
+      button.addEventListener("click", () => {
+        if (document.getElementById(TABS_MENU_ID)) return closeTabsMenu()
+        openTabsMenu(button)
+      })
+      host.append(button)
+    }
+    // An unread chat in a hidden tab: a dot on the button
+    const unread = chatTabs().some(tab => {
+      if (tab.classList.contains("Active")) return false
+      try { return tabViewOf(tab)?.GetUnreadMessageCount?.() > 0 } catch { return false }
+    })
+    if (button.classList.contains("nk-unread") !== unread) button.classList.toggle("nk-unread", unread)
+  }
+
   function watchMenu() {
     addEventListener("mousedown", event => {
-      if (event.target instanceof Element && event.target.closest(`#${MENU_ID}, #${MORE_ID}`)) return
-      closeMenu()
+      const target = event.target instanceof Element ? event.target : null
+      if (!target?.closest(`#${MENU_ID}, #${MORE_ID}`)) closeMenu()
+      if (!target?.closest(`#${TABS_MENU_ID}, #${TABS_ID}`)) closeTabsMenu()
     }, true)
     addEventListener("keydown", event => {
-      if (event.key === "Escape") closeMenu()
+      if (event.key !== "Escape") return
+      closeMenu()
+      closeTabsMenu()
     }, true)
-    addEventListener("blur", closeMenu)
-    addEventListener("resize", closeMenu)
+    addEventListener("blur", () => { closeMenu(); closeTabsMenu() })
+    addEventListener("resize", () => { closeMenu(); closeTabsMenu() })
   }
 
 
   // Custom Chat Background
 
   // A picture behind one chat, with its own blur and dimming (set in the window opened from the chat menu).
-  // Everything is kept in the theme folder "Cache": the pictures themselves and backgrounds.json -
+  // Everything is kept in the theme folder "Cache/Chat Backgrounds": the pictures themselves and backgrounds.json -
   // the list of pictures and, for every chat, its picture, its layout, blur and dimming. The file can be edited or deleted by hand.
   // Read through the theme's own address; written through Steam (a page cannot write files itself). Styles in Chat.css
-  const BG_FOLDER = "Cache"
+  const BG_FOLDER = "Cache/Chat Backgrounds"
+  const OLD_BG_FOLDER = "Cache" // before Cache had folders: moved from there once
   const BG_FILE = "backgrounds.json"
   const BG_ATTR = "data-nk-chat-bg"
   const BG_GLOBAL = "global" // in place of a chat key: the background of the chats that have none of their own
@@ -1062,20 +1737,71 @@
   const BG_BLUR_MAX = 24
   const BG_DIM_MAX = 90
   const library = new Map() // file name -> address of the picture
-  const chatBackgrounds = new Map() // chat key -> { name, picture, blur, dim }
+  const chatBackgrounds = new Map() // chat key -> { name, picture, blur, dim } of the account signed in
   let draft = null // { key, picture, blur, dim } while the window is open: shown in the chat at once
+  // Every Steam account has its own backgrounds (the pictures are one library for all): "accounts" of the file,
+  // by the account's id. "chats" of an older file belong to the account that made them - the first one signed in
+  // that is not one of those chats itself; they stay in the file until it comes
+  let otherAccounts = {} // account id -> its chats, as in the file
+  let olderChats = null
+  let accountId = ""
 
-  const pictureUrl = name => `${THEME_URL}${BG_FOLDER}/${encodeURIComponent(name)}`
+  const fileUrl = (folder, name) => `${THEME_URL}${encodeURI(folder)}/${encodeURIComponent(name)}`
+  const pictureUrl = name => fileUrl(BG_FOLDER, name)
+
+  // The backgrounds of before the folders: the pictures and the list moved into their folder
+  async function moveOldBackgrounds() {
+    const old = await fetch(`${fileUrl(OLD_BG_FOLDER, BG_FILE)}?${Date.now()}`, { cache: "no-store" })
+    if (!old.ok) return {}
+    const data = await old.json()
+    const files = await diskAccess()
+    for (const name of data.pictures || []) {
+      const picture = await fetch(fileUrl(OLD_BG_FOLDER, name)).catch(() => null)
+      if (!picture?.ok) continue
+      await files.write(name, await picture.arrayBuffer())
+      await files.removeAt(`${OLD_BG_FOLDER}/${name}`)
+    }
+    await files.write(BG_FILE, new TextEncoder().encode(`${JSON.stringify(data, null, 2)}\n`).buffer)
+    await files.removeAt(`${OLD_BG_FOLDER}/${BG_FILE}`)
+    return data
+  }
   const within = (value, max) => Math.max(0, Math.min(Number(value) || 0, max))
+
+  function signedInId() {
+    for (const win of [window, window.opener]) {
+      try {
+        const id = win?.g_FriendsUIApp?.FriendStore?.self?.steamid64
+        if (id) return String(id)
+      } catch { /* no store in that window */ }
+    }
+    return ""
+  }
+
+  // The account is known a little after the window opens
+  async function waitAccount() {
+    for (let i = 0; i < 100 && !signedInId(); i++) await new Promise(resolve => setTimeout(resolve, 100))
+    return signedInId()
+  }
 
   async function loadBackgrounds() {
     try {
-      const response = await fetch(`${THEME_URL}${BG_FOLDER}/${BG_FILE}?${Date.now()}`, { cache: "no-store" })
-      const data = response.ok ? await response.json() : {} // no file: no backgrounds yet
+      const response = await fetch(`${fileUrl(BG_FOLDER, BG_FILE)}?${Date.now()}`, { cache: "no-store" })
+      // No file: the old place, or no backgrounds yet
+      const data = response.ok ? await response.json() : await moveOldBackgrounds().catch(() => ({}))
       for (const name of data.pictures || []) {
         if (typeof name === "string" && name) library.set(name, pictureUrl(name))
       }
-      for (const [key, chat] of Object.entries(data.chats || {})) {
+      accountId = await waitAccount()
+      if (!accountId) throw new Error("the account signed in is not known")
+      otherAccounts = { ...(data.accounts || {}) }
+      let own = otherAccounts[accountId]
+      delete otherAccounts[accountId]
+      olderChats = data.chats && typeof data.chats === "object" ? data.chats : null
+      if (!own && olderChats && !(`friend:${accountId}` in olderChats)) {
+        own = olderChats
+        olderChats = null
+      }
+      for (const [key, chat] of Object.entries(own || {})) {
         if (!chat || !library.has(chat.picture)) continue
         chatBackgrounds.set(key, {
           name: String(chat.name || ""),
@@ -1088,6 +1814,7 @@
     } catch (error) {
       console.warn(`[NEVKO] chat backgrounds: ${BG_FOLDER}/${BG_FILE} is not read (broken JSON?)`, error)
     }
+    predecodeUsed()
     applyBackground()
   }
 
@@ -1112,21 +1839,32 @@
     const service = id && Object.values(load(id)).find(value => typeof value?.WriteFile === "function")
     if (!service) throw new Error("Steam has no file writing request any more")
 
-    const folder = `${themes}/${themeName}/${BG_FOLDER}`
+    // Paths from the theme folder; Steam makes the folders on the way itself
+    const root = `${themes}/${themeName}`
+    // The bytes must belong to the window the request is sent from
+    async function writeAt(path, buffer) {
+      const result = await service.WriteFile({ path: `${root}/${path}`, data: new shared.Uint8Array(buffer) })
+      if (!result.BSuccess()) throw new Error(`"${path}" is not written`)
+    }
+    // Steam can move a file, not delete it: out to Steam's temporary folder
+    async function removeAt(path) {
+      const extension = path.includes(".") ? path.split(".").pop() : "tmp"
+      await shared.SteamClient.System.MoveFile(`${root}/${path}`, await shared.SteamClient.System.CreateTempPath(extension))
+    }
     disk = {
-      folder,
-      // The bytes must belong to the window the request is sent from
-      async write(name, buffer) {
-        const result = await service.WriteFile({ path: `${folder}/${name}`, data: new shared.Uint8Array(buffer) })
-        if (!result.BSuccess()) throw new Error(`"${name}" is not written`)
-      },
-      // Steam can move a file, not delete it: out to Steam's temporary folder
-      async remove(name) {
-        const extension = name.includes(".") ? name.split(".").pop() : "tmp"
-        await shared.SteamClient.System.MoveFile(`${folder}/${name}`, await shared.SteamClient.System.CreateTempPath(extension))
-      },
+      writeAt,
+      removeAt,
+      write: (name, buffer) => writeAt(`${BG_FOLDER}/${name}`, buffer),
+      remove: name => removeAt(`${BG_FOLDER}/${name}`),
     }
     return disk
+  }
+  // For the other scripts of the theme (Gif Picker.js: own GIFs in Cache/GIFs)
+  window.__nevkoThemeFiles = {
+    url: THEME_URL,
+    fileUrl,
+    write: async (path, buffer) => (await diskAccess()).writeAt(path, buffer),
+    remove: async path => (await diskAccess()).removeAt(path),
   }
 
   // One write after another: a picture is on the disk before the list that names it
@@ -1139,7 +1877,9 @@
   }
 
   function writeList() {
-    const data = { pictures: [...library.keys()], chats: Object.fromEntries(chatBackgrounds) }
+    if (!accountId) return // not read yet: the file would lose the other accounts
+    const data = { pictures: [...library.keys()], accounts: { ...otherAccounts, [accountId]: Object.fromEntries(chatBackgrounds) } }
+    if (olderChats) data.chats = olderChats
     return onDisk(files => files.write(BG_FILE, new TextEncoder().encode(`${JSON.stringify(data, null, 2)}\n`).buffer))
   }
 
@@ -1168,6 +1908,11 @@
     for (const [key, chat] of chatBackgrounds) {
       if (chat.picture === name) chatBackgrounds.delete(key)
     }
+    for (const chats of [...Object.values(otherAccounts), olderChats]) {
+      for (const [key, chat] of Object.entries(chats || {})) {
+        if (chat?.picture === name) delete chats[key]
+      }
+    }
     writeList()
     onDisk(files => files.remove(name))
   }
@@ -1182,15 +1927,18 @@
     } else {
       chatBackgrounds.delete(key)
     }
+    predecodeUsed()
     writeList()
   }
 
   // Layer behind the whole chat (messages and the message field): the box that holds both.
-  // Every open chat has its window, only one of them is on screen
+  // Every open chat has its window, only one of them is on screen. Each keeps its own layer: going back to a chat
+  // does not build it, load and blur its picture again (that was the stutter on switching chats); the hidden
+  // chats are display: none, their layers cost nothing
   function backgroundLayer(create) {
     const host = [...document.querySelectorAll(".chatWindow .ChatRoomGroupDialog_contents")].find(el => el.offsetParent)
-    let layer = document.getElementById(BG_LAYER_ID)
-    if (layer && (layer.parentElement !== host || !create)) {
+    let layer = host?.querySelector(`:scope > #${BG_LAYER_ID}`) || null
+    if (layer && !create) {
       layer.remove()
       layer = null
     }
@@ -1201,6 +1949,19 @@
       host.append(layer)
     }
     return layer
+  }
+
+  // Pictures decoded once, before they are needed: the first switch to a chat shows its picture at once
+  const decoded = new Map() // address -> Image (kept, so the browser keeps it decoded)
+  function predecode(url) {
+    if (!url || decoded.has(url)) return
+    const image = new Image()
+    image.src = url
+    decoded.set(url, image)
+    image.decode?.().catch(() => { /* broken file: the layer shows nothing, as before */ })
+  }
+  function predecodeUsed() {
+    for (const chat of chatBackgrounds.values()) predecode(library.get(chat.picture))
   }
 
   function applyBackground() {
@@ -1454,6 +2215,94 @@
     placeBackgroundDialog(box)
   }
 
+  // Deleted Messages
+
+  // The deleted messages of the chat on screen (kept by Message Archive.js), from the chat menu: a list over the
+  // chat, as in AyuGram - by days, the author's name over each bubble, its time inside
+  const DELETED_ID = "nk-deleted-list"
+
+  function archiveEngine() {
+    for (const win of [window.opener, window]) {
+      try { if (win?.__nkMessageArchive?.listDeleted) return win.__nkMessageArchive } catch { /* no access */ }
+    }
+    return null
+  }
+
+  const escapeHtml = text => text.replace(/[&<>"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[char])
+
+  // Steam's text (BBCode) as a little HTML: quotes, pictures, emoticons; other tags as their text
+  function deletedHtml(text) {
+    let html = escapeHtml(withoutMark(text))
+    html = html.replace(/\[quote(?:=[^\]]*)?\]([\s\S]*?)\[\/quote\]/g, (_, inner) => `<div class="nk-deleted-quote">${inner.trim()}</div>`)
+    // Steam writes the address inside the tag too: [img src=URL ...]URL[/img]
+    html = html.replace(/\[img src=(?:&quot;)?([^\s\]&]+)(?:&quot;)?[^\]]*\](?:[\s\S]*?\[\/img\])?/g, (_, src) => `<img class="nk-deleted-picture" src="${src}" alt="">`)
+    html = html.replace(/\[emoticon\]([^[]*)\[\/emoticon\]/g, (_, name) => `<img class="nk-deleted-emoticon" src="https://community.fastly.steamstatic.com/economy/emoticon/${encodeURIComponent(name)}" alt=":${name}:">`)
+    html = html.replace(/\[sticker[^\]]*\][\s\S]*?\[\/sticker\]|\[sticker[^\]]*\]/g, `<span class="nk-deleted-note">${escapeHtml(ownText("Sticker"))}</span>`)
+    html = html.replace(/\[video[^\]]*\][\s\S]*?\[\/video\]|\[video[^\]]*\]/g, `<span class="nk-deleted-note">${escapeHtml(ownText("Video"))}</span>`)
+    html = html.replace(/\[\/?[a-z]+[^\]]*\]/g, "")
+    return html.replace(/\n/g, "<br>")
+  }
+
+  function closeDeletedList() {
+    document.getElementById(DELETED_ID)?.remove()
+  }
+
+  function openDeletedList() {
+    closeDeletedList()
+    const chat = shownView()?.m_chat
+    const area = document.querySelector(".multiChatDialog .chatDialogs")?.getBoundingClientRect()
+    if (!chat || !area) return
+    let messages = []
+    try { messages = archiveEngine()?.listDeleted(chat) || [] } catch { /* the archive is not running */ }
+
+    const panel = document.createElement("div")
+    panel.id = DELETED_ID
+    Object.assign(panel.style, { left: `${area.left}px`, top: `${area.top}px`, width: `${area.width}px`, height: `${area.height}px` })
+    panel.innerHTML = '<div class="nk-deleted-head"><div class="nk-deleted-title"></div><div class="nk-deleted-close" role="button"></div></div><div class="nk-deleted-body"></div>'
+    panel.querySelector(".nk-deleted-title").textContent = `${ownText("Deleted Messages")} · ${messages.length}`
+    panel.querySelector(".nk-deleted-close").addEventListener("click", closeDeletedList)
+    const body = panel.querySelector(".nk-deleted-body")
+
+    const lang = document.documentElement.lang || undefined
+    let day = ""
+    for (const message of messages) {
+      const date = new Date(message.ts * 1000)
+      const dayText = date.toLocaleDateString(lang, { day: "numeric", month: "long", year: date.getFullYear() === new Date().getFullYear() ? undefined : "numeric" })
+      if (dayText !== day) {
+        day = dayText
+        const pill = document.createElement("div")
+        pill.className = "nk-deleted-day"
+        pill.textContent = dayText
+        body.append(pill)
+      }
+      const bubble = document.createElement("div")
+      bubble.className = "nk-deleted-bubble"
+      bubble.innerHTML = `<div class="nk-deleted-name"></div><div class="nk-deleted-text">${deletedHtml(message.text)}</div><span class="nk-deleted-time"></span>`
+      bubble.querySelector(".nk-deleted-name").textContent = authorName(message.author)
+      bubble.querySelector(".nk-deleted-time").textContent = date.toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit" })
+      body.append(bubble)
+    }
+    if (!messages.length) {
+      const empty = document.createElement("div")
+      empty.className = "nk-deleted-empty"
+      empty.textContent = ownText("No deleted messages yet")
+      body.append(empty)
+    }
+    document.body.append(panel)
+    body.scrollTop = body.scrollHeight // the newest at the bottom, as in the chat
+  }
+
+  function watchDeletedList() {
+    addEventListener("keydown", event => {
+      if (event.key === "Escape" && document.getElementById(DELETED_ID)) closeDeletedList()
+    }, true)
+    // A press past the list (another chat, the friends list): it is the chat on screen no more
+    document.addEventListener("mousedown", event => {
+      if (event.target instanceof Element && !event.target.closest(`#${DELETED_ID}`)) closeDeletedList()
+    }, true)
+    addEventListener("resize", closeDeletedList)
+  }
+
   function watchBackgroundDialog() {
     addEventListener("keydown", event => {
       if (event.key === "Escape") closeBackgroundDialog(false)
@@ -1473,7 +2322,9 @@
   // Started by the button beside a message or by a double click on it; the bar above the field shows what is answered
   const REPLY_BAR_ID = "nk-reply-bar"
   const REPLY_BUTTON = "nk-reply-button"
-  const REPLY_MAX = 140 // characters of the answered message kept in the quote
+  // Game invites (and group invites) cannot be answered
+  const NO_REPLY = ":has(> .msgText > :is([class*='Invite'], [class*='invite']))"
+  const REPLY_MAX = 60 // characters of the answered message kept in the quote: a part is enough to know it
   const replies = new Map() // chat view -> { name, text }: what the next message of that chat answers
 
   // Message component above the element keeps the message and the view of its chat
@@ -1500,6 +2351,10 @@
       .trim()
   }
 
+  // Text as the quote has it. A link in the quote would be sent again and Steam would put its preview into the quote:
+  // only its site is kept, without "https://" and "www." (Steam makes a link only of those)
+  const quotedText = message => plainText(message).replace(/\b(?:https?:\/\/|www\.)(?:www\.)?([^\s/?#]+)\S*/gi, "$1")
+
   function authorName(accountId) {
     for (const win of [window, window.opener]) {
       try {
@@ -1512,18 +2367,46 @@
 
   const shownView = () => {
     const chat = [...document.querySelectorAll(".chatWindow")].find(el => el.offsetParent)
-    return chat ? fiberProps(chat, 14, props => props.chatView) : null
+    return chat ? chatViewOf(chat) : null
+  }
+
+  // Mark of the answered message in the quote, invisible: its time and number, written with zero-width characters
+  // after the quoted text. A click on the card goes to exactly that message (older cards: found by the text)
+  const MARK_EDGE = "⁣"
+  const MARK_DIGITS = ["​", "‌", "‍", "⁠"]
+  const MARK = /⁣([​‌‍⁠]+)⁣/
+  const withoutMark = text => text.replace(/[⁣​‌‍⁠]/g, "")
+
+  function markOf(msg) {
+    let value = Number(msg.rtTimestamp) * 1000 + (Number(msg.unOrdinal) || 0) % 1000
+    if (!value) return ""
+    let digits = ""
+    for (; value > 0; value = Math.floor(value / 4)) digits = MARK_DIGITS[value % 4] + digits
+    return MARK_EDGE + digits + MARK_EDGE
+  }
+
+  function readMark(text) {
+    const found = MARK.exec(text)
+    if (!found) return null
+    let value = 0
+    for (const char of found[1]) value = value * 4 + MARK_DIGITS.indexOf(char)
+    return { time: Math.floor(value / 1000), ordinal: value % 1000 }
   }
 
   function startReply(el) {
     const found = messageOf(el)
     if (!found) return
     const { msg, chatView: view } = found
-    let text = plainText(msg.strMessage)
-    if (text.length > REPLY_MAX) text = `${text.slice(0, REPLY_MAX - 1).trimEnd()}…`
+    let text = withoutMark(quotedText(msg.strMessage))
+    // Cut at a word, if one ends in the second half of the length
+    if (text.length > REPLY_MAX) {
+      const cut = text.slice(0, REPLY_MAX - 1)
+      const word = cut.lastIndexOf(" ")
+      text = `${(word > REPLY_MAX / 2 ? cut.slice(0, word) : cut).trimEnd()}…`
+    }
     const name = authorName(msg.unAccountID)
     if (!text || !name) return
-    replies.set(view, { name, text })
+    replies.set(view, { name, text, mark: markOf(msg), el })
     hookSend(view)
     updateReplyBar()
     try { view.FocusTextInput?.() } catch { /* the field is focused by a click then */ }
@@ -1536,18 +2419,37 @@
 
   // Steam's server makes a quote block only of a whole message (the "/quote" command) and throws quote tags out of
   // any other text. So a reply is two messages sent one right after the other through Steam's own sending:
-  // the quote, then the answer. Chat.css draws the quote as a card that stands on the answer
+  // the quote, then the answer. Chat.css draws the quote as a card that stands on the answer.
+  // An answer is text, a sticker (Steam sends it as "/sticker name") or a file - a picture, a GIF (Steam's upload;
+  // the GIF tab sends through it too). Other commands (room effects...) are no answers: the reply waits for the next
+  const ANSWER_COMMAND = /^\/sticker\s/
+
+  function takeReply(view) {
+    const reply = replies.get(view)
+    replies.delete(view)
+    delete view.SendChatMessage
+    delete view.UploadFile
+    updateReplyBar()
+    return reply
+  }
+
   function hookSend(view) {
     if (Object.hasOwn(view, "SendChatMessage")) return
     const send = view.SendChatMessage
+    const upload = view.UploadFile
+    const quote = (chat, reply) => send.call(chat, `/quote ${reply.name}\n${reply.text}${reply.mark || ""}`)
     view.SendChatMessage = async function (text) {
-      const reply = replies.get(this)
-      replies.delete(this)
-      delete this.SendChatMessage
-      updateReplyBar()
-      if (!reply || !String(text).trim() || String(text).startsWith("/")) return send.call(this, text)
-      await send.call(this, `/quote ${reply.name}\n${reply.text}`)
+      const message = String(text)
+      if (!message.trim() || (message.startsWith("/") && !ANSWER_COMMAND.test(message))) return send.call(this, text)
+      const reply = takeReply(this)
+      if (reply) await quote(this, reply)
       return send.call(this, text)
+    }
+    if (typeof upload !== "function") return
+    view.UploadFile = async function (...args) {
+      const reply = takeReply(this)
+      if (reply) await quote(this, reply)
+      return upload.apply(this, args)
     }
   }
 
@@ -1600,7 +2502,7 @@
 
   // "Reply" among the buttons of a message (they are shown by Steam on hover)
   function addReplyButtons() {
-    for (const addons of document.querySelectorAll(`.chatWindow .ChatMessageBlock > .msg > .Addons:not(:has(> .${REPLY_BUTTON}))`)) {
+    for (const addons of document.querySelectorAll(`.chatWindow .ChatMessageBlock > .msg:not(${NO_REPLY}) > .Addons:not(:has(> .${REPLY_BUTTON}))`)) {
       const button = document.createElement("div")
       button.className = REPLY_BUTTON
       button.title = ownText("Reply")
@@ -1648,18 +2550,111 @@
     step()
   }
 
-  function showAnswered(card) {
-    const [name, ...rest] = card.textContent.split("\n")
-    const text = rest.join(" ").replace(/…$/, "").trim()
-    const from = card.closest(".msg")
-    const before = [...document.querySelectorAll(".chatWindow .ChatMessageBlock > .msg")].filter(el => el.offsetParent)
-    const target = before.slice(0, before.indexOf(from)).reverse().find(el => {
-      const found = messageOf(el)
-      return found && authorName(found.msg.unAccountID) === name && plainText(found.msg.strMessage).startsWith(text)
+  // The card was written by the client of whoever answered: their name for the author (a nickname, an older name)
+  // and their language for media ("Фото" / "Photo"). So any name of the author fits, media words of every
+  // language are one mark, and if no name fits, the nearest message with that text is taken
+  function namesOf(accountId) {
+    const names = new Set()
+    for (const win of [window, window.opener]) {
+      try {
+        const player = win?.g_FriendsUIApp?.FriendStore?.GetPlayer(accountId)
+        for (const name of [player?.display_name, player?.persona?.m_strPlayerName, player?.nickname]) if (name) names.add(String(name))
+      } catch { /* no store in that window */ }
+    }
+    return names
+  }
+
+  const MEDIA_KEYS = ["Photo", "Video", "Sticker"]
+  let mediaWords = null
+  function sameText(text) {
+    mediaWords ??= MEDIA_KEYS.map(key => {
+      const index = TEXT_KEYS.indexOf(key)
+      const words = new Set([key, ...Object.values(TEXTS).map(texts => texts?.[index]).filter(Boolean)])
+      return { key, words: [...words].map(word => word.toLowerCase()).sort((a, b) => b.length - a.length) }
     })
-    if (!target) return
-    target.scrollIntoView({ block: "center", behavior: "smooth" })
+    let result = text.toLowerCase().replace(/\s+/g, " ").trim()
+    for (const { key, words } of mediaWords) for (const word of words) result = result.split(word).join(`\u0000${key}`)
+    return result
+  }
+
+  // The answered message may be older than what Steam has loaded: the older history is asked for, page by page,
+  // until it is there (a marked card waits for exactly its message; then the text is tried)
+  const HISTORY_PAGES = 30
+  let seeking = false
+
+  async function showAnswered(card) {
+    if (seeking) return
+    const from = card.closest(".msg")
+    const chat = messageOf(from)?.chatView?.m_chat
+    const go = target => {
+      target.scrollIntoView({ block: "center", behavior: "smooth" })
+      highlightLine(target)
+    }
+
+    const mark = readMark(card.textContent)
+    const [name] = card.textContent.split("\n")
+    // An older quote of a link holds Steam's preview of it: the message is found by that link
+    const link = card.querySelector(".ChatMessageOpenGraph a[href]")?.getAttribute("href")
+    const rest = withoutMark([...card.childNodes].filter(node => !node.matches?.(".ChatMessageOpenGraph")).map(node => node.textContent).join(""))
+    const text = sameText(rest.split("\n").slice(1).join(" ").replace(/…$/, ""))
+    if (!mark && !text && !link) return
+
+    const earlier = () => {
+      const all = [...document.querySelectorAll(".chatWindow .ChatMessageBlock > .msg")].filter(el => el.offsetParent)
+      const index = all.indexOf(from)
+      return all.slice(0, index < 0 ? all.length : index).reverse()
+    }
+    const byMark = () => earlier().find(el => {
+      const msg = messageOf(el)?.msg
+      return msg && Number(msg.rtTimestamp) === mark.time && (Number(msg.unOrdinal) || 0) % 1000 === mark.ordinal
+    })
+    const byText = () => {
+      if (!text && !link) return null
+      const candidates = earlier().filter(el => {
+        const found = messageOf(el)
+        if (!found) return false
+        const message = String(found.msg.strMessage || "")
+        if (link && !message.includes(link)) return false
+        return !text || sameText(quotedText(message)).startsWith(text) || sameText(plainText(message)).startsWith(text)
+      })
+      return candidates.find(el => namesOf(messageOf(el).msg.unAccountID).has(name.trim())) || candidates[0] || null
+    }
+
+    seeking = true
+    try {
+      for (let page = 0; page <= HISTORY_PAGES; page++) {
+        const target = mark ? byMark() : byText()
+        if (target) return go(target)
+        if (!chat?.IsMoreHistoryAvailable?.()) break
+        await chat.LoadMoreHistory()
+        await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 30))) // drawn
+      }
+      // The whole history and no message with that mark (deleted): the text, if it is still somewhere
+      const target = mark && byText()
+      if (target) go(target)
+    } catch { /* the chat was closed meanwhile */ } finally {
+      seeking = false
+    }
+  }
+
+  // Ctrl+Up / Ctrl+Down: the reply goes to the message before / after (as in Telegram); past the last - no reply
+  function stepReply(up) {
+    const view = shownView()
+    if (!view) return false
+    const list = [...document.querySelectorAll(`.chatWindow .ChatMessageBlock > .msg:not(${NO_REPLY})`)].filter(el => el.offsetParent && messageOf(el))
+    if (!list.length) return false
+    const current = replies.get(view)?.el
+    let index = current && list.includes(current) ? list.indexOf(current) : list.length
+    index += up ? -1 : 1
+    if (index >= list.length) {
+      cancelReply(view)
+      return true
+    }
+    const target = list[Math.max(0, index)]
+    startReply(target)
+    target.scrollIntoView({ block: "nearest", behavior: "smooth" })
     highlightLine(target)
+    return true
   }
 
   function watchReplies() {
@@ -1674,11 +2669,15 @@
     }, true)
     document.addEventListener("dblclick", event => {
       const message = event.target instanceof Element && event.target.closest(".chatWindow .ChatMessageBlock > .msg")
+      if (message?.matches(NO_REPLY)) return
       // Not on the text itself: a double click there selects a word, as everywhere
       if (message && !event.target.closest("a, img, video, .Addons, .MessageReactions, .msgText")) startReply(message)
     })
     addEventListener("keydown", event => {
       if (event.key === "Escape" && document.getElementById(REPLY_BAR_ID)) cancelReply(shownView())
+      if (event.ctrlKey && !event.altKey && !event.shiftKey && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
+        if (stepReply(event.key === "ArrowUp")) event.preventDefault()
+      }
     }, true)
   }
 
@@ -1691,6 +2690,16 @@
       frame = null
       markInvites()
       markEffects()
+      markStickerBlocks()
+      markMemberGroups()
+      patchMemberSections()
+      patchMemberStep()
+      updateTabNav()
+      markGroupLastMessages()
+      decorateMembers()
+      markMemberSearch()
+      markChannelTitles()
+      markServerMessages()
       markEntryHeight()
       markWindowButtons()
       markTimes()
@@ -1707,6 +2716,7 @@
       ensureMoreButton()
       addGlobalItem()
       ensureCallButton()
+      ensureTabsButton()
       applyBackground()
     })
   }
@@ -1731,14 +2741,28 @@
     ensureMoreButton()
     addGlobalItem()
     ensureCallButton()
+    ensureTabsButton()
     watchSpoilers()
     watchReplies()
     watchMenu()
     watchBackgroundDialog()
+    watchDeletedList()
     loadBackgrounds()
+    patchMemberSections()
+    document.documentElement.style.setProperty("--nk-found-text", JSON.stringify(ownText("Found")))
+    addEventListener("resize", updateTabNav) // the tabs may fit, or no longer fit
+    for (const type of ["click", "mousedown", "pointerdown", "dblclick"]) {
+      document.addEventListener(type, onMemberJoin, true)
+      document.addEventListener(type, onFoldedSearch, true)
+      document.addEventListener(type, onMemberAvatar, true)
+      document.addEventListener(type, onSpeakerName, true)
+    }
+    document.addEventListener("mouseover", onSpeakerBadge)
     // attributes: the active tab changes by a class only
     new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] })
     setInterval(updateHeader, HEADER_REFRESH)
+    setInterval(decorateMembers, HEADER_REFRESH) // a game started or ended changes no element of the row
+    setInterval(markGroupLastMessages, HEADER_REFRESH) // nor does a new message in a group that is not open
   }
 
   document.readyState === "loading"
